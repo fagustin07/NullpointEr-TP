@@ -1,0 +1,59 @@
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Java CI with Gradle
+
+on:
+  # Sequence of patterns matched against refs/tags
+  push:
+    tags:
+      - "*" # Push events to matching v*, i.e. v1.0, v20.15.10
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Extraer nombre del tag
+        run: fullTagName=${{ github.ref }} && path='refs/tags/' && a='' && tagName=${fullTagName/$path/$a} && echo $tagName && echo "##[set-output name=tagName;]$tagName"
+        id: tagName
+      - name: Make Gradle executable
+        run: chmod +x ./gradlew
+      - name: Run tests
+        run: ./gradlew test -i
+        env:
+          SQL_URL: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+
+      - name: Success notification
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: ${{ github.repository }}
+          DISCORD_AVATAR: https://www.iconsdb.com/icons/preview/green/github-9-xxl.png
+        uses: EPERS-UNQ/action-discord@master
+        with:
+          fields: '[{"name":"Proyecto",  "value":" [{{ EVENT_PAYLOAD.repository.name }}]({{ EVENT_PAYLOAD.repository.url }}) ", "inline": true}, {"name":"Tag",  "value":"[${{ steps.tagName.outputs.tagName }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.tagName.outputs.tagName }})", "inline": true}]'
+          title: ':green_circle: Entrega existosa'
+          color: 3258062
+          author: true
+          includeCommits: true
+      - name: Failure notification
+        if: failure()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: ${{ github.repository }}
+          DISCORD_AVATAR: https://www.iconsdb.com/icons/preview/red/github-10-xxl.png
+        uses: EPERS-UNQ/action-discord@master
+        with:
+          fields: '[{"name":"Proyecto",  "value":" [{{ EVENT_PAYLOAD.repository.name }}]({{ EVENT_PAYLOAD.repository.url }}) ", "inline": true},{"name":"Tag",  "value":"[${{ steps.tagName.outputs.tagName }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.tagName.outputs.tagName }})", "inline": true}]'
+          title: ':red_circle: Entrega fallida '
+          color: 9503748
+          author: true
+          includeCommits: true

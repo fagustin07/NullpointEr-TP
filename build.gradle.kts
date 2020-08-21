@@ -30,7 +30,6 @@ dependencies {
     }
     testImplementation ("junit:junit:4.12")
     runtimeOnly("mysql:mysql-connector-java")
-
 }
 
 tasks.withType<Test> {
