@@ -23,7 +23,7 @@ class JDBCPartyDAOTest {
         assertEquals(1, partyID)
     }
   
-  @Test
+    @Test
     fun alCrearUnaPartyYLuegoRecuperarlaSeObtienenObjetosSimilares() {
 
         val idParty = adminPartyDAO.crear(bigTeam)
@@ -34,6 +34,21 @@ class JDBCPartyDAOTest {
         assertEquals(idParty, partyRecov.id)
         assertEquals(0, partyRecov.numeroDeAventureros)
 
+    }
+
+    @Test
+    fun cuandoSeRecuperanTodasLasPartySeLasObtieneOrdenadasPorNombreEnFormaAscendente() {
+        val betaParty = Party("Beta")
+        val alphaParty = Party("Alpha")
+
+        adminPartyDAO.crear(betaParty)
+        adminPartyDAO.crear(alphaParty)
+
+        val partiesObtenidas = adminPartyDAO.recuperarTodas()
+
+        assertEquals(2, partiesObtenidas.size)
+        assertEquals(alphaParty.nombre, partiesObtenidas[0].nombre)
+        assertEquals(betaParty.nombre, partiesObtenidas[1].nombre)
     }
 
     @AfterEach

@@ -4,6 +4,7 @@ import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.unidad1.wop.dao.impl.JDBCConnector.execute
 import java.sql.Connection
 import java.sql.PreparedStatement
+import java.sql.ResultSet
 
 class JDBCPartyDAO: IPartyDAO {
 
@@ -44,29 +45,49 @@ class JDBCPartyDAO: IPartyDAO {
 
     override fun recuperar(idDeLaParty: Long): Party {
             return execute { conn: Connection ->
-                val ps = conn.prepareStatement("SELECT nombre,numeroDeAventureros FROM party WHERE id = ?")
+                val ps = conn.prepareStatement("SELECT * FROM party WHERE id = ?")
                 ps.setLong(1, idDeLaParty)
                 val resultSet = ps.executeQuery()
-                var party: Party? = null
-                while (resultSet.next()) {
-                    val nombre = resultSet.getString("nombre")
-                    party = Party(nombre)
-                    party.id = idDeLaParty
-                    party.numeroDeAventureros = resultSet.getInt("numeroDeAventureros")
-                }
+                resultSet.next()
+
+                val party = mapPartyToObjectFrom(resultSet)
+
                 ps.close()
-                party!!
+                party
             }
     }
 
-    override fun recuperarTodas(): List<Party> {
-        TODO("Not yet implemented")
-    }
+    override fun recuperarTodas() =
+        execute { connection ->
+            val ps = connection.prepareStatement("SELECT * FROM party ORDER BY nombre ASC")
+            val resultSet = ps.executeQuery()
+
+            val parties = mutableListOf<Party>()
+
+            while (resultSet.next()) {
+                parties.add(mapPartyToObjectFrom(resultSet))
+            }
+
+            ps.close()
+            parties
+        }
 
     private fun chequearCreacionDeParty(ps: PreparedStatement, party: Party) {
         if (ps.updateCount != 1) {
             throw RuntimeException("No se creo correctamente la party $party")
         }
+    }
+
+    private fun mapPartyToObjectFrom(resultSet: ResultSet): Party {
+        val id = resultSet.getLong("id")
+        val nombre = resultSet.getString("nombre")
+        val numeroDeAventureros = resultSet.getInt("numeroDeAventureros")
+
+        val party = Party(nombre)
+        party.id = id
+        party.numeroDeAventureros = numeroDeAventureros
+
+        return party
     }
 
     init {
