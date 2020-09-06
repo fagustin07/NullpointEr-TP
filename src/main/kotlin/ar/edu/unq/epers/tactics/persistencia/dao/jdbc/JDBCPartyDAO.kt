@@ -20,27 +20,6 @@ class JDBCPartyDAO : IPartyDAO {
         }
     }
 
-    private fun recuperarPartyID(ps: PreparedStatement, party: Party): Long {
-        var partyID: Long? = null
-        ps.generatedKeys.use { generatedKeys ->
-            if (generatedKeys.next()) {
-                partyID = generatedKeys.getLong(1)
-            } else {
-                throw RuntimeException("Ha fallado la creacion, no se pudo obtener la ID de $party.")
-            }
-        }
-        ps.close()
-        return partyID!!
-    }
-
-    fun eliminarTablaDeParty() {
-        execute { conn: Connection ->
-            val ps = conn.prepareStatement("DROP TABLE party")
-            ps.executeUpdate()
-            ps.close()
-        }
-    }
-
     override fun actualizar(party: Party) {
         execute { connection ->
             val ps = connection.prepareStatement(
@@ -79,6 +58,27 @@ class JDBCPartyDAO : IPartyDAO {
                 ps.close()
                 parties
             }
+
+    private fun recuperarPartyID(ps: PreparedStatement, party: Party): Long {
+        var partyID: Long? = null
+        ps.generatedKeys.use { generatedKeys ->
+            if (generatedKeys.next()) {
+                partyID = generatedKeys.getLong(1)
+            } else {
+                throw RuntimeException("Ha fallado la creacion, no se pudo obtener la ID de $party.")
+            }
+        }
+        ps.close()
+        return partyID!!
+    }
+
+    fun eliminarTablaDeParty() {
+        execute { conn: Connection ->
+            val ps = conn.prepareStatement("DROP TABLE party")
+            ps.executeUpdate()
+            ps.close()
+        }
+    }
 
     private fun chequearCreacionDeParty(ps: PreparedStatement, party: Party) {
         if (ps.updateCount != 1) {

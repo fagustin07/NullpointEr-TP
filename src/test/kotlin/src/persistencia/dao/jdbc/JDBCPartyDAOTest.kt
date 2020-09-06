@@ -1,15 +1,15 @@
-package src
+package src.persistencia.dao.jdbc
 
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.JDBCPartyDAO
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.*
 
 class JDBCPartyDAOTest {
     private val adminPartyDAO: JDBCPartyDAO = JDBCPartyDAO()
-    lateinit var bigTeam : Party
+    lateinit var bigTeam: Party
 
     @BeforeEach
     fun crearModelo() {
@@ -22,7 +22,7 @@ class JDBCPartyDAOTest {
 
         assertEquals(1, partyID)
     }
-  
+
     @Test
     fun alCrearUnaPartyYLuegoRecuperarlaSeObtienenObjetosSimilares() {
 
@@ -52,7 +52,7 @@ class JDBCPartyDAOTest {
     }
 
     @Test
-    fun cuandoSeActualizaUnaParty_luegoSeLaRecuperaConLaInformacionActualizada(){
+    fun cuandoSeActualizaUnaParty_luegoSeLaRecuperaConLaInformacionActualizada() {
         val party = Party("Beta")
         val partyId = adminPartyDAO.crear(party)
 
@@ -65,7 +65,7 @@ class JDBCPartyDAOTest {
 
 
     @AfterEach
-    fun eliminarDatos(){
+    fun eliminarDatos() {
         // creo esta funcion hasta tener el dataService
         adminPartyDAO.eliminarTablaDeParty()
     }

@@ -1,19 +1,19 @@
-package src
+package src.service
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.IPartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.JDBCPartyDAO
 import ar.edu.unq.epers.tactics.service.PersistentPartyService
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
-class PartyServiceTest {
+open class PartyServiceTest {
 
-    lateinit var partyService: PersistentPartyService
-    lateinit var dao: IPartyDAO
+    private lateinit var partyService: PersistentPartyService
+    private lateinit var dao: IPartyDAO
 
     @BeforeEach
     fun setUp() {
@@ -52,16 +52,16 @@ class PartyServiceTest {
 
     @Test
     fun noSePuedeRecuperarUnaPartySiNoExisteNingunaPartyConElIdProvisto() {
-        assertThrows(Exception::class.java,  { partyService.recuperar(0) },  "No hay ninguna party con el id provisto")
+        assertThrows(Exception::class.java, { partyService.recuperar(0) }, "No hay ninguna party con el id provisto")
     }
 
     @Test
     fun alAgregarUnNuevoAventureroAUnaPartyEstaCambiaSusValores() {
         val party = Party("Nombre de party")
-        val aventurero = Aventurero(party,50,"Pepe")
+        val aventurero = Aventurero(party, 50, "Pepe")
         val partyId = partyService.crear(party)
 
-        partyService.agregarAventureroAParty(partyId,aventurero)
+        partyService.agregarAventureroAParty(partyId, aventurero)
         val partyRec = partyService.recuperar(partyId)
 
         assertEquals(1, partyRec.numeroDeAventureros)
@@ -71,14 +71,12 @@ class PartyServiceTest {
     }
 
 
-
-
     @AfterEach
     fun tearDown() {
         (dao as JDBCPartyDAO).eliminarTablaDeParty()
     }
 
-    protected fun assertEqualParty(expectedParty: Party, obtainedParty: Party) {
+    private fun assertEqualParty(expectedParty: Party, obtainedParty: Party) {
         assertEquals(expectedParty.nombre, obtainedParty.nombre)
         assertEquals(expectedParty.numeroDeAventureros, obtainedParty.numeroDeAventureros)
     }
