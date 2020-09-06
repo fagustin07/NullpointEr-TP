@@ -9,7 +9,7 @@ class PersistentPartyService(val dao: IPartyDAO) : PartyService {
 
     override fun crear(party: Party) = dao.crear(party)
 
-    override fun actualizar(party: Party) = TODO("SHOULD BE IMPLEMENTED")
+    override fun actualizar(party: Party) = dao.actualizar(party)
 
     override fun recuperar(idDeLaParty: Long) = dao.recuperar(idDeLaParty)
 
