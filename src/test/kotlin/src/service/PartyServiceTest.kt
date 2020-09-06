@@ -62,10 +62,10 @@ open class PartyServiceTest {
         val partyId = partyService.crear(party)
 
         partyService.agregarAventureroAParty(partyId, aventurero)
-        val partyRec = partyService.recuperar(partyId)
+        val partyRecuperada = partyService.recuperar(partyId)
 
-        assertEquals(1, partyRec.numeroDeAventureros)
-        assertNotEquals(party.numeroDeAventureros, partyRec.numeroDeAventureros)
+        assertEquals(1, partyRecuperada.numeroDeAventureros)
+        assertNotEquals(party.numeroDeAventureros, partyRecuperada.numeroDeAventureros)
 
 
     }

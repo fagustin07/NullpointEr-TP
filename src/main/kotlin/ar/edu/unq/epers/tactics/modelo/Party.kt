@@ -10,5 +10,5 @@ class Party(val nombre: String) {
     }
 
 
-    private fun esLaParty(partyBuscada: Party) = nombre == partyBuscada.nombre
+    private fun esLaParty(otraParty: Party) = nombre == otraParty.nombre
 }
