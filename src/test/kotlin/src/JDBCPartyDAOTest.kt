@@ -37,7 +37,7 @@ class JDBCPartyDAOTest {
     }
 
     @Test
-    fun cuandoSeRecuperanTodasLasPartidasSeLasObtieneOrdenadasPorNombreEnFormaAscendente() {
+    fun cuandoSeRecuperanTodasLasPartySeLasObtieneOrdenadasPorNombreEnFormaAscendente() {
         val betaParty = Party("Beta")
         val alphaParty = Party("Alpha")
 
