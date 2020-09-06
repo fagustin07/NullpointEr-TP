@@ -6,7 +6,7 @@ import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
-class JDBCPartyDAO: IPartyDAO {
+class JDBCPartyDAO : IPartyDAO {
 
     override fun crear(party: Party): Long {
         return execute { conn: Connection ->
@@ -14,7 +14,9 @@ class JDBCPartyDAO: IPartyDAO {
             ps.setString(1, party.nombre)
             ps.executeUpdate()
             chequearCreacionDeParty(ps, party)
-            recuperarPartyID(ps, party)
+            val partyId = recuperarPartyID(ps, party)
+            party.id = partyId
+            partyId
         }
     }
 
@@ -40,37 +42,43 @@ class JDBCPartyDAO: IPartyDAO {
     }
 
     override fun actualizar(party: Party) {
-        TODO("Not yet implemented")
+        execute { connection ->
+            val ps = connection.prepareStatement(
+                    "UPDATE party SET numeroDeAventureros = ${party.numeroDeAventureros} WHERE id = ${party.id}"
+            )
+            ps.executeUpdate()
+            ps.close()
+        }
     }
 
     override fun recuperar(idDeLaParty: Long): Party {
-            return execute { conn: Connection ->
-                val ps = conn.prepareStatement("SELECT * FROM party WHERE id = ?")
-                ps.setLong(1, idDeLaParty)
-                val resultSet = ps.executeQuery()
-                resultSet.next()
+        return execute { conn: Connection ->
+            val ps = conn.prepareStatement("SELECT * FROM party WHERE id = ?")
+            ps.setLong(1, idDeLaParty)
+            val resultSet = ps.executeQuery()
+            resultSet.next()
 
-                val party = mapPartyToObjectFrom(resultSet)
+            val party = mapPartyToObjectFrom(resultSet)
 
-                ps.close()
-                party
-            }
+            ps.close()
+            party
+        }
     }
 
     override fun recuperarTodas() =
-        execute { connection ->
-            val ps = connection.prepareStatement("SELECT * FROM party ORDER BY nombre ASC")
-            val resultSet = ps.executeQuery()
+            execute { connection ->
+                val ps = connection.prepareStatement("SELECT * FROM party ORDER BY nombre ASC")
+                val resultSet = ps.executeQuery()
 
-            val parties = mutableListOf<Party>()
+                val parties = mutableListOf<Party>()
 
-            while (resultSet.next()) {
-                parties.add(mapPartyToObjectFrom(resultSet))
+                while (resultSet.next()) {
+                    parties.add(mapPartyToObjectFrom(resultSet))
+                }
+
+                ps.close()
+                parties
             }
-
-            ps.close()
-            parties
-        }
 
     private fun chequearCreacionDeParty(ps: PreparedStatement, party: Party) {
         if (ps.updateCount != 1) {
