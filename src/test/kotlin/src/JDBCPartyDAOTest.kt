@@ -37,20 +37,18 @@ class JDBCPartyDAOTest {
     }
 
     @Test
-    fun cuandoSeRecuperanTodasLasPartidasSeLasObtieneOrdenadasPorNombreEnFormaAscendente_CaseInsensitive_Asdasdasdasdasd() {
+    fun cuandoSeRecuperanTodasLasPartidasSeLasObtieneOrdenadasPorNombreEnFormaAscendente() {
+        val betaParty = Party("Beta")
         val alphaParty = Party("Alpha")
-        val gammaParty = Party("Gamma")
-        val betaParty = Party("beta")
-        adminPartyDAO.crear(alphaParty)
-        adminPartyDAO.crear(gammaParty)
+
         adminPartyDAO.crear(betaParty)
+        adminPartyDAO.crear(alphaParty)
 
         val partiesObtenidas = adminPartyDAO.recuperarTodas()
 
-        assertEquals(3, partiesObtenidas.size)
+        assertEquals(2, partiesObtenidas.size)
         assertEquals(alphaParty.nombre, partiesObtenidas[0].nombre)
         assertEquals(betaParty.nombre, partiesObtenidas[1].nombre)
-        assertEquals(gammaParty.nombre, partiesObtenidas[2].nombre)
     }
 
     @AfterEach
