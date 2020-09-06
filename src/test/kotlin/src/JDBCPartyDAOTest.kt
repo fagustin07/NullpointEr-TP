@@ -30,12 +30,13 @@ class JDBCPartyDAOTest {
 
         val partyRecov = adminPartyDAO.recuperar(idParty)
 
-        Assert.assertEquals(bigTeam.nombre, partyRecov.nombre)
-        Assert.assertEquals(idParty, partyRecov.id)
-        Assert.assertEquals(0, partyRecov.numeroDeAventureros)
+        assertEquals(bigTeam.nombre, partyRecov.nombre)
+        assertEquals(idParty, partyRecov.id)
+        assertEquals(0, partyRecov.numeroDeAventureros)
 
     }
 
+    @AfterEach
     fun eliminarDatos(){
         // creo esta funcion hasta tener el dataService
         adminPartyDAO.eliminarTablaDeParty()
