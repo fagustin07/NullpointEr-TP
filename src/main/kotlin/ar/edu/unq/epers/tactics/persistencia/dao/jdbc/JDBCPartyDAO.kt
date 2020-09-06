@@ -45,18 +45,15 @@ class JDBCPartyDAO: IPartyDAO {
 
     override fun recuperar(idDeLaParty: Long): Party {
             return execute { conn: Connection ->
-                val ps = conn.prepareStatement("SELECT nombre,numeroDeAventureros FROM party WHERE id = ?")
+                val ps = conn.prepareStatement("SELECT * FROM party WHERE id = ?")
                 ps.setLong(1, idDeLaParty)
                 val resultSet = ps.executeQuery()
-                var party: Party? = null
-                while (resultSet.next()) {
-                    val nombre = resultSet.getString("nombre")
-                    party = Party(nombre)
-                    party.id = idDeLaParty
-                    party.numeroDeAventureros = resultSet.getInt("numeroDeAventureros")
-                }
+                resultSet.next()
+
+                val party = mapPartyToObjectFrom(resultSet)
+
                 ps.close()
-                party!!
+                party
             }
     }
 
