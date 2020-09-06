@@ -51,6 +51,19 @@ class JDBCPartyDAOTest {
         assertEquals(betaParty.nombre, partiesObtenidas[1].nombre)
     }
 
+    @Test
+    fun cuandoSeActualizaUnaParty_luegoSeLaRecuperaConLaInformacionActualizada(){
+        val party = Party("Beta")
+        val partyId = adminPartyDAO.crear(party)
+
+        party.numeroDeAventureros = 4
+        adminPartyDAO.actualizar(party)
+        val partyActualizada = adminPartyDAO.recuperar(partyId)
+
+        assertEquals(4, partyActualizada.numeroDeAventureros)
+    }
+
+
     @AfterEach
     fun eliminarDatos(){
         // creo esta funcion hasta tener el dataService
