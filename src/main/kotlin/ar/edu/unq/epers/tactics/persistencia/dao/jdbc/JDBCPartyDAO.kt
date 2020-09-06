@@ -43,7 +43,20 @@ class JDBCPartyDAO: IPartyDAO {
     }
 
     override fun recuperar(idDeLaParty: Long): Party {
-        TODO("Not yet implemented")
+            return execute { conn: Connection ->
+                val ps = conn.prepareStatement("SELECT nombre,numeroDeAventureros FROM party WHERE id = ?")
+                ps.setLong(1, idDeLaParty)
+                val resultSet = ps.executeQuery()
+                var party: Party? = null
+                while (resultSet.next()) {
+                    val nombre = resultSet.getString("nombre")
+                    party = Party(nombre)
+                    party.id = idDeLaParty
+                    party.numeroDeAventureros = resultSet.getInt("numeroDeAventureros")
+                }
+                ps.close()
+                party!!
+            }
     }
 
     override fun recuperarTodas(): List<Party> {

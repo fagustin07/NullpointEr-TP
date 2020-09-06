@@ -22,8 +22,20 @@ class JDBCPartyDAOTest {
 
         assertEquals(1, partyID)
     }
+  
+  @Test
+    fun alCrearUnaPartyYLuegoRecuperarlaSeObtienenObjetosSimilares() {
 
-    @AfterEach
+        val idParty = adminPartyDAO.crear(bigTeam)
+
+        val partyRecov = adminPartyDAO.recuperar(idParty)
+
+        Assert.assertEquals(bigTeam.nombre, partyRecov.nombre)
+        Assert.assertEquals(idParty, partyRecov.id)
+        Assert.assertEquals(0, partyRecov.numeroDeAventureros)
+
+    }
+
     fun eliminarDatos(){
         // creo esta funcion hasta tener el dataService
         adminPartyDAO.eliminarTablaDeParty()
