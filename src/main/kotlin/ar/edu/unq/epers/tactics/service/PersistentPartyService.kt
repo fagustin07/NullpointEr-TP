@@ -16,7 +16,15 @@ class PersistentPartyService(val dao: IPartyDAO) : PartyService {
     override fun recuperarTodas() = dao.recuperarTodas()
 
     override fun agregarAventureroAParty(idDeLaParty: Long, aventurero: Aventurero): Aventurero {
-        TODO("SHOULD BE IMPLEMENTED")
+        val party = dao.recuperar(idDeLaParty)
+        actualizarNumAvent(party)
+        actualizar(party)
+        return aventurero
+
+    }
+
+    private fun actualizarNumAvent(party : Party) {
+        party.numeroDeAventureros = party.numeroDeAventureros + 1
     }
 
 }

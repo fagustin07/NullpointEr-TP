@@ -55,6 +55,21 @@ class PartyServiceTest {
         assertThrows(Exception::class.java,  { partyService.recuperar(0) },  "No hay ninguna party con el id provisto")
     }
 
+    @Test
+    fun alAgregarUnNuevoAventureroAUnaPartyEstaCambiaSusValores() {
+        val party = Party("Nombre de party")
+        val aventurero = Aventurero(party,50,"Pepe")
+        val partyId = partyService.crear(party)
+
+        partyService.agregarAventureroAParty(partyId,aventurero)
+        val partyRec = partyService.recuperar(partyId)
+
+        assertEquals(1, partyRec.numeroDeAventureros)
+        assertNotEquals(party.numeroDeAventureros, partyRec.numeroDeAventureros)
+
+
+    }
+
 
 
 
