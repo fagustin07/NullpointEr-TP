@@ -23,7 +23,7 @@ class JDBCPartyDAO : IPartyDAO {
     override fun actualizar(party: Party) {
         execute { connection ->
             val ps = connection.prepareStatement(
-                    "UPDATE party SET numeroDeAventureros = ${party.numeroDeAventureros} WHERE id = ${party.id}"
+                "UPDATE party SET numeroDeAventureros = ${party.numeroDeAventureros} WHERE id = ${party.id}"
             )
             ps.executeUpdate()
             ps.close()
@@ -45,19 +45,19 @@ class JDBCPartyDAO : IPartyDAO {
     }
 
     override fun recuperarTodas() =
-            execute { connection ->
-                val ps = connection.prepareStatement("SELECT * FROM party ORDER BY nombre ASC")
-                val resultSet = ps.executeQuery()
+        execute { connection ->
+            val ps = connection.prepareStatement("SELECT * FROM party ORDER BY nombre ASC")
+            val resultSet = ps.executeQuery()
 
-                val parties = mutableListOf<Party>()
+            val parties = mutableListOf<Party>()
 
-                while (resultSet.next()) {
-                    parties.add(mapPartyToObjectFrom(resultSet))
-                }
-
-                ps.close()
-                parties
+            while (resultSet.next()) {
+                parties.add(mapPartyToObjectFrom(resultSet))
             }
+
+            ps.close()
+            parties
+        }
 
     private fun recuperarPartyID(ps: PreparedStatement, party: Party): Long {
         var partyID: Long? = null
