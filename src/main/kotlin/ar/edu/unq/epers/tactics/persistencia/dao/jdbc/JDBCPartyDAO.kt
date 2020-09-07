@@ -20,31 +20,10 @@ class JDBCPartyDAO : IPartyDAO {
         }
     }
 
-    private fun recuperarPartyID(ps: PreparedStatement, party: Party): Long {
-        var partyID: Long? = null
-        ps.generatedKeys.use { generatedKeys ->
-            if (generatedKeys.next()) {
-                partyID = generatedKeys.getLong(1)
-            } else {
-                throw RuntimeException("Ha fallado la creacion, no se pudo obtener la ID de $party.")
-            }
-        }
-        ps.close()
-        return partyID!!
-    }
-
-    fun eliminarTablaDeParty() {
-        execute { conn: Connection ->
-            val ps = conn.prepareStatement("DROP TABLE party")
-            ps.executeUpdate()
-            ps.close()
-        }
-    }
-
     override fun actualizar(party: Party) {
         execute { connection ->
             val ps = connection.prepareStatement(
-                    "UPDATE party SET numeroDeAventureros = ${party.numeroDeAventureros} WHERE id = ${party.id}"
+                "UPDATE party SET numeroDeAventureros = ${party.numeroDeAventureros} WHERE id = ${party.id}"
             )
             ps.executeUpdate()
             ps.close()
@@ -66,19 +45,40 @@ class JDBCPartyDAO : IPartyDAO {
     }
 
     override fun recuperarTodas() =
-            execute { connection ->
-                val ps = connection.prepareStatement("SELECT * FROM party ORDER BY nombre ASC")
-                val resultSet = ps.executeQuery()
+        execute { connection ->
+            val ps = connection.prepareStatement("SELECT * FROM party ORDER BY nombre ASC")
+            val resultSet = ps.executeQuery()
 
-                val parties = mutableListOf<Party>()
+            val parties = mutableListOf<Party>()
 
-                while (resultSet.next()) {
-                    parties.add(mapPartyToObjectFrom(resultSet))
-                }
-
-                ps.close()
-                parties
+            while (resultSet.next()) {
+                parties.add(mapPartyToObjectFrom(resultSet))
             }
+
+            ps.close()
+            parties
+        }
+
+    private fun recuperarPartyID(ps: PreparedStatement, party: Party): Long {
+        var partyID: Long? = null
+        ps.generatedKeys.use { generatedKeys ->
+            if (generatedKeys.next()) {
+                partyID = generatedKeys.getLong(1)
+            } else {
+                throw RuntimeException("Ha fallado la creacion, no se pudo obtener la ID de $party.")
+            }
+        }
+        ps.close()
+        return partyID!!
+    }
+
+    fun eliminarTablaDeParty() {
+        execute { conn: Connection ->
+            val ps = conn.prepareStatement("DROP TABLE party")
+            ps.executeUpdate()
+            ps.close()
+        }
+    }
 
     private fun chequearCreacionDeParty(ps: PreparedStatement, party: Party) {
         if (ps.updateCount != 1) {
