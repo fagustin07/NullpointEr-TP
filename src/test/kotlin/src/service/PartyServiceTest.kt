@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.sql.SQLException
 
-open class PartyServiceTest {
+class PartyServiceTest {
 
     private lateinit var partyService: PersistentPartyService
     private lateinit var dao: IPartyDAO
