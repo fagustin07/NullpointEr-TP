@@ -10,8 +10,7 @@ class JDBCPartyDAO : IPartyDAO {
 
     override fun crear(party: Party): Long {
         return execute { conn: Connection ->
-            val ps =
-                conn.prepareStatement("INSERT INTO party (nombre) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)
+            val ps = conn.prepareStatement("INSERT INTO party (nombre) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)
             ps.setString(1, party.nombre)
             ps.executeUpdate()
             chequearCreacionDeParty(ps, party)
