@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-open class PartyServiceTest {
+class PartyServiceTest {
 
     private lateinit var partyService: PersistentPartyService
     private lateinit var dao: IPartyDAO
