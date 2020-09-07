@@ -5,6 +5,7 @@ import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.IPartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.JDBCPartyDAO
 import ar.edu.unq.epers.tactics.service.PersistentPartyService
+import helpers.DataServiceHelper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -78,7 +79,7 @@ class PartyServiceTest {
 
     @AfterEach
     fun tearDown() {
-        (dao as JDBCPartyDAO).eliminarTablaDeParty()
+        DataServiceHelper().eliminarTodo()
     }
 
     private fun assertEqualParty(expectedParty: Party, obtainedParty: Party) {
