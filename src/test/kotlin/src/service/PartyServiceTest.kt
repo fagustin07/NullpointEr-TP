@@ -10,7 +10,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.sql.SQLException
+import org.junit.jupiter.api.assertThrows
+import java.lang.RuntimeException
 
 class PartyServiceTest {
 
@@ -54,11 +55,8 @@ class PartyServiceTest {
 
     @Test
     fun noSePuedeRecuperarUnaPartySiNoExisteNingunaPartyConElIdProvisto() {
-        assertThrows(
-            SQLException::class.java,
-            { partyService.recuperar(0) },
-            "No hay ninguna party con el id provisto"
-        )
+        val exception = assertThrows<RuntimeException> { partyService.recuperar(0) }
+        assertEquals(exception.message, "No hay ninguna party con el id provisto")
     }
 
     @Test
@@ -72,8 +70,6 @@ class PartyServiceTest {
 
         assertEquals(1, partyRecuperada.numeroDeAventureros)
         assertNotEquals(party.numeroDeAventureros, partyRecuperada.numeroDeAventureros)
-
-
     }
 
 
