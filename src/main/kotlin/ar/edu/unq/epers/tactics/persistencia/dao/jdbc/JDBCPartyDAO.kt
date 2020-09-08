@@ -35,7 +35,8 @@ class JDBCPartyDAO : IPartyDAO {
             val ps = conn.prepareStatement("SELECT * FROM party WHERE id = ?")
             ps.setLong(1, idDeLaParty)
             val resultSet = ps.executeQuery()
-            resultSet.next()
+
+            if (!resultSet.next()) throw RuntimeException("No hay ninguna party con el id provisto")
 
             val party = mapPartyToObjectFrom(resultSet)
 
@@ -72,15 +73,8 @@ class JDBCPartyDAO : IPartyDAO {
         return partyID!!
     }
 
-    fun eliminarTablaDeParty() {
-        execute { conn: Connection ->
-            val ps = conn.prepareStatement("DROP TABLE party")
-            ps.executeUpdate()
-            ps.close()
-        }
-    }
-
     private fun chequearCreacionDeParty(ps: PreparedStatement, party: Party) {
+        // TODO: esto no se chequea en ningun test. Si se comenta el codigo igual pasan todos los tests
         if (ps.updateCount != 1) {
             throw RuntimeException("No se creo correctamente la party $party")
         }
