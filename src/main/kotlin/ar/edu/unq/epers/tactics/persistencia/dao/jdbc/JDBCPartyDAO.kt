@@ -13,8 +13,9 @@ class JDBCPartyDAO : IPartyDAO {
             val ps = conn.prepareStatement("INSERT INTO party (nombre) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)
             ps.setString(1, party.nombre)
             ps.executeUpdate()
-            chequearCreacionDeParty(ps, party)
-            val partyId = recuperarPartyID(ps, party)
+
+            val partyId = recuperarPartyID(ps)
+
             party.id = partyId
             partyId
         }
@@ -60,24 +61,14 @@ class JDBCPartyDAO : IPartyDAO {
             parties
         }
 
-    private fun recuperarPartyID(ps: PreparedStatement, party: Party): Long {
+    private fun recuperarPartyID(ps: PreparedStatement): Long {
         var partyID: Long? = null
         ps.generatedKeys.use { generatedKeys ->
             if (generatedKeys.next()) {
                 partyID = generatedKeys.getLong(1)
-            } else {
-                throw RuntimeException("Ha fallado la creacion, no se pudo obtener la ID de $party.")
             }
         }
-        ps.close()
         return partyID!!
-    }
-
-    private fun chequearCreacionDeParty(ps: PreparedStatement, party: Party) {
-        // TODO: esto no se chequea en ningun test. Si se comenta el codigo igual pasan todos los tests
-        if (ps.updateCount != 1) {
-            throw RuntimeException("No se creo correctamente la party $party")
-        }
     }
 
     private fun mapPartyToObjectFrom(resultSet: ResultSet): Party {
