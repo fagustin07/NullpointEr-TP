@@ -24,8 +24,10 @@ class JDBCPartyDAO : IPartyDAO {
     override fun actualizar(party: Party) {
         execute { connection ->
             val ps = connection.prepareStatement(
-                "UPDATE party SET numeroDeAventureros = ${party.numeroDeAventureros} WHERE id = ${party.id}"
+                "UPDATE party SET numeroDeAventureros = ? WHERE id = ?"
             )
+            ps.setInt(1, party.numeroDeAventureros)
+            ps.setLong(2, party.id!!)
             ps.executeUpdate()
             ps.close()
         }
