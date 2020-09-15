@@ -17,6 +17,7 @@ class JDBCPartyDAO : IPartyDAO {
             val partyId = recuperarPartyID(ps)
 
             party.id = partyId
+            ps.close()
             partyId
         }
     }
