@@ -23,6 +23,7 @@ class JDBCPartyDAO : IPartyDAO {
     }
 
     override fun actualizar(party: Party) {
+        checkearSiPartyTieneId(party)
         execute { connection ->
             val ps = connection.prepareStatement(
                 "UPDATE party SET numeroDeAventureros = ? WHERE id = ?"
@@ -31,6 +32,12 @@ class JDBCPartyDAO : IPartyDAO {
             ps.setLong(2, party.id!!)
             ps.executeUpdate()
             ps.close()
+        }
+    }
+
+    private fun checkearSiPartyTieneId(party: Party) {
+        if (party.id == null) {
+            throw RuntimeException("No se puede actualizar una party que no fue creada")
         }
     }
 
