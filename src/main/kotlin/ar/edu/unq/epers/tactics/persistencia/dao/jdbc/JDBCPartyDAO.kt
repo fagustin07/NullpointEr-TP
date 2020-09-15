@@ -13,20 +13,31 @@ class JDBCPartyDAO : IPartyDAO {
             val ps = conn.prepareStatement("INSERT INTO party (nombre) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)
             ps.setString(1, party.nombre)
             ps.executeUpdate()
-            chequearCreacionDeParty(ps, party)
-            val partyId = recuperarPartyID(ps, party)
+
+            val partyId = recuperarPartyID(ps)
+
             party.id = partyId
+            ps.close()
             partyId
         }
     }
 
     override fun actualizar(party: Party) {
+        checkearSiPartyTieneId(party)
         execute { connection ->
             val ps = connection.prepareStatement(
-                "UPDATE party SET numeroDeAventureros = ${party.numeroDeAventureros} WHERE id = ${party.id}"
+                "UPDATE party SET numeroDeAventureros = ? WHERE id = ?"
             )
+            ps.setInt(1, party.numeroDeAventureros)
+            ps.setLong(2, party.id!!)
             ps.executeUpdate()
             ps.close()
+        }
+    }
+
+    private fun checkearSiPartyTieneId(party: Party) {
+        if (party.id == null) {
+            throw RuntimeException("No se puede actualizar una party que no fue creada")
         }
     }
 
@@ -60,24 +71,14 @@ class JDBCPartyDAO : IPartyDAO {
             parties
         }
 
-    private fun recuperarPartyID(ps: PreparedStatement, party: Party): Long {
+    private fun recuperarPartyID(ps: PreparedStatement): Long {
         var partyID: Long? = null
         ps.generatedKeys.use { generatedKeys ->
             if (generatedKeys.next()) {
                 partyID = generatedKeys.getLong(1)
-            } else {
-                throw RuntimeException("Ha fallado la creacion, no se pudo obtener la ID de $party.")
             }
         }
-        ps.close()
         return partyID!!
-    }
-
-    private fun chequearCreacionDeParty(ps: PreparedStatement, party: Party) {
-        // TODO: esto no se chequea en ningun test. Si se comenta el codigo igual pasan todos los tests
-        if (ps.updateCount != 1) {
-            throw RuntimeException("No se creo correctamente la party $party")
-        }
     }
 
     private fun mapPartyToObjectFrom(resultSet: ResultSet): Party {

@@ -72,6 +72,23 @@ class PartyServiceTest {
         assertNotEquals(party.numeroDeAventureros, partyRecuperada.numeroDeAventureros)
     }
 
+    @Test
+    fun noSePuedeActualizarUnaPartyQueNoFueCreada() {
+        val party = Party("Nombre de party")
+
+        val exception = assertThrows<RuntimeException> { partyService.actualizar(party) }
+        assertEquals("No se puede actualizar una party que no fue creada", exception.message)
+    }
+
+    @Test
+    fun noSePuedeAgregarUnAventureroUnaPartyQueNoFueCreada(){
+        val party = Party("Nombre de party")
+        val aventurero = Aventurero(party, 50, "Pepe")
+        val isInexistente: Long = 45
+
+        val exception = assertThrows<RuntimeException> { partyService.agregarAventureroAParty(isInexistente, aventurero) }
+        assertEquals(exception.message, "No hay ninguna party con el id provisto")
+    }
 
     @AfterEach
     fun tearDown() {
