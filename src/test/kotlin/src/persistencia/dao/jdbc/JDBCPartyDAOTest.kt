@@ -19,13 +19,6 @@ class JDBCPartyDAOTest {
     }
 
     @Test
-    fun alCrearUnaPartySeObtieneSuId() {
-        val partyID = adminPartyDAO.crear(bigTeam)
-
-        assertEquals(1, partyID)
-    }
-
-    @Test
     fun alCrearUnaPartyYLuegoRecuperarlaSeObtienenObjetosSimilares() {
 
         val idParty = adminPartyDAO.crear(bigTeam)
