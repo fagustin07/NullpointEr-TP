@@ -2,9 +2,9 @@ package src.service
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
-import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.IPartyDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.IPartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.JDBCPartyDAO
-import ar.edu.unq.epers.tactics.service.PersistentPartyService
+import ar.edu.unq.epers.tactics.service.impl.PersistentPartyService
 import helpers.DataServiceHelper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*

@@ -1,6 +1,7 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.jdbc
 
 import ar.edu.unq.epers.tactics.modelo.Party
+import ar.edu.unq.epers.tactics.persistencia.dao.IPartyDAO
 import ar.edu.unq.unidad1.wop.dao.impl.JDBCConnector.execute
 import java.sql.Connection
 import java.sql.PreparedStatement

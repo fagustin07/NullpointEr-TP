@@ -3,7 +3,7 @@ package helpers
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.JDBCPartyDAO
-import ar.edu.unq.epers.tactics.service.PersistentPartyService
+import ar.edu.unq.epers.tactics.service.impl.PersistentPartyService
 import ar.edu.unq.unidad1.wop.dao.impl.JDBCConnector.execute
 
 class DataServiceHelper : DataService {
