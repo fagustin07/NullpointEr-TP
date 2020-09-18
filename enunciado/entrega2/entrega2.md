@@ -33,8 +33,6 @@ Una party de aventureros debe poseer:
 - Nombre:String
 - ImagenUrl:String
 - aventureros:List<Aventurero> Hasta 5 aventureros como máximo
-- enPelea:Boolean
-- Ubicacion ??
 
 Una Party se crea sin aventureros y no esta en ninguna ubicación.
 
@@ -43,11 +41,9 @@ Una Party se crea sin aventureros y no esta en ninguna ubicación.
 Un aventurero debe poseer:
 
 - Nombre:String
-- Nivel:String
+- Nivel:Int
 - Atributos:Atributos
-- Estadisticas??
 - Tacticas: List<Tactica>
-- ImagenUrl:String
 
 #### Nivel
 
@@ -179,7 +175,7 @@ Se pide que implementen los siguientes servicios los cuales serán consumidos po
 - `recuperar(partyId:Long):Party`
 - `listar():List<Party>`
 - `actualizar(party:Party):Party`
-- `eliminar(partyId:Long)`??
+- `eliminar(partyId:Long)`
 
 ### AventureroService
 
