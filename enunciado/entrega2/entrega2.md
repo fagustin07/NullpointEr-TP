@@ -81,7 +81,7 @@ Los valores de las estadísticas nos brindan una forma de cuantificar de forma n
 
 Las estadísticas que nos interesan son:
 
-- Vida: Representa la cantidad de impacto físico y mágico que puede recibir nuestro aventurero antes de padecer. De estar llena, representa que nuestro personaje esta en pleno estado físico y mental. Cuando esta repleta, el personaje ha muerto.
+- Vida: Representa la cantidad de impacto físico y mágico que puede recibir nuestro aventurero antes de perecer. De estar llena, representa que nuestro personaje esta en pleno estado físico y mental. Cuando esta repleta, el personaje ha muerto.
 
 El valor de la vida se calcula con la siguiente formula: Nivel del aventurero x5 + Constitucion x 2 + Fuerza
 
@@ -125,7 +125,7 @@ Nos interesa modelar las siguientes acciones que pueden emitir los aventureros:
   - receptor.
 - Defender: El aventurero se coloca en acción defensiva, protegiendo a sus aliados del peligro. Nos interesa saber sobre la defensa:
   - El emisor de la acción
-  - receptor  
+  - Receptor  
     Además, cuando un aventurero defiende solo sufre la mitad del daño que recibe hasta su próximo turno.
 - Curar: Implorando la ayuda de alguna deidad divina, el aventurero cura las heridas de sus aliados. Nos interesa saber sobre la curación:
 
