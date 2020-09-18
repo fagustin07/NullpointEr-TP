@@ -3,7 +3,7 @@ package ar.edu.unq.epers.tactics.service.dto
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 
 
-data class AventureroDTO(var id:Long?, var nivel:Int, var nombre:String, var imagenURL:String, var dañoRecibido:Double, var tacticas: List<TacticaDTO>, var atributos: AtributosDTO){
+data class AventureroDTO(var id:Long?, var nivel:Int, var nombre:String, var imagenURL:String, var tacticas: List<TacticaDTO>, var atributos: AtributosDTO){
 
     companion object {
 
@@ -22,11 +22,12 @@ data class AventureroDTO(var id:Long?, var nivel:Int, var nombre:String, var ima
 }
 
 data class AtributosDTO(var id:Long?, var fuerza:Int, var destreza:Int, var constitucion:Int, var inteligencia:Int)
-data class TacticaDTO(var id:Long?, var receptor:TipoDeReceptor, var tipoDeEstadistica:TipoDeEstadistica, var criterio:Criterio, var valor:Int, var accion:Accion)
+data class TacticaDTO(var id:Long?, var prioridad:Int, var receptor:TipoDeReceptor, var tipoDeEstadistica:TipoDeEstadistica, var criterio:Criterio, var valor:Int, var accion:Accion)
 
 enum class TipoDeReceptor {
     ALIADO,
-    ENEMIGO
+    ENEMIGO,
+    UNO_MISMO
 }
 enum class TipoDeEstadistica {
     VIDA,
@@ -39,7 +40,7 @@ enum class TipoDeEstadistica {
 }
 
 enum class Criterio {
-    IGUAK ,
+    IGUAL ,
     MAYOR_QUE ,
     MENOR_QUE ;
 }
