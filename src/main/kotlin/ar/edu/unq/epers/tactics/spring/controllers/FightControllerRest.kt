@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 class FightControllerRest(private val peleaService: PeleaService) {
 
     @PostMapping
-    fun createFight(@RequestBody request: CreateFightRequest) = PeleaDTO.desdeModelo(peleaService.crear(request.partyId))
+    fun createFight(@RequestBody request: CreateFightRequest) = PeleaDTO.desdeModelo(peleaService.iniciarPelea(request.partyId))
 
     @PostMapping("/{fightId}/finish")
     fun finish(@PathVariable fightId: Long):StatusResponse  {
-        peleaService.terminar(fightId)
+        peleaService.terminarPelea(fightId)
         return StatusResponse(200)
     }
 

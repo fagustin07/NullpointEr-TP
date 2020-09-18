@@ -10,7 +10,7 @@ import ar.edu.unq.epers.tactics.service.PeleaService
 
 class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO): PeleaService {
 
-    override fun crear(idDeLaPelea: Long): Pelea {
+    override fun iniciarPelea(idDeLaPelea: Long): Pelea {
         TODO("Not yet implemented")
     }
 
@@ -30,7 +30,7 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
         TODO("Not yet implemented")
     }
 
-    override fun terminar(idDeLaPelea: Long): Pelea {
+    override fun terminarPelea(idDeLaPelea: Long): Pelea {
         TODO("Not yet implemented")
     }
 }
