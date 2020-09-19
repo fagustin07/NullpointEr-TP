@@ -33,7 +33,7 @@ class PartyServiceTest {
     fun seCreaExitosamenteUnaParty() {
         val party = Party("UnNombre")
 
-        val partyId = partyService.crear(party)
+        val partyId = partyService.crear(party).id!!
 
         val todasLasParties = partyService.recuperarTodas()
 
@@ -45,7 +45,7 @@ class PartyServiceTest {
     @Test
     fun sePuedeRecuperarUnaPartyConSuId() {
         val partyOriginal = Party("nombre de party")
-        val partyId = partyService.crear(partyOriginal)
+        val partyId = partyService.crear(partyOriginal).id!!
 
         val partyRecuperada = partyService.recuperar(partyId)
 
@@ -63,7 +63,7 @@ class PartyServiceTest {
     fun alAgregarUnNuevoAventureroAUnaParty_aumentaLaCantidadDeAventurerosDeLaMisma() {
         val party = Party("Nombre de party")
         val aventurero = Aventurero(party, 50, "Pepe")
-        val partyId = partyService.crear(party)
+        val partyId = partyService.crear(party).id!!
 
         partyService.agregarAventureroAParty(partyId, aventurero)
         val partyRecuperada = partyService.recuperar(partyId)

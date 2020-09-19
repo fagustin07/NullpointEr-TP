@@ -9,7 +9,7 @@ class HibernatePartyDAO: IPartyDAO {
         TODO("Not yet implemented")
     }
 
-    override fun actualizar(party: Party) {
+    override fun actualizar(party: Party) : Party {
         TODO("Not yet implemented")
     }
 

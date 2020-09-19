@@ -10,4 +10,6 @@ interface PeleaService {
     fun resolverTurno(peleaId: Long, aventureroId:Long, enemigos:List<Aventurero>): Habilidad
     fun recibirHabilidad(aventureroId: Long, habilidadId:Habilidad): Aventurero
     fun terminarPelea(idDeLaPelea: Long): Pelea
+    fun actualizar(pelea: Pelea): Pelea
+    fun recuperar(idDeLaPelea: Long): Pelea
 }
