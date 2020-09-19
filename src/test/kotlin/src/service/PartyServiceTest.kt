@@ -2,7 +2,8 @@ package src.service
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
-import ar.edu.unq.epers.tactics.persistencia.dao.IPartyDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.JDBCPartyDAO
 import ar.edu.unq.epers.tactics.service.impl.PersistentPartyService
 import helpers.DataServiceHelper
@@ -16,7 +17,7 @@ import java.lang.RuntimeException
 class PartyServiceTest {
 
     private lateinit var partyService: PersistentPartyService
-    private lateinit var dao: IPartyDAO
+    private lateinit var dao: PartyDAO
 
     @BeforeEach
     fun setUp() {
@@ -100,5 +101,5 @@ class PartyServiceTest {
         assertEquals(expectedParty.numeroDeAventureros, obtainedParty.numeroDeAventureros)
     }
 
-    private fun createDAO() = JDBCPartyDAO()
+    private fun createDAO() = HibernatePartyDAO()//JDBCPartyDAO()
 }

@@ -1,8 +1,10 @@
-package src.persistencia.dao.jdbc
+package src.persistencia.dao
 
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.JDBCPartyDAO
+import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import helpers.DataServiceHelper
+import junit.framework.TestCase
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
@@ -20,16 +22,16 @@ class JDBCPartyDAOTest {
 
     @Test
     fun alCrearUnaPartyYLuegoRecuperarlaSeObtienenObjetosSimilares() {
+            val idParty = adminPartyDAO.crear(bigTeam).id!!
 
-        val idParty = adminPartyDAO.crear(bigTeam).id!!
+            val recoveryBigTeam = adminPartyDAO.recuperar(idParty)
 
-        val recoveryBigTeam = adminPartyDAO.recuperar(idParty)
-
-        assertEquals(bigTeam.nombre, recoveryBigTeam.nombre)
-        assertEquals(idParty, recoveryBigTeam.id)
-        assertEquals(0, recoveryBigTeam.numeroDeAventureros)
-        assertNotEquals(bigTeam, recoveryBigTeam)
+            assertEquals(bigTeam.nombre, recoveryBigTeam.nombre)
+            assertEquals(idParty, recoveryBigTeam.id)
+            assertEquals(0, recoveryBigTeam.numeroDeAventureros)
+            assertNotEquals(bigTeam, recoveryBigTeam)
     }
+
 
     @Test
     fun cuandoSeRecuperanTodasLasPartySeLasObtieneOrdenadasPorNombreEnFormaAscendente() {

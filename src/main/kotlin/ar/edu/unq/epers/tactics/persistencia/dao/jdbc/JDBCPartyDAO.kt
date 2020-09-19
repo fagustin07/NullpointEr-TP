@@ -1,13 +1,13 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.jdbc
 
 import ar.edu.unq.epers.tactics.modelo.Party
-import ar.edu.unq.epers.tactics.persistencia.dao.IPartyDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.unidad1.wop.dao.impl.JDBCConnector.execute
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
-class JDBCPartyDAO : IPartyDAO {
+class JDBCPartyDAO : PartyDAO {
 
     override fun crear(party: Party): Party {
         return execute { conn: Connection ->
