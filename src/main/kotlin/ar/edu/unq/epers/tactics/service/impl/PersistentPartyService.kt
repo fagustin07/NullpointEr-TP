@@ -1,8 +1,9 @@
-package ar.edu.unq.epers.tactics.service
+package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
-import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.IPartyDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.IPartyDAO
+import ar.edu.unq.epers.tactics.service.PartyService
 
 
 class PersistentPartyService(val dao: IPartyDAO) : PartyService {
