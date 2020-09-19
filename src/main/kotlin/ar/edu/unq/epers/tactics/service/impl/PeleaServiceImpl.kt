@@ -14,6 +14,10 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: IPartyDAO, val aven
         TODO("Not yet implemented")
     }
 
+    override fun estaEnPelea(partyId: Double): Boolean {
+        TODO("Not yet implemented")
+    }
+
     override fun actualizar(pelea: Pelea): Pelea {
         TODO("Not yet implemented")
     }

@@ -21,7 +21,7 @@ class JDBCPartyDAOTest {
     @Test
     fun alCrearUnaPartyYLuegoRecuperarlaSeObtienenObjetosSimilares() {
 
-        val idParty = adminPartyDAO.crear(bigTeam)
+        val idParty = adminPartyDAO.crear(bigTeam).id!!
 
         val recoveryBigTeam = adminPartyDAO.recuperar(idParty)
 
@@ -49,7 +49,7 @@ class JDBCPartyDAOTest {
     @Test
     fun cuandoSeActualizaUnaParty_luegoSeLaRecuperaConLaInformacionActualizada() {
         val party = Party("Beta")
-        val partyId = adminPartyDAO.crear(party)
+        val partyId = adminPartyDAO.crear(party).id!!
 
         party.numeroDeAventureros = 4
         adminPartyDAO.actualizar(party)

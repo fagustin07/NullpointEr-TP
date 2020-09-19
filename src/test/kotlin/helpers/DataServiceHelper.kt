@@ -14,9 +14,9 @@ class DataServiceHelper : DataService {
         val bTeam = Party("The B team")
         val cTeam = Party("The C team")
 
-        val idATeam = service.crear(aTeam)
-        val idBTeam = service.crear(bTeam)
-        val idCTeam = service.crear(cTeam)
+        val idATeam = service.crear(aTeam).id!!
+        val idBTeam = service.crear(bTeam).id!!
+        val idCTeam = service.crear(cTeam).id!!
 
         val aventureroParaATeam = Aventurero(aTeam, 5, "Legolas")
         val aventureroParaBTeam = Aventurero(bTeam, 10, "Gimli")

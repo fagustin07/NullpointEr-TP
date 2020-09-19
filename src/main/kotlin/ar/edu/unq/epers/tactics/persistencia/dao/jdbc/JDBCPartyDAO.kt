@@ -9,30 +9,32 @@ import java.sql.ResultSet
 
 class JDBCPartyDAO : IPartyDAO {
 
-    override fun crear(party: Party): Long {
+    override fun crear(party: Party): Party {
         return execute { conn: Connection ->
             val ps = conn.prepareStatement("INSERT INTO party (nombre) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)
             ps.setString(1, party.nombre)
             ps.executeUpdate()
 
             val partyId = recuperarPartyID(ps)
-
             party.id = partyId
+
             ps.close()
-            partyId
+
+            party
         }
     }
 
-    override fun actualizar(party: Party) {
+    override fun actualizar(party: Party) : Party {
         checkearSiPartyTieneId(party)
-        execute { connection ->
-            val ps = connection.prepareStatement(
-                "UPDATE party SET numeroDeAventureros = ? WHERE id = ?"
-            )
+        return execute { connection ->
+            val ps = connection.prepareStatement("UPDATE party SET numeroDeAventureros = ? WHERE id = ?")
             ps.setInt(1, party.numeroDeAventureros)
             ps.setLong(2, party.id!!)
             ps.executeUpdate()
+
             ps.close()
+
+            party
         }
     }
 
