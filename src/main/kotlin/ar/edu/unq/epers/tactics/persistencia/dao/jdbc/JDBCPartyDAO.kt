@@ -16,9 +16,10 @@ class JDBCPartyDAO : IPartyDAO {
             ps.executeUpdate()
 
             val partyId = recuperarPartyID(ps)
-
             party.id = partyId
+
             ps.close()
+
             party
         }
     }
@@ -26,15 +27,13 @@ class JDBCPartyDAO : IPartyDAO {
     override fun actualizar(party: Party) : Party {
         checkearSiPartyTieneId(party)
         return execute { connection ->
-            val ps = connection.prepareStatement(
-                "UPDATE party SET numeroDeAventureros = ? WHERE id = ?"
-            )
+            val ps = connection.prepareStatement("UPDATE party SET numeroDeAventureros = ? WHERE id = ?")
             ps.setInt(1, party.numeroDeAventureros)
             ps.setLong(2, party.id!!)
             ps.executeUpdate()
+
             ps.close()
 
-            val partyId = recuperarPartyID(ps)
             party
         }
     }
