@@ -101,5 +101,5 @@ class PartyServiceTest {
         assertEquals(expectedParty.numeroDeAventureros, obtainedParty.numeroDeAventureros)
     }
 
-    private fun createDAO() = HibernatePartyDAO()//JDBCPartyDAO()
+    private fun createDAO() = JDBCPartyDAO()
 }

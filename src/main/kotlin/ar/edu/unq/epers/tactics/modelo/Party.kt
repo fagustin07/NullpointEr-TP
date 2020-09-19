@@ -1,15 +1,12 @@
 package ar.edu.unq.epers.tactics.modelo
 
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.OneToMany
+import javax.persistence.*
 
 @Entity
 class Party(val nombre: String) {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
     var numeroDeAventureros = 0
 

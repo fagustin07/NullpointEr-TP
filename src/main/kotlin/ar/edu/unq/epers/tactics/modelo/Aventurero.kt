@@ -10,6 +10,6 @@ class Aventurero (
     val nombre: String) {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 }

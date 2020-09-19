@@ -1,6 +1,7 @@
 package src.persistencia.dao
 
 import ar.edu.unq.epers.tactics.modelo.Party
+import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateDataDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import helpers.DataServiceHelper
@@ -68,6 +69,8 @@ class HibernatePartyDAOTest {
 
     @AfterEach
     fun eliminarDatos() {
-        DataServiceHelper().eliminarTodo()
+        HibernateTransactionRunner.runTrx {
+            HibernateDataDAO().clear()
+        }
     }
 }
