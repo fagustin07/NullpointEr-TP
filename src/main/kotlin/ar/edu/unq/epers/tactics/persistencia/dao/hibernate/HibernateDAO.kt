@@ -9,13 +9,6 @@ open class HibernateDAO<T>(val entityType: Class<T>) {
     open fun crear(entity: T): T {
         val session = HibernateTransactionRunner.currentSession
         val id = session.save(entity)
-
-        val idField = entityType.getDeclaredField("id");
-        val fieldAccesibility = idField.isAccessible
-        idField.setAccessible(true)
-        idField.set(entity, id)
-        idField.setAccessible(fieldAccesibility)
-
         return entity
     }
 
