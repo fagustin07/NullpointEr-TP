@@ -10,6 +10,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
+import org.assertj.core.api.Assertions.*
+
 
 class HibernateAventureroDAOTest {
     private val aventureroDAO = HibernateAventureroDAO()
@@ -26,15 +28,10 @@ class HibernateAventureroDAOTest {
     @Test
     fun alRecuperarUnAventureroSeObtienenObjetosSimilares(){
         HibernateTransactionRunner.runTrx {
-            val pepitoId = aventureroDAO.crear(pepito).id!!
-            bigTeam.agregarUnAventurero(pepito)
-            partyDAO.crear(bigTeam)
-            val recovPepito = aventureroDAO.recuperar(pepitoId)
+            val pepitoId = generateModel()
+            val recoveryPepito = aventureroDAO.recuperar(pepitoId)
 
-            assertEquals(pepito.nombre, recovPepito.nombre)
-            assertEquals(pepito.vida, recovPepito.vida)
-            assertEquals(pepitoId, recovPepito.id)
-            assertEquals(pepito.party, recovPepito.party)
+            assertThat(pepito).isEqualToComparingFieldByField(recoveryPepito)
         }
 
     }
@@ -42,20 +39,13 @@ class HibernateAventureroDAOTest {
     @Test
     fun seActualizaLaVidaDeUnAventureroYLuegoSeLoRecuperaActualizado(){
         HibernateTransactionRunner.runTrx {
-            val pepitoId = aventureroDAO.crear(pepito).id!!
-            bigTeam.agregarUnAventurero(pepito)
-            partyDAO.crear(bigTeam)
+            val pepitoId = generateModel()
 
             pepito.vida = 27
+            aventureroDAO.actualizar(pepito)
+            val recoveryPepito = aventureroDAO.recuperar(pepitoId)
 
-            val recovPepito = aventureroDAO.actualizar(pepito)
-
-            assertEquals(pepito.nombre, recovPepito.nombre)
-            assertEquals(pepito.vida, recovPepito.vida)
-            assertEquals(pepitoId, recovPepito.id)
-            assertEquals(pepito.party, recovPepito.party)
-
-
+            assertThat(pepito).isEqualToComparingFieldByField(recoveryPepito)
         }
     }
 
@@ -65,10 +55,19 @@ class HibernateAventureroDAOTest {
             val pepitoId = aventureroDAO.crear(pepito).id!!
             aventureroDAO.eliminar(pepito)
 
-            assertEquals(null, aventureroDAO.recuperar(pepitoId))
+            assertThrows( Exception::class.java)
+            {
+               aventureroDAO.recuperar(pepitoId)
+            }
         }
     }
 
+    fun generateModel() : Long {
+        val pepitoId = aventureroDAO.crear(pepito).id!!
+        bigTeam.agregarUnAventurero(pepito)
+        partyDAO.crear(bigTeam)
+        return pepitoId
+    }
 
     @AfterEach
     fun eliminarDatos() {

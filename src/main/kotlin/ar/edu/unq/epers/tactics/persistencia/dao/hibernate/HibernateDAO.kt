@@ -20,7 +20,11 @@ open class HibernateDAO<T>(val entityType: Class<T>) {
 
     open fun recuperar(id: Long): T {
         val session = HibernateTransactionRunner.currentSession
-        return session.get(entityType, id)
+        val recoveryEntity = session.get(entityType, id)
+        if(recoveryEntity == null){
+            throw Exception("No existe una entidad con ese id")
+            return recoveryEntity
+        } else { return recoveryEntity }
     }
 
 
