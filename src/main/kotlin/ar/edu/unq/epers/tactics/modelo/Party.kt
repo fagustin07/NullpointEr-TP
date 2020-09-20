@@ -11,8 +11,11 @@ class Party(val nombre: String) {
     var numeroDeAventureros = 0
 
     @OneToMany
-    var aventureros:List<Aventurero> = listOf()
+    var aventureros:  MutableList<Aventurero> = mutableListOf()
 
-    fun agregarUnAventurero() = numeroDeAventureros++
+    fun agregarUnAventurero(aventurero: Aventurero) {
+        numeroDeAventureros++
+        aventureros.add(aventurero)
+    }
 
 }
