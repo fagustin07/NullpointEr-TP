@@ -9,7 +9,7 @@ on:
     types: [opened, labeled, synchronize, reopened]
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
 
@@ -24,6 +24,6 @@ jobs:
       - name: Run tests
         run: ./gradlew test -i
         env:
-          SQL_URL: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+          SQL_URL: jdbc:h2:mem:test
           HIBERNATE_DIALECT: org:hibernate:dialect:H2Dialect
           SQL_DRIVER: org:h2:Driver
