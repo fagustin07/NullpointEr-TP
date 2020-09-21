@@ -23,7 +23,7 @@ class AppConfiguration {
 
 
     @Bean
-    fun partyDAO() : IPartyDAO {
+    fun partyDAO() : PartyDAO {
         return HibernatePartyDAO()
     }
 
@@ -38,17 +38,17 @@ class AppConfiguration {
     }
 
     @Bean
-    fun partyService(partyDAO: IPartyDAO) : PartyService {
+    fun partyService(partyDAO: PartyDAO) : PartyService {
         return PersistentPartyService(partyDAO)
     }
 
     @Bean
-    fun adventurerService(aventureroDAO: AventureroDAO, partyDAO: IPartyDAO) : AventureroService {
+    fun adventurerService(aventureroDAO: AventureroDAO, partyDAO: PartyDAO) : AventureroService {
         return AventureroServiceImpl(aventureroDAO, partyDAO)
     }
 
     @Bean
-    fun fightService(peleaDAO: PeleaDAO, partyDAO: IPartyDAO, aventureroDAO: AventureroDAO) : PeleaService {
+    fun fightService(peleaDAO: PeleaDAO, partyDAO: PartyDAO, aventureroDAO: AventureroDAO) : PeleaService {
         return PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO)
     }
 }

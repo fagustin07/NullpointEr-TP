@@ -1,5 +1,6 @@
 package src.modelo
 
+import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -18,7 +19,8 @@ class PartyTest {
 
     @Test
     fun sePuedenAgregarAventurerosAUnaParty() {
-        losBulls.agregarUnAventurero()
+        val pepe = Aventurero(losBulls,50,"Pepe")
+        losBulls.agregarUnAventurero(pepe)
 
         assertEquals(1, losBulls.numeroDeAventureros)
     }

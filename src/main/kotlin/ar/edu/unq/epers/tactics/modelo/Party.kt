@@ -1,10 +1,21 @@
 package ar.edu.unq.epers.tactics.modelo
 
-class Party(val nombre: String) {
-    var id: Long? = null
-    var numeroDeAventureros = 0
-    var aventureros:List<Aventurero> = listOf()
+import javax.persistence.*
 
-    fun agregarUnAventurero() = numeroDeAventureros++
+@Entity
+class Party(val nombre: String) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null
+
+    var numeroDeAventureros = 0
+
+    @OneToMany
+    var aventureros:  MutableList<Aventurero> = mutableListOf()
+
+    fun agregarUnAventurero(aventurero: Aventurero) {
+        numeroDeAventureros++
+        aventureros.add(aventurero)
+    }
 
 }

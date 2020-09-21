@@ -15,8 +15,10 @@
         <!-- Echo all executed SQL to stdout -->
         <property name="show_sql">false</property>
 
-        <property name="hibernate.hbm2ddl.auto">update</property>
-        
+        <property name="hibernate.hbm2ddl.auto">create-drop</property>
+
+        <mapping class="ar.edu.unq.epers.tactics.modelo.Party" />
+        <mapping class="ar.edu.unq.epers.tactics.modelo.Aventurero" />
 
     </session-factory>
 </hibernate-configuration>

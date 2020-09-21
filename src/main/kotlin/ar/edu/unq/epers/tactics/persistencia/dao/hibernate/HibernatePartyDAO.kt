@@ -1,23 +1,11 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.hibernate
 
 import ar.edu.unq.epers.tactics.modelo.Party
-import ar.edu.unq.epers.tactics.persistencia.dao.IPartyDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
+import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 
-class HibernatePartyDAO: IPartyDAO {
+class HibernatePartyDAO: HibernateDAO<Party>(Party::class.java), PartyDAO {
 
-    override fun crear(party: Party): Party {
-        TODO("Not yet implemented")
-    }
+    override fun recuperarTodas() = queryMany("from Party ORDER BY nombre ASC")
 
-    override fun actualizar(party: Party) : Party {
-        TODO("Not yet implemented")
-    }
-
-    override fun recuperar(idDeLaParty: Long): Party {
-        TODO("Not yet implemented")
-    }
-
-    override fun recuperarTodas(): List<Party> {
-        TODO("Not yet implemented")
-    }
 }
