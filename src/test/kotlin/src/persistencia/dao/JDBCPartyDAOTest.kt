@@ -2,6 +2,7 @@ package src.persistencia.dao
 
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.JDBCPartyDAO
+import ar.edu.unq.epers.tactics.service.impl.PersistentPartyService
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import helpers.DataServiceHelper
 import junit.framework.TestCase
@@ -63,6 +64,6 @@ class JDBCPartyDAOTest {
 
     @AfterEach
     fun eliminarDatos() {
-        DataServiceHelper().eliminarTodo()
+        DataServiceHelper(PersistentPartyService(adminPartyDAO)).eliminarTodo()
     }
 }

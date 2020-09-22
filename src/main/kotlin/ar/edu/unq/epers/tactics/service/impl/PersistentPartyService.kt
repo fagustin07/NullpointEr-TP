@@ -26,4 +26,6 @@ class PersistentPartyService(val dao: PartyDAO) : PartyService {
         }
     }
 
+    override fun eliminarTodo() = dao.eliminarTodo()
+
 }

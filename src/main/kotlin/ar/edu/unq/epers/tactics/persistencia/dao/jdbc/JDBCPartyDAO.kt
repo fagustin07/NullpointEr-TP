@@ -2,7 +2,7 @@ package ar.edu.unq.epers.tactics.persistencia.dao.jdbc
 
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
-import ar.edu.unq.unidad1.wop.dao.impl.JDBCConnector.execute
+import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.JDBCConnector.execute
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
@@ -72,6 +72,13 @@ class JDBCPartyDAO : PartyDAO {
 
             ps.close()
             parties
+        }
+
+    override fun eliminarTodo() =
+        execute { conn ->
+            val ps = conn.prepareStatement("TRUNCATE TABLE party")
+            ps.executeQuery()
+            ps.close()
         }
 
     private fun recuperarPartyID(ps: PreparedStatement): Long {

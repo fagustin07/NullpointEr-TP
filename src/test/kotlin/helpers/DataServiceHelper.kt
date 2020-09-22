@@ -2,13 +2,11 @@ package helpers
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
-import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.JDBCPartyDAO
-import ar.edu.unq.epers.tactics.service.impl.PersistentPartyService
-import ar.edu.unq.unidad1.wop.dao.impl.JDBCConnector.execute
+import ar.edu.unq.epers.tactics.service.PartyService
 
-class DataServiceHelper : DataService {
+class DataServiceHelper(val service: PartyService) : DataService {
+
     override fun crearSetDeDatosIniciales() {
-        val service = PersistentPartyService(JDBCPartyDAO())
 
         val aTeam = Party("The A team")
         val bTeam = Party("The B team")
@@ -29,12 +27,5 @@ class DataServiceHelper : DataService {
         service.agregarAventureroAParty(idCTeam, aventureroParaCTeam2)
     }
 
-    override fun eliminarTodo() {
-        val sqlQuery = "TRUNCATE TABLE party"
-        execute { conn->
-            val stmt = conn.prepareStatement(sqlQuery)
-            stmt.executeUpdate()
-            stmt.close()
-        }
-    }
+    override fun eliminarTodo() = service.eliminarTodo()
 }

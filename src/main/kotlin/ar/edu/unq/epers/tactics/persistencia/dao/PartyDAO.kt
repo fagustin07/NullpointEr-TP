@@ -7,4 +7,5 @@ interface PartyDAO {
     fun actualizar(party: Party) : Party
     fun recuperar(idDeLaParty: Long): Party
     fun recuperarTodas(): List<Party>
+    fun eliminarTodo()
 }

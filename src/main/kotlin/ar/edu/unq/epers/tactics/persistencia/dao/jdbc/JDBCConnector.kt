@@ -1,4 +1,4 @@
-package ar.edu.unq.unidad1.wop.dao.impl
+package ar.edu.unq.epers.tactics.persistencia.dao.jdbc
 
 import java.sql.Connection
 import java.sql.DriverManager
