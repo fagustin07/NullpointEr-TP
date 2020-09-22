@@ -77,7 +77,7 @@ class JDBCPartyDAO : PartyDAO {
     override fun eliminarTodo() =
         execute { conn ->
             val ps = conn.prepareStatement("TRUNCATE TABLE party")
-            ps.executeQuery()
+            ps.execute()
             ps.close()
         }
 
