@@ -27,6 +27,10 @@ open class HibernateDAO<T>(val entityType: Class<T>) {
         } else { return recoveryEntity }
     }
 
+    fun eliminarTodo() {
+        val session = HibernateTransactionRunner.currentSession
+        session.createQuery("TRUNCATE TABLE ${entityType.name}")
+    }
 
     protected fun queryMany(hql: String) =
         createQuery(hql).resultList

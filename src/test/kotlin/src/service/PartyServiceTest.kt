@@ -93,7 +93,7 @@ class PartyServiceTest {
 
     @AfterEach
     fun tearDown() {
-        DataServiceHelper().eliminarTodo()
+        DataServiceHelper(partyService).eliminarTodo()
     }
 
     private fun assertEqualParty(expectedParty: Party, obtainedParty: Party) {
