@@ -1,10 +1,7 @@
-package src.persistencia.dao
+package ar.edu.unq.epers.tactics.persistencia.dao.hibernate
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
-import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
-import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateDataDAO
-import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -30,7 +27,7 @@ class HibernateAventureroDAOTest {
         HibernateTransactionRunner.runTrx {
             val pepitoId = generateModel()
             val recoveryPepito = aventureroDAO.recuperar(pepitoId)
-
+//            chequear este assert porque esta deprecado!
             assertThat(pepito).isEqualToComparingFieldByField(recoveryPepito)
         }
 

@@ -1,11 +1,8 @@
-package src.persistencia.dao
+package ar.edu.unq.epers.tactics.persistencia.dao.jdbc
 
 import ar.edu.unq.epers.tactics.modelo.Party
-import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.JDBCPartyDAO
 import ar.edu.unq.epers.tactics.service.impl.PersistentPartyService
-import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import helpers.DataServiceHelper
-import junit.framework.TestCase
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals

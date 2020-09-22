@@ -1,4 +1,4 @@
-package src.service
+package ar.edu.unq.epers.tactics.service
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
