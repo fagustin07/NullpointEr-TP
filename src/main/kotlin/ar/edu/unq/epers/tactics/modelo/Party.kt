@@ -8,20 +8,21 @@ class Party(val nombre: String) {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
-    var numeroDeAventureros = 0
-
     @OneToMany
     var aventureros: MutableList<Aventurero> = mutableListOf()
 
+    private val maximoDeAventureros = 5
+
+    fun numeroDeAventureros() = aventureros.size
+
     fun agregarUnAventurero(aventurero: Aventurero) {
         this.chequearSiPertenece(aventurero)
+        this.chequearSiHayEspacioEnParty()
+        this.aventureros.add(aventurero)
+    }
 
-        if (puedeAgregarAventureros()) {
-            this.numeroDeAventureros++
-            this.aventureros.add(aventurero)
-        } else {
-            throw RuntimeException("La party $nombre está completa.")
-        }
+    private fun chequearSiHayEspacioEnParty() {
+        if (!this.puedeAgregarAventureros()) throw RuntimeException("La party $nombre está completa.")
     }
 
     private fun chequearSiPertenece(aventurero: Aventurero) {
@@ -32,8 +33,5 @@ class Party(val nombre: String) {
 
     private fun esLaParty(party: Party) = this.nombre == party.nombre
 
-    private fun puedeAgregarAventureros() = numeroDeAventureros < maximoDeAventureros()
-
-    private fun maximoDeAventureros() = 5
-
+    private fun puedeAgregarAventureros() = this.numeroDeAventureros() < this.maximoDeAventureros
 }

@@ -3,7 +3,6 @@ package ar.edu.unq.epers.tactics.service
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
-import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.JDBCPartyDAO
 import ar.edu.unq.epers.tactics.service.impl.PersistentPartyService
 import helpers.DataServiceHelper
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.lang.RuntimeException
 
 class PartyServiceTest {
 
@@ -69,8 +67,8 @@ class PartyServiceTest {
         partyService.agregarAventureroAParty(partyId, aventurero)
         val partyRecuperada = partyService.recuperar(partyId)
 
-        assertEquals(1, partyRecuperada.numeroDeAventureros)
-        assertNotEquals(party.numeroDeAventureros, partyRecuperada.numeroDeAventureros)
+        assertEquals(1, partyRecuperada.numeroDeAventureros())
+        assertNotEquals(party.numeroDeAventureros(), partyRecuperada.numeroDeAventureros())
     }
 
     @Test
@@ -98,7 +96,7 @@ class PartyServiceTest {
 
     private fun assertEqualParty(expectedParty: Party, obtainedParty: Party) {
         assertEquals(expectedParty.nombre, obtainedParty.nombre)
-        assertEquals(expectedParty.numeroDeAventureros, obtainedParty.numeroDeAventureros)
+        assertEquals(expectedParty.numeroDeAventureros(), obtainedParty.numeroDeAventureros())
     }
 
     private fun createDAO() = JDBCPartyDAO()

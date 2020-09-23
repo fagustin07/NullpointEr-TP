@@ -28,7 +28,7 @@ class JDBCPartyDAO : PartyDAO {
         checkearSiPartyTieneId(party)
         return execute { connection ->
             val ps = connection.prepareStatement("UPDATE party SET numeroDeAventureros = ? WHERE id = ?")
-            ps.setInt(1, party.numeroDeAventureros)
+            ps.setInt(1, party.numeroDeAventureros())
             ps.setLong(2, party.id!!)
             ps.executeUpdate()
 
@@ -98,7 +98,7 @@ class JDBCPartyDAO : PartyDAO {
 
         val party = Party(nombre)
         party.id = id
-        party.numeroDeAventureros = numeroDeAventureros
+//        party.numeroDeAventureros = numeroDeAventureros
 
         return party
     }

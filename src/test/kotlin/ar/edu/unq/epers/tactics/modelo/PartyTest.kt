@@ -16,13 +16,13 @@ class PartyTest {
     }
 
     @Test
-    fun unaPartyComienzaSinAventureros() = assertEquals(0, losBulls.numeroDeAventureros)
+    fun unaPartyComienzaSinAventureros() = assertEquals(0, losBulls.numeroDeAventureros())
 
     @Test
     fun sePuedenAgregarAventurerosAUnaParty() {
         losBulls.agregarUnAventurero(pepe)
 
-        assertEquals(1, losBulls.numeroDeAventureros)
+        assertEquals(1, losBulls.numeroDeAventureros())
         assertEquals(1, losBulls.aventureros.size)
     }
 
@@ -34,6 +34,8 @@ class PartyTest {
 
         val exception = assertThrows<RuntimeException> { losBulls.agregarUnAventurero(pepe) }
         assertEquals(exception.message, "La party ${losBulls.nombre} está completa.")
+
+        assertEquals(5, losBulls.numeroDeAventureros())
     }
 
     @Test
@@ -43,5 +45,6 @@ class PartyTest {
 
         val exception = assertThrows<RuntimeException> { redHawks.agregarUnAventurero(otaku24) }
         assertEquals(exception.message, "${otaku24.nombre} no pertenece a ${redHawks.nombre}.")
+        assertEquals(0, redHawks.numeroDeAventureros())
     }
 }

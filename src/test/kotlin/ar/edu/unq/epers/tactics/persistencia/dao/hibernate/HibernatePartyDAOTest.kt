@@ -1,5 +1,6 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.hibernate
 
+import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import org.junit.jupiter.api.AfterEach
@@ -26,7 +27,7 @@ class HibernatePartyDAOTest {
 
             assertEquals(bigTeam.nombre, recoveryBigTeam.nombre)
             assertEquals(idParty, recoveryBigTeam.id)
-            assertEquals(0, recoveryBigTeam.numeroDeAventureros)
+            assertEquals(0, recoveryBigTeam.numeroDeAventureros())
         }
     }
 
@@ -52,12 +53,13 @@ class HibernatePartyDAOTest {
         HibernateTransactionRunner.runTrx {
             val party = Party("Beta")
             val partyId = partyDAO.crear(party).id!!
+            val wos = Aventurero(party, 50, "wosito")
 
-            party.numeroDeAventureros = 4
+            repeat(4){ party.agregarUnAventurero(wos) }
             partyDAO.actualizar(party)
             val partyActualizada = partyDAO.recuperar(partyId)
 
-            assertEquals(4, partyActualizada.numeroDeAventureros)
+            assertEquals(4, partyActualizada.numeroDeAventureros())
         }
     }
 
