@@ -1,11 +1,9 @@
-package src.persistencia.dao
+package ar.edu.unq.epers.tactics.persistencia.dao.jdbc
 
+import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
-import ar.edu.unq.epers.tactics.persistencia.dao.jdbc.JDBCPartyDAO
 import ar.edu.unq.epers.tactics.service.impl.PersistentPartyService
-import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import helpers.DataServiceHelper
-import junit.framework.TestCase
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
@@ -29,7 +27,7 @@ class JDBCPartyDAOTest {
 
             assertEquals(bigTeam.nombre, recoveryBigTeam.nombre)
             assertEquals(idParty, recoveryBigTeam.id)
-            assertEquals(0, recoveryBigTeam.numeroDeAventureros)
+            assertEquals(0, recoveryBigTeam.numeroDeAventureros())
             assertNotEquals(bigTeam, recoveryBigTeam)
     }
 
@@ -53,12 +51,14 @@ class JDBCPartyDAOTest {
     fun cuandoSeActualizaUnaParty_luegoSeLaRecuperaConLaInformacionActualizada() {
         val party = Party("Beta")
         val partyId = adminPartyDAO.crear(party).id!!
+        val dtoke = Aventurero(party, 50, "dtoke")
 
-        party.numeroDeAventureros = 4
+        repeat(4) { party.agregarUnAventurero(dtoke) }
+
         adminPartyDAO.actualizar(party)
         val partyActualizada = adminPartyDAO.recuperar(partyId)
 
-        assertEquals(4, partyActualizada.numeroDeAventureros)
+        assertEquals(4, partyActualizada.numeroDeAventureros())
     }
 
 
