@@ -53,13 +53,16 @@ class HibernatePartyDAOTest {
         HibernateTransactionRunner.runTrx {
             val party = Party("Beta")
             val partyId = partyDAO.crear(party).id!!
-            val wos = Aventurero(party, 50, "wosito")
+            val wos = Aventurero(party, 50, "wos")
+            val aventureroDAO = HibernateAventureroDAO()
+            aventureroDAO.crear(wos)
 
-            repeat(4){ party.agregarUnAventurero(wos) }
+            party.agregarUnAventurero(wos)
+
             partyDAO.actualizar(party)
             val partyActualizada = partyDAO.recuperar(partyId)
 
-            assertEquals(4, partyActualizada.numeroDeAventureros())
+            assertEquals(1, partyActualizada.numeroDeAventureros())
         }
     }
 
