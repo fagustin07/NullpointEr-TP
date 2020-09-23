@@ -24,6 +24,10 @@ open class HibernateDAO<T>(val entityType: Class<T>) {
         return session.get(entityType, id) ?: throw RuntimeException("No existe una entidad con ese id")
     }
 
+    fun eliminarTodo() {
+        val session = HibernateTransactionRunner.currentSession
+        session.createQuery("TRUNCATE TABLE ${entityType.name}")
+    }
 
     protected fun queryMany(hql: String) =
         createQuery(hql).resultList
