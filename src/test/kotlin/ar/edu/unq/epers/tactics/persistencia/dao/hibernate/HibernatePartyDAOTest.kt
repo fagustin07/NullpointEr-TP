@@ -2,7 +2,9 @@ package ar.edu.unq.epers.tactics.persistencia.dao.hibernate
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
+import ar.edu.unq.epers.tactics.service.impl.PersistentPartyService
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
+import helpers.DataServiceHelper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -54,8 +56,6 @@ class HibernatePartyDAOTest {
             val party = Party("Beta")
             val partyId = partyDAO.crear(party).id!!
             val wos = Aventurero(party, 50, "wos")
-            val aventureroDAO = HibernateAventureroDAO()
-            aventureroDAO.crear(wos)
 
             party.agregarUnAventurero(wos)
 
@@ -69,8 +69,7 @@ class HibernatePartyDAOTest {
 
     @AfterEach
     fun eliminarDatos() {
-        HibernateTransactionRunner.runTrx {
-            HibernateDataDAO().clear()
-        }
+        DataServiceHelper(PersistentPartyService(partyDAO)).eliminarTodo()
+
     }
 }

@@ -21,11 +21,11 @@ class PersistentPartyService(val dao: PartyDAO) : PartyService {
         return  runTrx {
             val party = dao.recuperar(idDeLaParty)
             party.agregarUnAventurero(aventurero)
-            actualizar(party)
+            dao.actualizar(party)
             aventurero
         }
     }
 
-    override fun eliminarTodo() = dao.eliminarTodo()
+    override fun eliminarTodo() = runTrx {  dao.eliminarTodo() }
 
 }
