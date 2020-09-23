@@ -7,12 +7,12 @@ import org.junit.jupiter.api.assertThrows
 
 class PartyTest {
     private lateinit var losBulls: Party
-    private  lateinit var pepe : Aventurero
+    private lateinit var pepe: Aventurero
 
     @BeforeEach
     fun setUp() {
         losBulls = Party("Los Bulls.")
-        pepe = Aventurero(losBulls,50,"Pepe")
+        pepe = Aventurero(losBulls, 50, "Pepe")
     }
 
     @Test
@@ -27,8 +27,8 @@ class PartyTest {
     }
 
     @Test
-    fun noSePuedenAgregarAventurerosAUnaPartyCompleta(){
-        repeat(5){
+    fun noSePuedenAgregarAventurerosAUnaPartyCompleta() {
+        repeat(5) {
             losBulls.agregarUnAventurero(pepe)
         }
 
@@ -39,7 +39,7 @@ class PartyTest {
     }
 
     @Test
-    fun unaPartyNoAgregaAventurerosQueNoPertenezcanAElla(){
+    fun unaPartyNoAgregaAventurerosQueNoPertenezcanAElla() {
         val redHawks = Party("Champions of Red Hawk.")
         val otaku24 = Aventurero(losBulls, 75, "OTK Garfield")
 
