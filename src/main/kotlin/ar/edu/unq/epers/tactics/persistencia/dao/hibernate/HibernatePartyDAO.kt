@@ -16,10 +16,4 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
         return party
     }
 
-    override fun eliminarTodo() {
-        HibernateTransactionRunner.runTrx {
-            HibernateDataDAO().clear()
-        }
-    }
-
 }
