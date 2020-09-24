@@ -67,7 +67,6 @@ class PartyServiceTest {
     }
 
 
-    //    este test esta rojo con
     @Test
     fun alAgregarUnNuevoAventureroAUnaParty_aumentaLaCantidadDeAventurerosDeLaMisma() {
         HibernateTransactionRunner.runTrx {
@@ -84,11 +83,11 @@ class PartyServiceTest {
     }
 
     @Test
-    fun noSePuedeActualizarUnaPartyQueNoFueCreada() {
+    fun noSePuedeActualizarUnaPartyQueNoFuePersistida() {
         HibernateTransactionRunner.runTrx {
             val party = Party("Nombre de party")
 
-            val exception = assertThrows<Exception> { partyService.actualizar(party) }
+            val exception = assertThrows<RuntimeException> { partyService.actualizar(party) }
             assertEquals("No se puede actualizar una party que no fue persistida", exception.message)
         }
     }
@@ -101,7 +100,7 @@ class PartyServiceTest {
             val isInexistente: Long = 45
 
             val exception =
-                assertThrows<Exception> { partyService.agregarAventureroAParty(isInexistente, aventurero) }
+                assertThrows<RuntimeException> { partyService.agregarAventureroAParty(isInexistente, aventurero) }
             assertEquals(exception.message, "No existe una entidad con ese id")
         }
     }

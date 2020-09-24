@@ -68,8 +68,5 @@ class HibernatePartyDAOTest {
 
 
     @AfterEach
-    fun eliminarDatos() {
-        DataServiceHelper(PersistentPartyService(partyDAO)).eliminarTodo()
-
-    }
+    fun eliminarDatos() { partyDAO.eliminarTodo() }
 }
