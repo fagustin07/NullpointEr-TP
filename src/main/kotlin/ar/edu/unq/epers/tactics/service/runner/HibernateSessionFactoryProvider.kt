@@ -25,7 +25,7 @@ class HibernateSessionFactoryProvider private constructor() {
         configuration.setProperty("hibernate.connection.password", password)
         configuration.setProperty("hibernate.connection.url", url)
         configuration.setProperty("connection.driver_class", driver)
-        configuration.setProperty("dialect", dialect)
+        configuration.setProperty("hibernate.dialect", dialect)
         this.sessionFactory = configuration.buildSessionFactory()
     }
 
