@@ -8,7 +8,7 @@ open class HibernateDAO<T>(val entityType: Class<T>) {
 
     open fun crear(entity: T): T {
         val session = HibernateTransactionRunner.currentSession
-        /*val id = esta variable no la utiliza */ session.save(entity)
+        session.save(entity)
         return entity
     }
 
