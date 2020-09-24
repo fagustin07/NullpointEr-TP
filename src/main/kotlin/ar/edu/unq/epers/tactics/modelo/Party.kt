@@ -8,7 +8,7 @@ class Party(val nombre: String) {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
-    @OneToMany
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var aventureros: MutableList<Aventurero> = mutableListOf()
 
     private val maximoDeAventureros = 5

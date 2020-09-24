@@ -3,38 +3,39 @@ package ar.edu.unq.epers.tactics.persistencia.dao.hibernate
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
-import org.assertj.core.api.Assertions.*
 
 
 class HibernateAventureroDAOTest {
     private val aventureroDAO = HibernateAventureroDAO()
     private var partyDAO = HibernatePartyDAO()
-    lateinit var pepito : Aventurero
-    lateinit var bigTeam : Party
+    lateinit var pepito: Aventurero
+    lateinit var bigTeam: Party
 
     @BeforeEach
-    fun setUp(){
+    fun setUp() {
         bigTeam = Party("Big Team")
-        pepito = Aventurero(bigTeam,50,"Pepito")
+        pepito = Aventurero(bigTeam, 50, "Pepito")
     }
 
     @Test
-    fun alRecuperarUnAventureroSeObtienenObjetosSimilares(){
+    fun alRecuperarUnAventureroSeObtienenObjetosSimilares() {
         HibernateTransactionRunner.runTrx {
             val pepitoId = generateModel()
             val recoveryPepito = aventureroDAO.recuperar(pepitoId)
-//            chequear este assert porque esta deprecado!
-            assertThat(pepito).isEqualToComparingFieldByField(recoveryPepito)
+
+            assertThat(pepito).usingRecursiveComparison().isEqualTo(recoveryPepito)
         }
 
     }
 
     @Test
-    fun seActualizaLaVidaDeUnAventureroYLuegoSeLoRecuperaActualizado(){
+    fun seActualizaLaVidaDeUnAventureroYLuegoSeLoRecuperaActualizado() {
         HibernateTransactionRunner.runTrx {
             val pepitoId = generateModel()
 
@@ -42,24 +43,24 @@ class HibernateAventureroDAOTest {
             aventureroDAO.actualizar(pepito)
             val recoveryPepito = aventureroDAO.recuperar(pepitoId)
 
-            assertThat(pepito).isEqualToComparingFieldByField(recoveryPepito)
+            assertThat(pepito).usingRecursiveComparison().isEqualTo(recoveryPepito)
         }
     }
 
     @Test
-    fun alEliminarUnAventureroPersistidoYLuegoRecuperarloNoExiste(){
+    fun alEliminarUnAventureroPersistidoYLuegoRecuperarloNoExiste() {
         HibernateTransactionRunner.runTrx {
             val pepitoId = aventureroDAO.crear(pepito).id!!
             aventureroDAO.eliminar(pepito)
 
-            assertThrows( Exception::class.java)
-            {
-               aventureroDAO.recuperar(pepitoId)
+            val exception = assertThrows<RuntimeException> {
+                aventureroDAO.recuperar(pepitoId)
             }
+            assertEquals(exception.message, "No existe una entidad con ese id")
         }
     }
 
-    fun generateModel() : Long {
+    fun generateModel(): Long {
         val pepitoId = aventureroDAO.crear(pepito).id!!
         bigTeam.agregarUnAventurero(pepito)
         partyDAO.crear(bigTeam)
@@ -68,8 +69,6 @@ class HibernateAventureroDAOTest {
 
     @AfterEach
     fun eliminarDatos() {
-        HibernateTransactionRunner.runTrx {
-            HibernateDataDAO().clear()
-        }
+        aventureroDAO.eliminarTodo()
     }
 }
