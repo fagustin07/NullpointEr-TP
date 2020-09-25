@@ -20,9 +20,9 @@ class Party(val nombre: String) {
 
 
     fun agregarUnAventurero(aventurero: Aventurero) {
-        this.chequearSiPertenece(aventurero)
-        this.chequearSiYaFueAgregado(aventurero)
-        this.chequearSiHayEspacioEnParty()
+        this.validarQueNoPertenzcaAOtraParty(aventurero)
+        this.validarQueNoEsteRegistrado(aventurero)
+        this.validarQueSeAdmitanNuevosIntegrantes()
         this.aventureros.add(aventurero)
     }
 
@@ -31,15 +31,15 @@ class Party(val nombre: String) {
     private fun puedeAgregarAventureros() = this.numeroDeAventureros() < this.maximoDeAventureros
 
     /* Assertions */
-    private fun chequearSiPertenece(aventurero: Aventurero) {
+    private fun validarQueNoPertenzcaAOtraParty(aventurero: Aventurero) {
         if (!this.esLaParty(aventurero.party)) throw RuntimeException("${aventurero.nombre} no pertenece a ${this.nombre}.")
     }
 
-    private fun chequearSiYaFueAgregado(aventurero: Aventurero) {
+    private fun validarQueNoEsteRegistrado(aventurero: Aventurero) {
         if (aventureros.contains(aventurero)) throw RuntimeException("${aventurero.nombre} ya forma parte de la party ${nombre}.")
     }
 
-    private fun chequearSiHayEspacioEnParty() {
+    private fun validarQueSeAdmitanNuevosIntegrantes() {
         if (!this.puedeAgregarAventureros()) throw RuntimeException("La party $nombre está completa.")
     }
 
