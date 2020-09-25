@@ -1,50 +1,73 @@
 package ar.edu.unq.epers.tactics.modelo
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class PartyTest {
-    private lateinit var losBulls: Party
+    private lateinit var party: Party
     private lateinit var pepe: Aventurero
 
     @BeforeEach
     fun setUp() {
-        losBulls = Party("Los Bulls.")
-        pepe = Aventurero(losBulls, 50, "Pepe")
+        party = Party("Los Bulls")
+        pepe = Aventurero(party, 50, "Pepe")
     }
 
     @Test
-    fun unaPartyComienzaSinAventureros() = assertEquals(0, losBulls.numeroDeAventureros())
+    fun unaPartyComienzaSinAventureros() = assertEquals(0, party.numeroDeAventureros())
 
     @Test
     fun sePuedenAgregarAventurerosAUnaParty() {
-        losBulls.agregarUnAventurero(pepe)
+        party.agregarUnAventurero(pepe)
 
-        assertEquals(1, losBulls.numeroDeAventureros())
-        assertEquals(1, losBulls.aventureros.size)
+        assertEquals(1, party.numeroDeAventureros())
+        assertEquals(1, party.aventureros.size)
     }
 
     @Test
     fun noSePuedenAgregarAventurerosAUnaPartyCompleta() {
-        repeat(5) {
-            losBulls.agregarUnAventurero(pepe)
-        }
+        val cincoAventureros = (1..5).map { Aventurero(party, 1, "Aventurero${it}") }
 
-        val exception = assertThrows<RuntimeException> { losBulls.agregarUnAventurero(pepe) }
-        assertEquals(exception.message, "La party ${losBulls.nombre} está completa.")
+        cincoAventureros.forEach { aventurero -> party.agregarUnAventurero(aventurero) }
 
-        assertEquals(5, losBulls.numeroDeAventureros())
+        val exception = assertThrows<RuntimeException> { party.agregarUnAventurero(pepe) }
+        assertEquals(exception.message, "La party ${party.nombre} está completa.")
+
+        assertEquals(5, party.numeroDeAventureros())
+        assertTrue(party.aventureros.containsAll(cincoAventureros))
     }
 
     @Test
     fun unaPartyNoAgregaAventurerosQueNoPertenezcanAElla() {
-        val redHawks = Party("Champions of Red Hawk.")
-        val otaku24 = Aventurero(losBulls, 75, "OTK Garfield")
+        val otraParty = Party("Champions of Red Hawk.")
+        val aventureroDeOtraParty = Aventurero(otraParty, 75, "OTK Garfield")
 
-        val exception = assertThrows<RuntimeException> { redHawks.agregarUnAventurero(otaku24) }
-        assertEquals(exception.message, "${otaku24.nombre} no pertenece a ${redHawks.nombre}.")
-        assertEquals(0, redHawks.numeroDeAventureros())
+        val exception = assertThrows<RuntimeException> { party.agregarUnAventurero(aventureroDeOtraParty) }
+        assertEquals(exception.message, "${aventureroDeOtraParty.nombre} no pertenece a ${party.nombre}.")
+        assertEquals(0, party.numeroDeAventureros())
+    }
+
+
+    @Test
+    fun noPuedeAgregarseAUnaPartyUnAventureroQueYaFueAgregado() {
+        val party = Party("Nombre de party")
+        val aventurero = Aventurero(party, 1, "Nombre de aventurero")
+
+        party.agregarUnAventurero(aventurero)
+
+        val exception = assertThrows<RuntimeException> { party.agregarUnAventurero(aventurero) }
+        assertEquals(exception.message, "${aventurero.nombre} ya forma parte de la party ${party.nombre}.")
+
+        assertEquals(1, party.numeroDeAventureros())
+        assertTrue(party.aventureros.contains(aventurero))
+    }
+
+    @Test
+    fun unaPartyDebeTenerUnNombre() {
+        val exception = assertThrows<RuntimeException> { Party("") }
+        assertEquals(exception.message, "Una party debe tener un nombre")
     }
 }
