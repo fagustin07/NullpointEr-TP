@@ -1,10 +1,8 @@
 package ar.edu.unq.epers.tactics.modelo
 
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.assertThrows
 
 
 class AventureroTest() {
@@ -49,17 +47,17 @@ class AventureroTest() {
 
     @Test
     fun unAventureroSabeCuantosPuntosDeDañoFisicoTiene(){
-        assertEquals(51,cacho.danio_fisico())
+        assertEquals(51,cacho.dañoFisico())
     }
 
     @Test
     fun unAventureroSabeCuantosPuntosDePoderMagicoTiene(){
-        assertEquals(21,cacho.poder_magico())
+        assertEquals(21,cacho.poderMagico())
     }
 
     @Test
     fun unAventureroSabeCuantosPuntosDePrecisionFisica(){
-        assertEquals(56,cacho.precision_fisica())
+        assertEquals(56,cacho.precisionFisica())
     }
 
     @Test

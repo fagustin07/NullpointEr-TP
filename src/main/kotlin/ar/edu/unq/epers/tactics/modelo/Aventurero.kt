@@ -37,19 +37,14 @@ class Aventurero(
     //Estadisticas
     fun armadura() = nivel() + constitucion
     fun velocidad() = nivel() + destreza
-    fun danio_fisico() = nivel() + fuerza + (destreza / 2)
-    fun poder_magico() = mana
-    fun precision_fisica() = nivel() + fuerza + destreza
+    fun dañoFisico() = nivel() + fuerza + (destreza / 2)
+    fun poderMagico() = mana
+    fun precisionFisica() = nivel() + fuerza + destreza
 
 //    fun atacar(receptor: Aventurero) = Habilidad(this).atacar(receptor)
 //    fun defender(receptor: Aventurero) = state.defender(receptor)
 //    fun curar(receptor: Aventurero) = Habilidad(this).curar(receptor)
 //    fun atacar_con_magia(receptor: Aventurero) = Habilidad(this).atacar_con_magia_ofensiva(receptor)
 //    fun meditar(receptor: Aventurero) = Habilidad(this).meditar(receptor)
-
-
-
-
-
 
 }
