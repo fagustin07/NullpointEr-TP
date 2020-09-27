@@ -14,13 +14,13 @@ import org.junit.jupiter.api.Test
 class HibernateAventureroDAOTest {
     private val aventureroDAO = HibernateAventureroDAO()
     private var partyDAO = HibernatePartyDAO()
-    lateinit var pepito: Aventurero
-    lateinit var bigTeam: Party
+    lateinit var pepito : Aventurero
+    lateinit var bigTeam : Party
 
     @BeforeEach
     fun setUp() {
         bigTeam = Party("Big Team")
-        pepito = Aventurero(bigTeam, 50, "Pepito")
+        pepito = Aventurero(bigTeam,  "Pepito")
     }
 
     @Test
@@ -35,11 +35,11 @@ class HibernateAventureroDAOTest {
     }
 
     @Test
-    fun seActualizaLaVidaDeUnAventureroYLuegoSeLoRecuperaActualizado() {
+    fun seActualizaElNombreDeUnAventureroYLuegoSeLoRecuperaActualizado() {
         HibernateTransactionRunner.runTrx {
             val pepitoId = generateModel()
 
-            pepito.vida = 27
+            pepito.nombre = "Federico"
             aventureroDAO.actualizar(pepito)
             val recoveryPepito = aventureroDAO.recuperar(pepitoId)
 
@@ -68,7 +68,7 @@ class HibernateAventureroDAOTest {
     }
 
     @AfterEach
-    fun eliminarDatos() {
+    fun clear() {
         aventureroDAO.eliminarTodo()
     }
 }

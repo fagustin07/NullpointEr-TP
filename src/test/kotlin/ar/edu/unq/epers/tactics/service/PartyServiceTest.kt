@@ -66,12 +66,11 @@ class PartyServiceTest {
         }
     }
 
-
     @Test
     fun alAgregarUnNuevoAventureroAUnaParty_aumentaLaCantidadDeAventurerosDeLaMisma() {
         HibernateTransactionRunner.runTrx {
             val party = Party("Nombre de party")
-            val aventurero = Aventurero(party, 50, "Pepe")
+            val aventurero = Aventurero(party, "Pepe")
             val partyId = partyService.crear(party).id!!
 
             partyService.agregarAventureroAParty(partyId, aventurero)
@@ -96,7 +95,7 @@ class PartyServiceTest {
     fun noSePuedeAgregarUnAventureroUnaPartyQueNoFueCreada() {
         HibernateTransactionRunner.runTrx {
             val party = Party("Nombre de party")
-            val aventurero = Aventurero(party, 50, "Pepe")
+            val aventurero = Aventurero(party, "Pepe")
             val isInexistente: Long = 45
 
             val exception =
