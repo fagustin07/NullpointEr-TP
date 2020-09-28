@@ -1,7 +1,6 @@
 package ar.edu.unq.epers.tactics.modelo
 
 import javax.persistence.*
-import kotlin.properties.Delegates
 
 
 @Entity(name = "Aventurero")
@@ -40,6 +39,16 @@ class Aventurero(
     fun dañoFisico() = nivel() + fuerza + (destreza / 2)
     fun poderMagico() = mana
     fun precisionFisica() = nivel() + fuerza + destreza
+
+
+    private fun recibirDaño(dañoRecibido: Int) {
+        this.vida -= dañoRecibido
+    }
+
+    fun recibirDañoSiDebe(danioFisico: Int, precisionFisica: Int) {
+        val claseDeArmadura = this.armadura() + (this.velocidad() / 2)
+        if(precisionFisica >= claseDeArmadura){ this.recibirDaño(danioFisico) }
+    }
 
 //    fun atacar(receptor: Aventurero) = Habilidad(this).atacar(receptor)
 //    fun defender(receptor: Aventurero) = state.defender(receptor)
