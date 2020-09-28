@@ -15,6 +15,8 @@ class Aventurero(
     private var vida: Int = 0,
     private var mana: Int = 0)
 {
+    private var estaEnDefensa: Boolean = false
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
@@ -42,12 +44,17 @@ class Aventurero(
 
 
     private fun recibirDaño(dañoRecibido: Int) {
-        this.vida -= dañoRecibido
+        val dañoARestar = if (this.estaEnDefensa) { dañoRecibido / 2 } else { dañoRecibido }
+        this.vida = vida - dañoARestar
     }
 
     fun recibirDañoSiDebe(danioFisico: Int, precisionFisica: Int) {
         val claseDeArmadura = this.armadura() + (this.velocidad() / 2)
         if(precisionFisica >= claseDeArmadura){ this.recibirDaño(danioFisico) }
+    }
+
+    fun entrarEnDefensaDurante(turnos: Int) {
+        this.estaEnDefensa = true
     }
 
 //    fun atacar(receptor: Aventurero) = Habilidad(this).atacar(receptor)

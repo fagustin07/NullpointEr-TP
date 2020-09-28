@@ -47,5 +47,35 @@ internal class HabilidadTest{
 
         assertThat(aventureroReceptor.vida()).isEqualTo(55)
     }
+
+    @Test
+    fun `cuando un aventurero defiende sufre la mitad de daño`(){
+        val party = Party("Party")
+        val aventureroDefensor = Aventurero(party, "Pepe", 10, 0, 0, 0, 10, 10)
+        val aventureroDefendido = Aventurero(party, "Jorge", 21, 0, 0, 20, 0, 10)
+        val defensa = Defensa(aventureroDefensor, aventureroDefendido)
+        val dadoDe20Falso = DadoDe20(20)
+
+        defensa.resolverParaReceptor(aventureroDefendido)
+        val ataque = Ataque(aventureroDefendido.danio_fisico(), aventureroDefendido.precision_fisica(), aventureroDefensor, dadoDe20Falso)
+        ataque.resolverParaReceptor(aventureroDefensor)
+
+        assertThat(aventureroDefensor.vida()).isEqualTo(4)
+    }
+
+    @Test
+    fun `cuando un aventurero es defendido sufre la mitad de daño`(){
+        val party = Party("Party")
+        val aventureroDefensor = Aventurero(party, "Pepe", 10, 0, 0, 0, 10, 10)
+        val aventureroDefendido = Aventurero(party, "Jorge", 21, 0, 0, 20, 0, 10)
+        val defensa = Defensa(aventureroDefensor, aventureroDefendido)
+        val dadoDe20Falso = DadoDe20(20)
+
+        defensa.resolverParaReceptor(aventureroDefendido)
+        val ataque = Ataque(aventureroDefensor.danio_fisico(), aventureroDefensor.precision_fisica(), aventureroDefendido, dadoDe20Falso)
+        ataque.resolverParaReceptor(aventureroDefendido)
+
+        assertThat(aventureroDefendido.vida()).isEqualTo(61)
+    }
 }
 
