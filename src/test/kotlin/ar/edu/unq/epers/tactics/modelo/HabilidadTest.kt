@@ -13,7 +13,7 @@ internal class HabilidadTest{
         val vidaAntesDelAtaque = aventureroReceptor.vida()
 
         val dadoDe20Falso = DadoDe20(10)
-        val ataque = Ataque(aventureroEmisor.danio_fisico(), aventureroEmisor.precision_fisica(), aventureroReceptor, dadoDe20Falso)
+        val ataque = Ataque.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
         ataque.resolverParaReceptor(aventureroReceptor)
 
         assertThat(aventureroReceptor.vida()).isLessThan(vidaAntesDelAtaque)
@@ -27,7 +27,7 @@ internal class HabilidadTest{
         val vidaAntesDelAtaque = aventureroReceptor.vida()
 
         val dadoDe20Falso = DadoDe20(1)
-        val ataque = Ataque(aventureroEmisor.danio_fisico(), aventureroEmisor.precision_fisica(), aventureroReceptor, dadoDe20Falso)
+        val ataque = Ataque.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
         ataque.resolverParaReceptor(aventureroReceptor)
 
         assertThat(aventureroReceptor.vida()).isEqualTo(vidaAntesDelAtaque)
@@ -39,7 +39,7 @@ internal class HabilidadTest{
         val aventureroEmisor = Aventurero(party, "Pepe", 10, 0, 0, 0, 10, 10)
         val aventureroReceptor = Aventurero(party, "Jorge", 21, 0, 0, 20, 0, 10)
         val dadoDe20Falso = DadoDe20(20)
-        val ataque = Ataque(aventureroEmisor.danio_fisico(), aventureroEmisor.precision_fisica(), aventureroReceptor, dadoDe20Falso)
+        val ataque = Ataque.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
         val vidaAntesDelAtaque = aventureroReceptor.vida()
 
         ataque.resolverParaReceptor(aventureroReceptor)
@@ -57,7 +57,7 @@ internal class HabilidadTest{
         val vidaAntesDelAtaque = aventureroDefensor.vida()
 
         defensa.resolverParaReceptor(aventureroDefendido)
-        val ataque = Ataque(aventureroDefendido.danio_fisico(), aventureroDefendido.precision_fisica(), aventureroDefensor, dadoDe20Falso)
+        val ataque = Ataque.para(aventureroDefendido, aventureroDefensor, dadoDe20Falso)
         ataque.resolverParaReceptor(aventureroDefensor)
 
         assertThat(aventureroDefensor.vida()).isEqualTo(vidaAntesDelAtaque - aventureroDefendido.danio_fisico() / 2)
@@ -73,7 +73,7 @@ internal class HabilidadTest{
         val vidaAntesDelAtaque = aventureroDefendido.vida()
 
         defensa.resolverParaReceptor(aventureroDefendido)
-        val ataque = Ataque(aventureroDefensor.danio_fisico(), aventureroDefensor.precision_fisica(), aventureroDefendido, dadoDe20Falso)
+        val ataque = Ataque.para(aventureroDefensor, aventureroDefendido, dadoDe20Falso)
         ataque.resolverParaReceptor(aventureroDefendido)
 
         assertThat(aventureroDefendido.vida()).isEqualTo(vidaAntesDelAtaque - aventureroDefensor.danio_fisico() / 2)
