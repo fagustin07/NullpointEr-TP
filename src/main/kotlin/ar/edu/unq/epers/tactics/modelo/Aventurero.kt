@@ -48,9 +48,9 @@ class Aventurero(
         this.vida = vida - dañoARestar
     }
 
-    fun recibirDañoSiDebe(danioFisico: Int, precisionFisica: Int) {
+    fun recibirDañoSiDebe(dañoFisico: Int, precisionFisica: Int) {
         val claseDeArmadura = this.armadura() + (this.velocidad() / 2)
-        if(precisionFisica >= claseDeArmadura){ this.recibirDaño(danioFisico) }
+        if(precisionFisica >= claseDeArmadura){ this.recibirDaño(dañoFisico) }
     }
 
     fun entrarEnDefensaDurante(turnos: Int) {

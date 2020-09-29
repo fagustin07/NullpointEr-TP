@@ -14,7 +14,7 @@ internal class HabilidadTest{
 
         val dadoDe20Falso = DadoDe20(10)
         val ataque = Ataque.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
-        ataque.resolverParaReceptor(aventureroReceptor)
+        ataque.resolverse()
 
         assertThat(aventureroReceptor.vida()).isLessThan(vidaAntesDelAtaque)
     }
@@ -28,7 +28,7 @@ internal class HabilidadTest{
 
         val dadoDe20Falso = DadoDe20(1)
         val ataque = Ataque.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
-        ataque.resolverParaReceptor(aventureroReceptor)
+        ataque.resolverse()
 
         assertThat(aventureroReceptor.vida()).isEqualTo(vidaAntesDelAtaque)
     }
@@ -42,9 +42,9 @@ internal class HabilidadTest{
         val ataque = Ataque.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
         val vidaAntesDelAtaque = aventureroReceptor.vida()
 
-        ataque.resolverParaReceptor(aventureroReceptor)
+        ataque.resolverse()
 
-        assertThat(aventureroReceptor.vida()).isEqualTo(vidaAntesDelAtaque - aventureroEmisor.danio_fisico())
+        assertThat(aventureroReceptor.vida()).isEqualTo(vidaAntesDelAtaque - aventureroEmisor.danioFisico())
     }
 
     @Test
@@ -52,15 +52,15 @@ internal class HabilidadTest{
         val party = Party("Party")
         val aventureroDefensor = Aventurero(party, "Pepe", 10, 0, 0, 0, 10, 10)
         val aventureroDefendido = Aventurero(party, "Jorge", 21, 0, 0, 20, 0, 10)
-        val defensa = Defensa(aventureroDefensor, aventureroDefendido)
+        val defensa = Defensa.para(aventureroDefensor, aventureroDefendido)
         val dadoDe20Falso = DadoDe20(20)
         val vidaAntesDelAtaque = aventureroDefensor.vida()
 
-        defensa.resolverParaReceptor(aventureroDefendido)
+        defensa.resolverse()
         val ataque = Ataque.para(aventureroDefendido, aventureroDefensor, dadoDe20Falso)
-        ataque.resolverParaReceptor(aventureroDefensor)
+        ataque.resolverse()
 
-        assertThat(aventureroDefensor.vida()).isEqualTo(vidaAntesDelAtaque - aventureroDefendido.danio_fisico() / 2)
+        assertThat(aventureroDefensor.vida()).isEqualTo(vidaAntesDelAtaque - aventureroDefendido.danioFisico() / 2)
     }
 
     @Test
@@ -68,15 +68,15 @@ internal class HabilidadTest{
         val party = Party("Party")
         val aventureroDefensor = Aventurero(party, "Pepe", 10, 0, 0, 0, 10, 10)
         val aventureroDefendido = Aventurero(party, "Jorge", 21, 0, 0, 20, 0, 10)
-        val defensa = Defensa(aventureroDefensor, aventureroDefendido)
+        val defensa = Defensa.para(aventureroDefensor, aventureroDefendido)
         val dadoDe20Falso = DadoDe20(20)
         val vidaAntesDelAtaque = aventureroDefendido.vida()
 
-        defensa.resolverParaReceptor(aventureroDefendido)
+        defensa.resolverse()
         val ataque = Ataque.para(aventureroDefensor, aventureroDefendido, dadoDe20Falso)
-        ataque.resolverParaReceptor(aventureroDefendido)
+        ataque.resolverse()
 
-        assertThat(aventureroDefendido.vida()).isEqualTo(vidaAntesDelAtaque - aventureroDefensor.danio_fisico() / 2)
+        assertThat(aventureroDefendido.vida()).isEqualTo(vidaAntesDelAtaque - aventureroDefensor.danioFisico() / 2)
     }
 }
 
