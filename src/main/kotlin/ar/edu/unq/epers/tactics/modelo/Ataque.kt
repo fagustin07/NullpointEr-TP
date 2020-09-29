@@ -4,7 +4,7 @@ class Ataque(val dañoFisico: Int, val precisionFisica: Int, val aventureroRecep
 
     companion object {
         fun para(aventureroEmisor: Aventurero, aventureroReceptor: Aventurero, dadoDe20: DadoDe20): Ataque {
-            return Ataque(aventureroEmisor.danioFisico(), aventureroEmisor.precisionFisica(), aventureroReceptor, dadoDe20)
+            return Ataque(aventureroEmisor.dañoFisico(), aventureroEmisor.precisionFisica(), aventureroReceptor, dadoDe20)
         }
     }
 

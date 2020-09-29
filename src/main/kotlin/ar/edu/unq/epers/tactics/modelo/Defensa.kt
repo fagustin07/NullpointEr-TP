@@ -8,9 +8,6 @@ class Defensa(val aventureroEmisor: Aventurero, val aventureroReceptor: Aventure
         }
     }
 
-    override fun resolverse() {
-        aventureroEmisor.entrarEnDefensaDurante(1)
-        aventureroReceptor.entrarEnDefensaDurante(3)
-    }
+    override fun resolverse() = aventureroReceptor.esDefendidoPor(aventureroEmisor)
 
 }

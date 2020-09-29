@@ -11,11 +11,13 @@ class Aventurero(
     private var fuerza:Int = 0,
     private var destreza: Int = 0,
     private var inteligencia:Int = 0,
-    private var constitucion:Int = 0,
-    private var vida: Int = 0,
-    private var mana: Int = 0)
+    private var constitucion:Int = 0
+    )
 {
-    private var estaEnDefensa: Boolean = false
+    private var  turnosDefendidos = 0
+    private var defensor : Aventurero? = null
+    private var vida: Int
+    private var mana: Int
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,18 +46,46 @@ class Aventurero(
 
 
     private fun recibirDaño(dañoRecibido: Int) {
-        val dañoARestar = if (this.estaEnDefensa) { dañoRecibido / 2 } else { dañoRecibido }
-        this.vida = vida - dañoARestar
+        if (this.tieneDefensor()){
+            enviarDañoADefensor(dañoRecibido)
+        } else {
+            val vidaSiSufreAtaque = vida - dañoRecibido
+            if (vidaSiSufreAtaque>0) this.vida = vida - dañoRecibido
+        }
     }
+
+    private fun enviarDañoADefensor(dañoADefensor: Int) {
+        if(defensor!!.estaVivo()){
+            defensor!!.recibirDaño(dañoADefensor/2)
+            this.consumirTurnoDeDefensa()
+        }else{
+            defensor = null
+            this.recibirDaño(dañoADefensor)
+        }
+    }
+
+    private fun estaVivo()= this.vida > 0
 
     fun recibirDañoSiDebe(dañoFisico: Int, precisionFisica: Int) {
         val claseDeArmadura = this.armadura() + (this.velocidad() / 2)
-        if(precisionFisica >= claseDeArmadura){ this.recibirDaño(dañoFisico) }
+
+        if(precisionFisica >= claseDeArmadura) this.recibirDaño(dañoFisico)
     }
 
-    fun entrarEnDefensaDurante(turnos: Int) {
-        this.estaEnDefensa = true
+    fun esDefendidoPor(defensor : Aventurero) {
+        this.defensor = defensor
+        this.turnosDefendidos = 3
     }
+
+    private fun consumirTurnoDeDefensa() {
+        turnosDefendidos -= 1
+
+        if(turnosDefendidos==0){
+            defensor = null
+        }
+    }
+
+    private fun tieneDefensor() = this.defensor != null
 
 //    fun atacar(receptor: Aventurero) = Habilidad(this).atacar(receptor)
 //    fun defender(receptor: Aventurero) = state.defender(receptor)
