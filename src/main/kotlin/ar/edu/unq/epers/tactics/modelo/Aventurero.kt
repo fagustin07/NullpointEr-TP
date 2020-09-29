@@ -79,6 +79,14 @@ class Aventurero(
 
     private fun estaVivo()= this.vida > 0
 
+    fun curar(vidaACurar: Int) {
+        this.vida += vidaACurar
+    }
+
+    fun restarMana(manaARestar: Int) {
+        this.mana -= manaARestar
+    }
+
 //    fun atacar(receptor: Aventurero) = Habilidad(this).atacar(receptor)
 //    fun defender(receptor: Aventurero) = state.defender(receptor)
 //    fun curar(receptor: Aventurero) = Habilidad(this).curar(receptor)
