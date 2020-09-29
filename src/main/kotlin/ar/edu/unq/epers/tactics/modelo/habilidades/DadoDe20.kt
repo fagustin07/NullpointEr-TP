@@ -1,4 +1,4 @@
-package ar.edu.unq.epers.tactics.modelo
+package ar.edu.unq.epers.tactics.modelo.habilidades
 
 class DadoDe20(val tiradaFalsa: Int?) {
     //TODO esto podrian ser dos clases, un D20 real y uno falso, y no tener que checkear po null

@@ -1,4 +1,6 @@
-package ar.edu.unq.epers.tactics.modelo
+package ar.edu.unq.epers.tactics.modelo.habilidades
+
+import ar.edu.unq.epers.tactics.modelo.Aventurero
 
 class Defensa(val aventureroEmisor: Aventurero, val aventureroReceptor: Aventurero): Habilidad() {
 
@@ -8,6 +10,6 @@ class Defensa(val aventureroEmisor: Aventurero, val aventureroReceptor: Aventure
         }
     }
 
-    override fun resolverse() = aventureroReceptor.esDefendidoPor(aventureroEmisor)
+    override fun resolverse() = aventureroReceptor.defendidoPor(aventureroEmisor)
 
 }

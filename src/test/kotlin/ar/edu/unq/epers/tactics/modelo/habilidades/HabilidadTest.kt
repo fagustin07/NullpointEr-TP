@@ -1,5 +1,7 @@
-package ar.edu.unq.epers.tactics.modelo
+package ar.edu.unq.epers.tactics.modelo.habilidades
 
+import ar.edu.unq.epers.tactics.modelo.Aventurero
+import ar.edu.unq.epers.tactics.modelo.Party
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -87,15 +89,35 @@ internal class HabilidadTest{
         val aventureroDefendido = Aventurero(party, "Jorge", 21, 0, 0, 20)
         val defensa = Defensa.para(aventureroDefensor, aventureroDefendido)
         val dadoDe20Falso = DadoDe20(20)
-        val vidaAntesDelAtaque = aventureroDefensor.vida()
         val vidaDelDefendidoAntesDelAtaque = aventureroDefendido.vida()
 
         defensa.resolverse()
         val ataque = Ataque.para(aventureroDefensor, aventureroDefendido, dadoDe20Falso)
-        repeat(4){ ataque.resolverse() }
+        repeat(3) { ataque.resolverse() }
+
+        ataque.resolverse()
 
         val vidaEsperadaDeDefendido = vidaDelDefendidoAntesDelAtaque - aventureroDefensor.dañoFisico()
         assertThat(aventureroDefendido.vida()).isEqualTo(vidaEsperadaDeDefendido)
+
+    }
+
+    @Test
+    fun `si el aventurero defensor de otro muere, el defendido pierde a su defensor y recibe todo el daño del ataque`() {
+        val party = Party("Party")
+        val aventureroDefensor = Aventurero(party, "Pepe", 5, 0, 0, 0)
+        val aventureroAtacante = Aventurero(party, "Destructor", 80, 0, 0, 0)
+        val aventureroDefendido = Aventurero(party, "Jorge", 21, 0, 0, 20)
+        val defensa = Defensa.para(aventureroDefensor, aventureroDefendido)
+        val dadoDe20Falso = DadoDe20(20)
+
+        val ataque = Ataque.para(aventureroAtacante, aventureroDefendido, dadoDe20Falso)
+        defensa.resolverse()
+        ataque.resolverse()
+
+        ataque.resolverse()
+
+        assertThat(aventureroDefendido.vida()).isEqualTo(0)
 
     }
 }

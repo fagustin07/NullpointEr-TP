@@ -1,4 +1,4 @@
-package ar.edu.unq.epers.tactics.modelo
+package ar.edu.unq.epers.tactics.modelo.habilidades
 
 
 abstract class Habilidad() {

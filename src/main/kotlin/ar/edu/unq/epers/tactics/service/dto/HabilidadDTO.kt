@@ -1,7 +1,6 @@
 package ar.edu.unq.epers.tactics.service.dto
 
-import ar.edu.unq.epers.tactics.modelo.Aventurero
-import ar.edu.unq.epers.tactics.modelo.Habilidad
+import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
