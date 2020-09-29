@@ -46,7 +46,7 @@ class Aventurero(
     fun precisionFisica() = nivel() + fuerza + destreza
 
 
-    fun recibirDañoSiDebe(dañoFisico: Int, precisionFisica: Int) {
+    fun recibirAtaqueFisicoSiDebe(dañoFisico: Int, precisionFisica: Int) {
         val claseDeArmadura = this.armadura() + (this.velocidad() / 2)
 
         if(precisionFisica >= claseDeArmadura) this.recibirDaño(dañoFisico)
@@ -85,6 +85,13 @@ class Aventurero(
 
     fun restarMana(manaARestar: Int) {
         this.mana -= manaARestar
+    }
+
+    fun recibirAtaqueMagicoSiDebe(tirada: Int, daño: Int) {
+        if(tirada >= this.velocidad() / 2){
+            this.recibirDaño(daño)
+        }
+
     }
 
 //    fun atacar(receptor: Aventurero) = Habilidad(this).atacar(receptor)

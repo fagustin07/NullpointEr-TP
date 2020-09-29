@@ -11,7 +11,7 @@ class Ataque(val dañoFisico: Int, val precisionFisica: Int, val aventureroRecep
     }
 
     override fun resolverse() {
-        aventureroReceptor.recibirDañoSiDebe(dañoFisico, dadoDe20.tirada() + precisionFisica)
+        aventureroReceptor.recibirAtaqueFisicoSiDebe(dañoFisico, dadoDe20.tirada() + precisionFisica)
     }
 
 }
