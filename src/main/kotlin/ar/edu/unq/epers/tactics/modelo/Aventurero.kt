@@ -94,6 +94,10 @@ class Aventurero(
 
     }
 
+    fun meditar() {
+        this.mana += this.nivel()
+    }
+
 //    fun atacar(receptor: Aventurero) = Habilidad(this).atacar(receptor)
 //    fun defender(receptor: Aventurero) = state.defender(receptor)
 //    fun curar(receptor: Aventurero) = Habilidad(this).curar(receptor)
