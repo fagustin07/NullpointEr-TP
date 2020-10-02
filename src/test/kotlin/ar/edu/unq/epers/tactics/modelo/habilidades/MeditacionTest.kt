@@ -10,8 +10,8 @@ class MeditacionTest {
 
     @Test
     fun `cuando un aventurero medita regenera mana igual a su nivel`() {
-        val party = Party("Los Solitarios")
-        val aventurero = Aventurero(party, "Pepe")
+        val party = Party("Los Solitarios","URL")
+        val aventurero = Aventurero("Pepe")
         val manaInicial = aventurero.mana()
 
         val meditacion = Meditacion.para(aventurero, aventurero)
@@ -22,9 +22,9 @@ class MeditacionTest {
 
     @Test
     fun `la habilidad meditar debe tener el mismo emisor y receptor`() {
-        val party = Party("Los Solitarios")
-        val aventureroEmisor = Aventurero(party, "Pepe")
-        val aventureroReceptor = Aventurero(party, "Jorge")
+        val party = Party("Los Solitarios","URL")
+        val aventureroEmisor = Aventurero("Pepe")
+        val aventureroReceptor = Aventurero("Jorge")
 
         assertThatThrownBy { Meditacion.para(aventureroEmisor, aventureroReceptor) }
                 .hasMessage(Meditacion.MENSAJE_AVENTUREROS_DISTINTOS)

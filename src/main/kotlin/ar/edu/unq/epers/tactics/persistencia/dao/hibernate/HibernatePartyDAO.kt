@@ -9,7 +9,7 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
     override fun recuperarTodas(): MutableList<Party> = queryMany("from Party ORDER BY nombre ASC")
 
     override fun actualizar(party: Party): Party {
-        if (party.id == null) throw  RuntimeException("No se puede actualizar una party que no fue persistida")
+        if (party.id() == null) throw  RuntimeException("No se puede actualizar una party que no fue persistida")
 
         val session = HibernateTransactionRunner.currentSession
         session.update(party)

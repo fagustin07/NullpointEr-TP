@@ -2,17 +2,16 @@ package ar.edu.unq.epers.tactics.modelo.habilidades
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 
-class Curacion(val aventureroEmisor: Aventurero, val aventureroReceptor: Aventurero) : Habilidad() {
+class Curacion(val poderMagicoEmisor: Int, val aventureroReceptor: Aventurero) : Habilidad() {
 
     companion object {
         fun para(aventureroEmisor: Aventurero, aventureroReceptor: Aventurero): Curacion {
-            return Curacion(aventureroEmisor, aventureroReceptor)
+            val curacionCreada = Curacion(aventureroEmisor.poderMagico(), aventureroReceptor)
+            aventureroEmisor.consumirMana()
+            return curacionCreada
         }
     }
 
-    override fun resolverse() {
-        aventureroReceptor.curar(aventureroEmisor.poderMagico())
-        aventureroEmisor.restarMana(5)
-    }
+    override fun resolverse() = aventureroReceptor.curar(poderMagicoEmisor)
 
 }

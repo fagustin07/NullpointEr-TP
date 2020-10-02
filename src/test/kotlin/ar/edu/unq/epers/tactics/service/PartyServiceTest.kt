@@ -33,14 +33,14 @@ class PartyServiceTest {
     @Test
     fun seCreaExitosamenteUnaParty() {
         HibernateTransactionRunner.runTrx {
-            val party = Party("UnNombre")
+            val party = Party("UnNombre", "URL")
 
-            val partyId = partyService.crear(party).id!!
+            val partyId = partyService.crear(party).id()!!
 
             val todasLasParties = partyService.recuperarTodas()
 
             assertEquals(1, todasLasParties.size)
-            assertEquals(partyId, todasLasParties[0].id)
+            assertEquals(partyId, todasLasParties[0].id())
             assertEqualParty(party, todasLasParties[0])
         }
     }
@@ -48,12 +48,12 @@ class PartyServiceTest {
     @Test
     fun sePuedeRecuperarUnaPartyConSuId() {
         HibernateTransactionRunner.runTrx {
-            val partyOriginal = Party("nombre de party")
-            val partyId = partyService.crear(partyOriginal).id!!
+            val partyOriginal = Party("nombre de party", "URL")
+            val partyId = partyService.crear(partyOriginal).id()!!
 
             val partyRecuperada = partyService.recuperar(partyId)
 
-            assertEquals(partyId, partyRecuperada.id)
+            assertEquals(partyId, partyRecuperada.id())
             assertEqualParty(partyOriginal, partyRecuperada)
         }
     }
@@ -69,9 +69,9 @@ class PartyServiceTest {
     @Test
     fun alAgregarUnNuevoAventureroAUnaParty_aumentaLaCantidadDeAventurerosDeLaMisma() {
         HibernateTransactionRunner.runTrx {
-            val party = Party("Nombre de party")
-            val aventurero = Aventurero(party, "Pepe")
-            val partyId = partyService.crear(party).id!!
+            val party = Party("Nombre de party", "URL")
+            val aventurero = Aventurero("Pepe", party = party)
+            val partyId = partyService.crear(party).id()!!
 
             partyService.agregarAventureroAParty(partyId, aventurero)
             val partyRecuperada = partyService.recuperar(partyId)
@@ -84,7 +84,7 @@ class PartyServiceTest {
     @Test
     fun noSePuedeActualizarUnaPartyQueNoFuePersistida() {
         HibernateTransactionRunner.runTrx {
-            val party = Party("Nombre de party")
+            val party = Party("Nombre de party", "URL")
 
             val exception = assertThrows<RuntimeException> { partyService.actualizar(party) }
             assertEquals("No se puede actualizar una party que no fue persistida", exception.message)
@@ -94,12 +94,11 @@ class PartyServiceTest {
     @Test
     fun noSePuedeAgregarUnAventureroUnaPartyQueNoFueCreada() {
         HibernateTransactionRunner.runTrx {
-            val party = Party("Nombre de party")
-            val aventurero = Aventurero(party, "Pepe")
-            val isInexistente: Long = 45
+            val aventurero = Aventurero("Pepe")
+            val idNoRegistrado: Long = 45
 
             val exception =
-                assertThrows<RuntimeException> { partyService.agregarAventureroAParty(isInexistente, aventurero) }
+                assertThrows<RuntimeException> { partyService.agregarAventureroAParty(idNoRegistrado, aventurero) }
             assertEquals(exception.message, "No existe una entidad con ese id")
         }
     }
@@ -110,7 +109,7 @@ class PartyServiceTest {
     }
 
     private fun assertEqualParty(expectedParty: Party, obtainedParty: Party) {
-        assertEquals(expectedParty.nombre, obtainedParty.nombre)
+        assertEquals(expectedParty.nombre(), obtainedParty.nombre())
         assertEquals(expectedParty.numeroDeAventureros(), obtainedParty.numeroDeAventureros())
     }
 

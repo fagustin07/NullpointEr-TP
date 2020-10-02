@@ -2,9 +2,11 @@ package ar.edu.unq.epers.tactics.modelo.habilidades
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
+import junit.framework.Assert.assertEquals
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class AtaqueMagicoTest {
 
@@ -14,9 +16,9 @@ class AtaqueMagicoTest {
 
     @BeforeEach
     internal fun setUp() {
-        party = Party("Los Increibles")
-        aventureroReceptor = Aventurero(party, "Belen", 0, 6, 0, 0)
-        aventureroEmisor = Aventurero(party, "Coco")
+        party = Party("Los Increibles", "URL")
+        aventureroReceptor = Aventurero("Belen", 0, 6, 50, 10)
+        aventureroEmisor = Aventurero("Coco", inteligencia = 5)
     }
 
     @Test
@@ -31,7 +33,7 @@ class AtaqueMagicoTest {
     }
 
     @Test
-    fun `un ataque con tirada menor a la mitad de la velocidad del receptor falla`(){
+    fun `un ataque con tirada menor a la mitad de la velocidad del receptor falla`() {
         val vidaAntesDelAtaque = aventureroReceptor.vida()
 
         val dadoDe20Falso = DadoDe20(1)
@@ -43,13 +45,13 @@ class AtaqueMagicoTest {
 
     @Test
     fun `un ataque exitoso le resta al receptor una cantidad de vida igual al poder magico del emisor`() {
-        val poderMagicoDelEmisor = aventureroEmisor.poderMagico()
-        val vidaAntesDelAtaque = aventureroReceptor.vida()
-
         val dadoDe20Falso = DadoDe20(20)
+        val poderMagicoDeAtaque = aventureroEmisor.poderMagico()
+        val vidaAntesDeAtaque = aventureroReceptor.vida()
         val ataqueMagico = AtaqueMagico.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
+
         ataqueMagico.resolverse()
 
-        Assertions.assertThat(aventureroReceptor.vida()).isEqualTo(vidaAntesDelAtaque - poderMagicoDelEmisor)
+        Assertions.assertThat(aventureroReceptor.vida()).isEqualTo(vidaAntesDeAtaque - poderMagicoDeAtaque)
     }
 }

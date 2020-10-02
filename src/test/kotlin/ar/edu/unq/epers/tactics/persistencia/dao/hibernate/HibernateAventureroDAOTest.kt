@@ -19,8 +19,8 @@ class HibernateAventureroDAOTest {
 
     @BeforeEach
     fun setUp() {
-        bigTeam = Party("Big Team")
-        pepito = Aventurero(bigTeam,  "Pepito")
+        bigTeam = Party("Big Team", "URL")
+        pepito = Aventurero("Pepito", party = bigTeam)
     }
 
     @Test
@@ -39,7 +39,7 @@ class HibernateAventureroDAOTest {
         HibernateTransactionRunner.runTrx {
             val pepitoId = generateModel()
 
-            pepito.nombre = "Federico"
+            pepito.cambiarNombrePor("Federico")
             aventureroDAO.actualizar(pepito)
             val recoveryPepito = aventureroDAO.recuperar(pepitoId)
 
@@ -50,7 +50,7 @@ class HibernateAventureroDAOTest {
     @Test
     fun alEliminarUnAventureroPersistidoYLuegoRecuperarloNoExiste() {
         HibernateTransactionRunner.runTrx {
-            val pepitoId = aventureroDAO.crear(pepito).id!!
+            val pepitoId = aventureroDAO.crear(pepito).id()!!
             aventureroDAO.eliminar(pepito)
 
             val exception = assertThrows<RuntimeException> {
@@ -61,7 +61,7 @@ class HibernateAventureroDAOTest {
     }
 
     fun generateModel(): Long {
-        val pepitoId = aventureroDAO.crear(pepito).id!!
+        val pepitoId = aventureroDAO.crear(pepito).id()!!
         bigTeam.agregarUnAventurero(pepito)
         partyDAO.crear(bigTeam)
         return pepitoId

@@ -8,18 +8,18 @@ class DataServiceHelper(val service: PartyService) : DataService {
 
     override fun crearSetDeDatosIniciales() {
 
-        val aTeam = Party("The A team")
-        val bTeam = Party("The B team")
-        val cTeam = Party("The C team")
+        val aTeam = Party("The A team", "URL")
+        val bTeam = Party("The B team", "URL")
+        val cTeam = Party("The C team", "URL")
 
-        val idATeam = service.crear(aTeam).id!!
-        val idBTeam = service.crear(bTeam).id!!
-        val idCTeam = service.crear(cTeam).id!!
+        val idATeam = service.crear(aTeam).id()!!
+        val idBTeam = service.crear(bTeam).id()!!
+        val idCTeam = service.crear(cTeam).id()!!
 
-        val aventureroParaATeam = Aventurero(aTeam,  "Legolas",15,23,57,87)
-        val aventureroParaBTeam = Aventurero(bTeam,  "Gimli",10,24,74,16)
-        val aventureroParaCTeam1 = Aventurero(cTeam,  "Frodo",99,45,7,80)
-        val aventureroParaCTeam2 = Aventurero(cTeam,  "Sam",16,20,76,8)
+        val aventureroParaATeam = Aventurero("Legolas", 15, 23, 57, 87)
+        val aventureroParaBTeam = Aventurero("Gimli", 10, 24, 74, 16)
+        val aventureroParaCTeam1 = Aventurero("Frodo", 99, 45, 7, 80)
+        val aventureroParaCTeam2 = Aventurero("Sam", 16, 20, 76, 8)
 
         service.agregarAventureroAParty(idATeam, aventureroParaATeam)
         service.agregarAventureroAParty(idBTeam, aventureroParaBTeam)

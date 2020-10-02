@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*
 class AdventurerControllerRest(private val aventureroService: AventureroService, val partyService:PartyService) {
 
     @GetMapping
-    fun getAdventurers(@PathVariable partyId: Long):List<AventureroDTO> = partyService.recuperar(partyId).aventureros.map { AventureroDTO.desdeModelo(it) }
+    fun getAdventurers(@PathVariable partyId: Long):List<AventureroDTO> = partyService.recuperar(partyId).aventureros().map { AventureroDTO.desdeModelo(it) }
 
     @GetMapping("/{id}")
     fun getAdventurer(@PathVariable id: Long) = AventureroDTO.desdeModelo(aventureroService.recuperar(id))

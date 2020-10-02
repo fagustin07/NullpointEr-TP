@@ -1,28 +1,26 @@
 package ar.edu.unq.epers.tactics.modelo
 
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.assertEquals
 
 
 class AventureroTest() {
     lateinit var cacho: Aventurero
-    lateinit var bigTeam: Party
 
     @BeforeEach
-    fun setUp(){
-        bigTeam = Party("Big Team")
-        cacho = Aventurero(bigTeam,"Cacho",45,10,20,17)
+    fun setUp() {
+        cacho = Aventurero("Cacho", 45, 10, 20, 17)
 
     }
 
     @Test
-    fun unAventureroInicialmenteEsNivelUno(){
-        assertEquals(1,cacho.nivel())
+    fun unAventureroInicialmenteEsNivelUno() {
+        assertEquals(1, cacho.nivel())
     }
 
     @Test
-    fun unAventureroTieneAtributos(){
+    fun unAventureroTieneAtributos() {
         assertEquals(45, cacho.fuerza())
         assertEquals(10, cacho.destreza())
         assertEquals(20, cacho.inteligencia())
@@ -31,39 +29,24 @@ class AventureroTest() {
 
 
     @Test
-    fun unAventureroSabeCuantaVidaTiene(){
-        assertEquals(84, cacho.vida())
-    }
+    fun unAventureroSabeCuantaVidaTiene() = assertEquals(84, cacho.vida())
 
     @Test
-    fun unAventureroSabeCuantosPuntosDeArmaduraTiene(){
-        assertEquals(18,cacho.armadura())
-    }
+    fun unAventureroSabeCuantaArmaduraTiene() = assertEquals(18, cacho.armadura())
 
     @Test
-    fun unAventureroSabeCuantoManaTiene(){
-        assertEquals(21,cacho.mana())
-    }
+    fun unAventureroSabeCuantoManaTiene() = assertEquals(21, cacho.mana())
 
     @Test
-    fun unAventureroSabeCuantosPuntosDeDañoFisicoTiene(){
-        assertEquals(51,cacho.dañoFisico())
-    }
+    fun unAventureroSabeCuantoDañoFisicoTiene() = assertEquals(51, cacho.dañoFisico())
 
     @Test
-    fun unAventureroSabeCuantosPuntosDePoderMagicoTiene(){
-        assertEquals(21,cacho.poderMagico())
-    }
+    fun unAventureroSabeCuantoPoderMagicoTiene() = assertEquals(22, cacho.poderMagico())
 
     @Test
-    fun unAventureroSabeCuantosPuntosDePrecisionFisica(){
-        assertEquals(56,cacho.precisionFisica())
-    }
+    fun unAventureroSabeCuantaPrecisionFisica() = assertEquals(56, cacho.precisionFisica())
 
     @Test
-    fun unAventureroSabeCuantosPuntosDeVelocidadTiene(){
-        assertEquals(11,cacho.velocidad())
-    }
-
+    fun unAventureroSabeCuantaVelocidadTiene() = assertEquals(11, cacho.velocidad())
 
 }

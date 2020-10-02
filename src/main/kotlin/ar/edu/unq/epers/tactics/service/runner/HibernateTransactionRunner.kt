@@ -1,8 +1,6 @@
 package ar.edu.unq.epers.tactics.service.runner
 
-import ar.edu.unq.unidad3.service.runner.HibernateSessionFactoryProvider
 import org.hibernate.Session
-import javax.persistence.EntityTransaction
 
 
 object HibernateTransactionRunner {

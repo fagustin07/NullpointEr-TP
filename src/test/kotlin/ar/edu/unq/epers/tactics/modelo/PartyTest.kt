@@ -12,8 +12,8 @@ class PartyTest {
 
     @BeforeEach
     fun setUp() {
-        party = Party("Los Bulls")
-        pepe = Aventurero(party,  "Pepe")
+        party = Party("Los Bulls", "URL")
+        pepe = Aventurero("Pepe", party = party)
     }
 
     @Test
@@ -24,50 +24,50 @@ class PartyTest {
         party.agregarUnAventurero(pepe)
 
         assertEquals(1, party.numeroDeAventureros())
-        assertEquals(1, party.aventureros.size)
+        assertEquals(1, party.aventureros().size)
     }
 
     @Test
     fun noSePuedenAgregarAventurerosAUnaPartyCompleta() {
-        val cincoAventureros = (1..5).map { Aventurero(party,  "Aventurero${it}") }
+        val cincoAventureros = (1..5).map { Aventurero("Aventurero${it}", party = party) }
 
         cincoAventureros.forEach { aventurero -> party.agregarUnAventurero(aventurero) }
 
         val exception = assertThrows<RuntimeException> { party.agregarUnAventurero(pepe) }
-        assertEquals(exception.message, "La party ${party.nombre} está completa.")
+        assertEquals("La party ${party.nombre()} está completa.", exception.message)
 
         assertEquals(5, party.numeroDeAventureros())
-        assertTrue(party.aventureros.containsAll(cincoAventureros))
+        assertTrue(party.aventureros().containsAll(cincoAventureros))
     }
 
     @Test
     fun unaPartyNoAgregaAventurerosQueNoPertenezcanAElla() {
-        val otraParty = Party("Champions of Red Hawk.")
-        val aventureroDeOtraParty = Aventurero(otraParty,  "OTK Garfield")
+        val otraParty = Party("Champions of Red Hawk.", "URL")
+        val aventureroDeOtraParty = Aventurero("OTK Garfield", party = otraParty)
 
         val exception = assertThrows<RuntimeException> { party.agregarUnAventurero(aventureroDeOtraParty) }
-        assertEquals(exception.message, "${aventureroDeOtraParty.nombre} no pertenece a ${party.nombre}.")
+        assertEquals(exception.message, "${aventureroDeOtraParty.nombre()} no pertenece a ${party.nombre()}.")
         assertEquals(0, party.numeroDeAventureros())
     }
 
 
     @Test
     fun noPuedeAgregarseAUnaPartyUnAventureroQueYaFueAgregado() {
-        val party = Party("Nombre de party")
-        val aventurero = Aventurero(party, "Nombre de aventurero")
+        val party = Party("Nombre de party", "URL")
+        val aventurero = Aventurero("Nombre de aventurero", party = party)
 
         party.agregarUnAventurero(aventurero)
 
         val exception = assertThrows<RuntimeException> { party.agregarUnAventurero(aventurero) }
-        assertEquals(exception.message, "${aventurero.nombre} ya forma parte de la party ${party.nombre}.")
+        assertEquals(exception.message, "${aventurero.nombre()} ya forma parte de la party ${party.nombre()}.")
 
         assertEquals(1, party.numeroDeAventureros())
-        assertTrue(party.aventureros.contains(aventurero))
+        assertTrue(party.aventureros().contains(aventurero))
     }
 
     @Test
     fun unaPartyDebeTenerUnNombre() {
-        val exception = assertThrows<RuntimeException> { Party("") }
+        val exception = assertThrows<RuntimeException> { Party("", "URL") }
         assertEquals(exception.message, "Una party debe tener un nombre")
     }
 }

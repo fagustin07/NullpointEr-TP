@@ -1,4 +1,4 @@
-package ar.edu.unq.unidad3.service.runner
+package ar.edu.unq.epers.tactics.service.runner
 
 import org.hibernate.Session
 import org.hibernate.SessionFactory

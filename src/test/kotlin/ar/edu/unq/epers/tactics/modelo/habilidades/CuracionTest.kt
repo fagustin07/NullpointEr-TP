@@ -2,9 +2,12 @@ package ar.edu.unq.epers.tactics.modelo.habilidades
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
+import junit.framework.Assert
+import junit.framework.Assert.assertEquals
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class CuracionTest {
 
@@ -14,20 +17,20 @@ class CuracionTest {
 
     @BeforeEach
     internal fun setUp() {
-        party = Party("Los Fabulosos")
-        aventureroCurador =Aventurero(party, "Raul", 1, 1, 10, 1)
-        aventureroCurado = Aventurero(party, "Sergio")
+        party = Party("Los Fabulosos","URL")
+        aventureroCurador =Aventurero("Raul", 1, 1, 10, 1)
+        aventureroCurado = Aventurero("Sergio")
     }
 
     @Test
     fun `cuando un aventurero es curado, su vida aumenta una cantidad igual al poder magico del curador`() {
         val vidaAntesDeCurar = aventureroCurado.vida()
-        val poderMagicoAntesDeCurar = aventureroCurador.poderMagico()
+        val poderMagicoEmisor = aventureroCurador.poderMagico()
 
         val curacion = Curacion.para(aventureroCurador, aventureroCurado)
         curacion.resolverse()
 
-        assertThat(aventureroCurado.vida()).isEqualTo(vidaAntesDeCurar + poderMagicoAntesDeCurar)
+        assertThat(aventureroCurado.vida()).isEqualTo(vidaAntesDeCurar + poderMagicoEmisor)
     }
 
     @Test
