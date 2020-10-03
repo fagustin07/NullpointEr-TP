@@ -12,7 +12,7 @@ class Party(private var nombre: String, private var imagenURL: String) {
 
     init { if (nombre.isEmpty()) throw RuntimeException("Una party debe tener un nombre") }
 
-    @OneToMany(mappedBy="party", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER, orphanRemoval = true)
     var aventureros: MutableList<Aventurero> = mutableListOf() // TODO: lo cambie TEMPORALMENTE a public (David) por lo de los enums. Hay que corregirlo despues
 
     private val maximoDeAventureros = 5
