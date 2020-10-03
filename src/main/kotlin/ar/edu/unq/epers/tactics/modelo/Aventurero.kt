@@ -25,7 +25,7 @@ class Aventurero(
     private var mana: Int = 0
 
     @ManyToOne
-    lateinit var party: Party
+    var party: Party? = null
 
     constructor(nombre: String,
                 fuerza: Int = 0,
@@ -131,5 +131,9 @@ class Aventurero(
 
     internal fun cambiarNombrePor(nuevoNombre: String) {
         this.nombre = nuevoNombre
+    }
+
+    fun registarseEn(party: Party) {
+        this.party = party
     }
 }

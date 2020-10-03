@@ -45,25 +45,32 @@ data class AtributosDTO(var id: Long?, var fuerza: Int, var destreza: Int, var c
 data class TacticaDTO(var id: Long?, var prioridad: Int, var receptor: TipoDeReceptor, var tipoDeEstadistica: TipoDeEstadistica, var criterio: Criterio, var valor: Int, var accion: Accion)
 
 enum class TipoDeReceptor {
-    ALIADO,
-    ENEMIGO,
-    UNO_MISMO
+    ALIADO { override fun test(emisor: Aventurero, receptor: Aventurero) = emisor != receptor && emisor.party!!.aventureros.contains(receptor) },
+    ENEMIGO { override fun test(emisor: Aventurero, receptor: Aventurero) = emisor != receptor && !emisor.party!!.aventureros.contains(receptor) },
+    UNO_MISMO { override fun test(emisor: Aventurero, receptor: Aventurero) = emisor == receptor };
+
+    abstract fun test(emisor: Aventurero, receptor: Aventurero): Boolean
+
 }
 
 enum class TipoDeEstadistica {
-    VIDA,
-    ARMADURA,
-    MANA,
-    VELOCIDAD,
-    DAÑO_FISICO,
-    DAÑO_MAGICO,
-    PRECISION_FISICA
+    VIDA  { override fun valorPara(aventurero: Aventurero) = aventurero.vida() },
+    ARMADURA { override fun valorPara(aventurero: Aventurero) = aventurero.armadura() },
+    MANA { override fun valorPara(aventurero: Aventurero) = aventurero.mana() },
+    VELOCIDAD { override fun valorPara(aventurero: Aventurero) = aventurero.velocidad() },
+    DAÑO_FISICO { override fun valorPara(aventurero: Aventurero) = aventurero.dañoFisico() },
+    DAÑO_MAGICO { override fun valorPara(aventurero: Aventurero) = aventurero.poderMagico() },
+    PRECISION_FISICA { override fun valorPara(aventurero: Aventurero) = aventurero.precisionFisica() };
+
+    abstract fun valorPara(aventurero: Aventurero): Int
 }
 
 enum class Criterio {
-    IGUAL,
-    MAYOR_QUE,
-    MENOR_QUE;
+    IGUAL { override fun evaluarseCon(valorAComparar: Int, valorDeComparacion: Int) = valorAComparar == valorDeComparacion },
+    MAYOR_QUE { override fun evaluarseCon(valorDeAventurero: Int, valorDeComparacion: Int) = valorDeAventurero > valorDeComparacion },
+    MENOR_QUE { override fun evaluarseCon(valorDeAventurero: Int, valorDeComparacion: Int) = valorDeAventurero < valorDeComparacion };
+
+    abstract fun evaluarseCon(valorDeAventurero: Int, valorDeComparacion: Int): Boolean
 }
 
 enum class Accion {
