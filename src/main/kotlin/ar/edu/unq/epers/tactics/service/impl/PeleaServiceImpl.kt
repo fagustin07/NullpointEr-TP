@@ -10,12 +10,17 @@ import ar.edu.unq.epers.tactics.service.PeleaService
 
 class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO): PeleaService {
 
-    override fun iniciarPelea(idDeLaPelea: Long): Pelea {
-        TODO("Not yet implemented")
+    override fun iniciarPelea(idDeLaParty: Long): Pelea {
+        val party = partyDAO.recuperar(idDeLaParty)
+        party.entrarEnPelea()
+        partyDAO.actualizar(party)
+
+        return peleaDAO.crear(Pelea(idDeLaParty))
+
     }
 
-    override fun estaEnPelea(partyId: Double): Boolean {
-        TODO("Not yet implemented")
+    override fun estaEnPelea(partyId: Long): Boolean {
+        return partyDAO.recuperar(partyId).estaEnPelea()
     }
 
     override fun actualizar(pelea: Pelea): Pelea {

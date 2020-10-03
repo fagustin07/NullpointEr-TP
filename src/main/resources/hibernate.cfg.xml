@@ -15,6 +15,7 @@
 
         <mapping class="ar.edu.unq.epers.tactics.modelo.Party" />
         <mapping class="ar.edu.unq.epers.tactics.modelo.Aventurero" />
+        <mapping class="ar.edu.unq.epers.tactics.modelo.Pelea" />
 
     </session-factory>
 </hibernate-configuration>

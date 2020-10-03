@@ -106,5 +106,4 @@ class AventureroTest() {
         assertTrue(cacho.esEnemigoDe(noAliado))
     }
 
-
 }

@@ -6,7 +6,7 @@ import ar.edu.unq.epers.tactics.modelo.Pelea
 
 interface PeleaService {
     fun iniciarPelea(idDeLaPelea: Long) : Pelea
-    fun estaEnPelea(partyId: Double):Boolean
+    fun estaEnPelea(partyId: Long):Boolean
     fun resolverTurno(peleaId: Long, aventureroId:Long, enemigos:List<Aventurero>): Habilidad
     fun recibirHabilidad(aventureroId: Long, habilidadId: Habilidad): Aventurero
     fun terminarPelea(idDeLaPelea: Long): Pelea

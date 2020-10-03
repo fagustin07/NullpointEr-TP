@@ -4,6 +4,6 @@ import ar.edu.unq.epers.tactics.modelo.Pelea
 
 interface PeleaDAO {
     fun crear(pelea:Pelea) : Pelea
-    fun actualizar(pelea: Pelea)
+    fun actualizar(pelea: Pelea): Pelea
     fun recuperar(idDeLaPelea: Long): Pelea
 }

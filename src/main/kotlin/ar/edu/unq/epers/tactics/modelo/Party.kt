@@ -2,6 +2,7 @@ package ar.edu.unq.epers.tactics.modelo
 
 import ar.edu.unq.epers.tactics.service.dto.PartyDTO
 import javax.persistence.*
+import kotlin.jvm.Transient
 
 @Entity
 class Party(private var nombre: String, private var imagenURL: String) {
@@ -16,6 +17,8 @@ class Party(private var nombre: String, private var imagenURL: String) {
     var aventureros: MutableList<Aventurero> = mutableListOf() // TODO: lo cambie TEMPORALMENTE a public (David) por lo de los enums. Hay que corregirlo despues
 
     private val maximoDeAventureros = 5
+
+    var estaEnPelea = false
 
     fun numeroDeAventureros() = aventureros.size
 
@@ -66,5 +69,13 @@ class Party(private var nombre: String, private var imagenURL: String) {
         return aliados
     }
 
+    fun estaEnPelea(): Boolean {
+        return this.estaEnPelea
+    }
+
+    fun entrarEnPelea() {
+        if(this.estaEnPelea) { throw RuntimeException("No se puede iniciar una pelea: la party ya esta peleando") }
+        this.estaEnPelea = true
+    }
 
 }
