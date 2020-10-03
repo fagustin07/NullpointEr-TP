@@ -1,6 +1,6 @@
 package ar.edu.unq.epers.tactics.modelo
 
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -48,6 +48,63 @@ class AventureroTest() {
 
     @Test
     fun sabeCuantaVelocidadTiene() = assertEquals(11, cacho.velocidad())
+
+    @Test
+    fun inicialmenteNoTieneNingunAliado() {
+        assertTrue(cacho.aliados().isEmpty())
+    }
+
+    @Test
+    fun cuandoLaPartyALaQuePerteneceTieneOtrosAventurerosSonSusAliados() {
+        val party = Party("Party", "")
+        val aliado = Aventurero("Aliado")
+
+        party.agregarUnAventurero(cacho)
+        party.agregarUnAventurero(aliado)
+
+        assertEquals(1, cacho.aliados().size)
+        assertTrue(cacho.aliados().contains(aliado))
+    }
+
+    @Test
+    fun sabeSiEsAliadoDeOtroAventurero() {
+        val party = Party("Party", "")
+        val aliado = Aventurero("Aliado")
+        val noAliado = Aventurero("No aliado")
+
+        party.agregarUnAventurero(cacho)
+        party.agregarUnAventurero(aliado)
+
+        assertTrue(cacho.esAliadoDe(aliado))
+        assertFalse(cacho.esAliadoDe(noAliado))
+    }
+
+    @Test
+    fun noEsAliadoDeSiMismo() {
+        val party = Party("Party", "")
+        party.agregarUnAventurero(cacho)
+        assertFalse(cacho.esAliadoDe(cacho))
+    }
+
+    @Test
+    fun noEsEnemigoDeSiMismo() {
+        val party = Party("Party", "")
+        party.agregarUnAventurero(cacho)
+        assertFalse(cacho.esEnemigoDe(cacho))
+    }
+
+    @Test
+    fun esEnemigoDeAventurerosQueNoSeanAliados() {
+        val party = Party("Party", "")
+        val aliado = Aventurero("Aliado")
+        val noAliado = Aventurero("No aliado")
+
+        party.agregarUnAventurero(cacho)
+        party.agregarUnAventurero(aliado)
+
+        assertFalse(cacho.esEnemigoDe(aliado))
+        assertTrue(cacho.esEnemigoDe(noAliado))
+    }
 
 
 }

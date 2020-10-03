@@ -132,4 +132,16 @@ class Aventurero(
     fun registarseEn(party: Party) {
         this.party = party
     }
+
+    fun aliados(): List<Aventurero> {
+        if (party == null) return listOf()
+        return party!!.aliadosDe(this)
+    }
+
+    fun esAliadoDe(otroAventurero: Aventurero) =
+        aliados().contains(otroAventurero)
+
+    fun esEnemigoDe(otroAventurero: Aventurero) =
+        otroAventurero != this && !esAliadoDe(otroAventurero)
+
 }
