@@ -18,6 +18,5 @@ class AventureroServiceImpl(val aventureroDAO: AventureroDAO, val partyDAO: Part
         partyDelAventurero.removerA(aventurero)
 
         partyDAO.actualizar(partyDelAventurero)
-        aventureroDAO.eliminar(aventurero) // TODO: esto me parece que no deberia ser necesario... asi y todo no me esta funcionando
     }
 }

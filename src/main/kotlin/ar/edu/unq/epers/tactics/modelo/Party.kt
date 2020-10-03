@@ -53,8 +53,8 @@ class Party(private var nombre: String, private var imagenURL: String) {
         this.aventureros = partyDTO.aventureros.map { aventurero -> aventurero.aModelo() }.toMutableList()
     }
 
+    private fun esLaParty(party: Party?) = party != null && this.nombre == party.nombre
 
-    private fun esLaParty(party: Party?) = party == null || this.nombre == party.nombre
 
     private fun puedeAgregarAventureros() = this.numeroDeAventureros() < this.maximoDeAventureros()
 

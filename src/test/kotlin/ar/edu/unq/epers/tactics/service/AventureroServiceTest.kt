@@ -13,6 +13,7 @@ import ar.edu.unq.epers.tactics.service.impl.PersistentPartyService
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -76,11 +77,13 @@ class AventureroServiceTest {
             partyService.agregarAventureroAParty(party.id()!!, aventurero)
 
             aventureroService.eliminar(aventurero)
+        }
 
+        HibernateTransactionRunner.runTrx {
+            assertEquals(0, party.numeroDeAventureros())
             val exception = assertThrows<RuntimeException> { aventureroService.recuperar(aventurero.id()!!) }
             org.junit.jupiter.api.Assertions.assertEquals(exception.message, "No existe una entidad con ese id")
         }
-
     }
 
     @AfterEach
