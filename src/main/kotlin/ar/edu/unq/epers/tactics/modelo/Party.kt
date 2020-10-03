@@ -12,7 +12,7 @@ class Party(private var nombre: String, private var imagenURL: String) {
 
     init { if (nombre.isEmpty()) throw RuntimeException("Una party debe tener un nombre") }
 
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @OneToMany(mappedBy="party", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var aventureros: MutableList<Aventurero> = mutableListOf() // TODO: lo cambie TEMPORALMENTE a public (David) por lo de los enums. Hay que corregirlo despues
 
     private val maximoDeAventureros = 5
@@ -27,6 +27,14 @@ class Party(private var nombre: String, private var imagenURL: String) {
         this.aventureros.add(aventurero)
         aventurero.registarseEn(this)
     }
+
+    fun removerA(aventurero: Aventurero) {
+        if (!this.esLaParty(aventurero.party)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
+
+        aventurero.salirDeLaParty()
+        aventureros.remove(aventurero)
+    }
+
     fun nombre()      = nombre
     fun id()          = id
     fun aventureros() = aventureros
@@ -42,14 +50,15 @@ class Party(private var nombre: String, private var imagenURL: String) {
         this.aventureros = partyDTO.aventureros.map { aventurero -> aventurero.aModelo() }.toMutableList()
     }
 
-    private fun esLaParty(party: Party?) = party == null || this.nombre == party.nombre
+    private fun esLaParty(party: Party?) = party != null && this.nombre == party.nombre
 
 
     private fun puedeAgregarAventureros() = this.numeroDeAventureros() < this.maximoDeAventureros
 
     /* Assertions */
     private fun validarQueNoPertenzcaAOtraParty(aventurero: Aventurero) {
-        if (!this.esLaParty(aventurero.party)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
+        // TODO: aventurero.party != null   parche momentaneo.
+        if (aventurero.party != null && !this.esLaParty(aventurero.party)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
     }
 
     private fun validarQueNoEsteRegistrado(aventurero: Aventurero) {
@@ -59,6 +68,5 @@ class Party(private var nombre: String, private var imagenURL: String) {
     private fun validarQueSeAdmitanNuevosIntegrantes() {
         if (!this.puedeAgregarAventureros()) throw RuntimeException("La party $nombre está completa.")
     }
-
 
 }

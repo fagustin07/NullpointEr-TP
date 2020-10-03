@@ -13,7 +13,7 @@ class PartyTest {
     @BeforeEach
     fun setUp() {
         party = Party("Los Bulls", "URL")
-        pepe = Aventurero("Pepe", party = party)
+        pepe = Aventurero("Pepe")
     }
 
     @Test
@@ -29,7 +29,7 @@ class PartyTest {
 
     @Test
     fun noSePuedenAgregarAventurerosAUnaPartyCompleta() {
-        val cincoAventureros = (1..5).map { Aventurero("Aventurero${it}", party = party) }
+        val cincoAventureros = (1..5).map { Aventurero("Aventurero${it}") }
 
         cincoAventureros.forEach { aventurero -> party.agregarUnAventurero(aventurero) }
 
@@ -53,8 +53,8 @@ class PartyTest {
 
     @Test
     fun noPuedeAgregarseAUnaPartyUnAventureroQueYaFueAgregado() {
-        val party = Party("Nombre de party", "URL")
-        val aventurero = Aventurero("Nombre de aventurero", party = party)
+        val party = Party("NombreDeParty", "URL")
+        val aventurero = Aventurero("NombreDeAventurero")
 
         party.agregarUnAventurero(aventurero)
 
@@ -70,4 +70,26 @@ class PartyTest {
         val exception = assertThrows<RuntimeException> { Party("", "URL") }
         assertEquals(exception.message, "Una party debe tener un nombre")
     }
+
+    @Test
+    fun seRemueveUnaAventurerosDeUnaParty() {
+        val party = Party("Nombre de party", "URL")
+        val aventurero = Aventurero("Nombre de aventurero")
+        party.agregarUnAventurero(aventurero)
+
+        party.removerA(aventurero)
+
+        assertEquals(0, party.numeroDeAventureros())
+        assertEquals(null, aventurero.party)
+    }
+
+    @Test
+    fun noSePuedeRemoverUnAventureroDeUnaPartyALaQueNoPertenece() {
+        val party = Party("Nombre de party", "URL")
+        val aventurero = Aventurero("Nombre de aventurero")
+
+        val exception = assertThrows<java.lang.RuntimeException> { party.removerA(aventurero) }
+        assertEquals("${aventurero.nombre()} no pertenece a ${party.nombre()}.", exception.message)
+    }
+
 }

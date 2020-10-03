@@ -136,4 +136,8 @@ class Aventurero(
     fun registarseEn(party: Party) {
         this.party = party
     }
+
+    fun salirDeLaParty() {
+        this.party = null
+    }
 }

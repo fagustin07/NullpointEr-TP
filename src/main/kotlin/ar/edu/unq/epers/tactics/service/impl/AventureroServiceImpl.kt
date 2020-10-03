@@ -12,5 +12,12 @@ class AventureroServiceImpl(val aventureroDAO: AventureroDAO, val partyDAO: Part
 
     override fun recuperar(idDelAventurero: Long) = runTrx { aventureroDAO.recuperar(idDelAventurero) }
 
-    override fun eliminar(aventurero: Aventurero) = runTrx { aventureroDAO.eliminar(aventurero) }
+    override fun eliminar(aventurero: Aventurero): Unit = runTrx {
+        val partyDelAventurero = partyDAO.recuperar(aventurero.party!!.id()!!)
+
+        partyDelAventurero.removerA(aventurero)
+
+        partyDAO.actualizar(partyDelAventurero)
+        aventureroDAO.eliminar(aventurero) // TODO: esto me parece que no deberia ser necesario... asi y todo no me esta funcionando
+    }
 }
