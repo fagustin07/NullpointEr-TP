@@ -24,6 +24,14 @@ class Party(private var nombre: String, private var imagenURL: String) {
         this.aventureros.add(aventurero)
         aventurero.registarseEn(this)
     }
+
+    fun removerA(aventurero: Aventurero) {
+        if (!this.esLaParty(aventurero.party)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
+
+        aventurero.salirDeLaParty()
+        aventureros.remove(aventurero)
+    }
+
     fun nombre()      = nombre
     fun id()          = id
     fun aventureros() = aventureros
@@ -54,7 +62,8 @@ class Party(private var nombre: String, private var imagenURL: String) {
 
     /* Assertions */
     private fun validarQueNoPertenzcaAOtraParty(aventurero: Aventurero) {
-        if (!this.esLaParty(aventurero.party)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
+        // TODO: aventurero.party != null   parche momentaneo.
+        if (aventurero.party != null && !this.esLaParty(aventurero.party)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
     }
 
     private fun validarQueNoEsteRegistrado(aventurero: Aventurero) {
@@ -64,6 +73,5 @@ class Party(private var nombre: String, private var imagenURL: String) {
     private fun validarQueSeAdmitanNuevosIntegrantes() {
         if (!this.puedeAgregarAventureros()) throw RuntimeException("La party $nombre está completa.")
     }
-
 
 }
