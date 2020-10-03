@@ -15,12 +15,12 @@ class AventureroTest() {
     }
 
     @Test
-    fun unAventureroInicialmenteEsNivelUno() {
+    fun inicialmenteEsNivelUno() {
         assertEquals(1, cacho.nivel())
     }
 
     @Test
-    fun unAventureroTieneAtributos() {
+    fun tieneAtributos() {
         assertEquals(45, cacho.fuerza())
         assertEquals(10, cacho.destreza())
         assertEquals(20, cacho.inteligencia())
@@ -29,24 +29,25 @@ class AventureroTest() {
 
 
     @Test
-    fun unAventureroSabeCuantaVidaTiene() = assertEquals(84, cacho.vida())
+    fun sabeCuantaVidaTiene() = assertEquals(84, cacho.vida())
 
     @Test
-    fun unAventureroSabeCuantaArmaduraTiene() = assertEquals(18, cacho.armadura())
+    fun sabeCuantaArmaduraTiene() = assertEquals(18, cacho.armadura())
 
     @Test
-    fun unAventureroSabeCuantoManaTiene() = assertEquals(21, cacho.mana())
+    fun sabeCuantoManaTiene() = assertEquals(21, cacho.mana())
 
     @Test
-    fun unAventureroSabeCuantoDañoFisicoTiene() = assertEquals(51, cacho.dañoFisico())
+    fun sabeCuantoDañoFisicoTiene() = assertEquals(51, cacho.dañoFisico())
 
     @Test
-    fun unAventureroSabeCuantoPoderMagicoTiene() = assertEquals(22, cacho.poderMagico())
+    fun sabeCuantoPoderMagicoTiene() = assertEquals(22, cacho.poderMagico())
 
     @Test
-    fun unAventureroSabeCuantaPrecisionFisica() = assertEquals(56, cacho.precisionFisica())
+    fun sabeCuantaPrecisionFisica() = assertEquals(56, cacho.precisionFisica())
 
     @Test
-    fun unAventureroSabeCuantaVelocidadTiene() = assertEquals(11, cacho.velocidad())
+    fun sabeCuantaVelocidadTiene() = assertEquals(11, cacho.velocidad())
+
 
 }
