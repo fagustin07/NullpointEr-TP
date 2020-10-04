@@ -15,8 +15,8 @@ internal class AtaqueTest {
     @BeforeEach
     internal fun setUp() {
         party = Party("Party","URL")
-        aventureroEmisor = Aventurero("Pepe", 10, 0, 0, 0)
-        aventureroReceptor = Aventurero("Jorge", 25, 0, 0, 20)
+        aventureroEmisor = Aventurero("Pepe","", 10)
+        aventureroReceptor = Aventurero("Jorge","", 25, constitucion = 20)
     }
 
     @Test

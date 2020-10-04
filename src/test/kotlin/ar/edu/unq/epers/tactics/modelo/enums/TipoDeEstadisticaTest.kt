@@ -14,7 +14,7 @@ class TipoDeEstadisticaTest {
     @BeforeEach
     fun setUp() {
         party = Party("Nombre de party", "/foto.jpg")
-        aventurero = Aventurero("Nombre", 1, 2, 3, 4)
+        aventurero = Aventurero("Nombre", "",1, 2, 3, 4)
     }
 
     @Test

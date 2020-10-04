@@ -53,7 +53,7 @@ class HibernatePartyDAOTest {
         HibernateTransactionRunner.runTrx {
             val party = Party("Beta", "URL")
             val partyId = partyDAO.crear(party).id()!!
-            val wos = Aventurero("wos", party = party)
+            val wos = Aventurero("wos")
 
             party.agregarUnAventurero(wos)
 

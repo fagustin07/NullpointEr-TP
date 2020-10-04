@@ -70,7 +70,7 @@ class PartyServiceTest {
     fun alAgregarUnNuevoAventureroAUnaParty_aumentaLaCantidadDeAventurerosDeLaMisma() {
         HibernateTransactionRunner.runTrx {
             val party = Party("Nombre de party", "URL")
-            val aventurero = Aventurero("Pepe", party = party)
+            val aventurero = Aventurero("Pepe")
             val partyId = partyService.crear(party).id()!!
 
             partyService.agregarAventureroAParty(partyId, aventurero)

@@ -2,12 +2,9 @@ package ar.edu.unq.epers.tactics.modelo.habilidades
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
-import junit.framework.Assert
-import junit.framework.Assert.assertEquals
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 class CuracionTest {
 
@@ -17,8 +14,8 @@ class CuracionTest {
 
     @BeforeEach
     internal fun setUp() {
-        party = Party("Los Fabulosos","URL")
-        aventureroCurador =Aventurero("Raul", 1, 1, 10, 1)
+        party = Party("Los Fabulosos", "URL")
+        aventureroCurador = Aventurero("Raul", "", 1, 1, 10, 1)
         aventureroCurado = Aventurero("Sergio")
     }
 

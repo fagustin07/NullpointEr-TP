@@ -10,7 +10,7 @@ class AventureroDTOTest {
 
     @Test
     fun `Al convertir un Aventurero a un AventureroDTO y de nuevo a un Aventurero se obtienen objetos similares`() {
-        val aventureroOriginal = Aventurero("Pepe", 40, 50, 60, 70)
+        val aventureroOriginal = Aventurero("Pepe", "",40, 50, 60, 70)
         val aventureroDTO = AventureroDTO.desdeModelo(aventureroOriginal)
         val aventureroDesdeDTO = aventureroDTO.aModelo()
 
@@ -19,7 +19,7 @@ class AventureroDTOTest {
 
     @Test
     fun `Al enviar el mensaje actualizar a un AventureroDTO se actualiza el objeto de dominio`(){
-        val aventurero = Aventurero("Pepe", 40, 50, 60, 70)
+        val aventurero = Aventurero("Pepe", "",40, 50, 60, 70)
         val aventureroDTO = AventureroDTO.desdeModelo(aventurero)
 
         aventureroDTO.atributos.fuerza = 56

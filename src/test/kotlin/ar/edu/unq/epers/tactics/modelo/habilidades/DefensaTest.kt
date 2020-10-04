@@ -5,6 +5,8 @@ import ar.edu.unq.epers.tactics.modelo.Party
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import java.lang.RuntimeException
 
 internal class DefensaTest{
 
@@ -15,8 +17,10 @@ internal class DefensaTest{
     @BeforeEach
     internal fun setUp() {
         party = Party("Party","URL")
-        aventureroDefensor = Aventurero("Pepe", 10, 0, 0, 0)
-        aventureroDefendido = Aventurero("Jorge", 21, 0, 0, 20)
+        aventureroDefensor = Aventurero("Pepe","", 10)
+        aventureroDefendido = Aventurero("Jorge","", 21, constitucion = 20)
+        party.agregarUnAventurero(aventureroDefensor)
+        party.agregarUnAventurero(aventureroDefendido)
     }
 
     @Test
@@ -65,8 +69,7 @@ internal class DefensaTest{
 
     @Test
     fun `si el aventurero defensor de otro muere, el defendido pierde a su defensor y recibe todo el daño del ataque`() {
-        val party = Party("Party","URL")
-        val aventureroAtacante = Aventurero("Destructor", 80, 0, 0, 0)
+        val aventureroAtacante = Aventurero("Destructor","", 80)
         val defensa = Defensa.para(aventureroDefensor, aventureroDefendido)
         val dadoDe20Falso = DadoDe20(20)
 
@@ -77,7 +80,46 @@ internal class DefensaTest{
         ataque.resolverse()
 
         assertThat(aventureroDefendido.vida()).isEqualTo(0)
+    }
 
+    @Test
+    fun `un aventurero solo puede defender a un compañero a la vez`() {
+        val aventureroAtacante = Aventurero("Destructor", "imagen", 30)
+        val aventureroCompañero = Aventurero("Jorge", "imagen", 21, constitucion = 20)
+        val dadoDe20Falso = DadoDe20(20)
+        val vidaAntesDelAtaque = aventureroCompañero.vida()
+        val ataque = Ataque.para(aventureroAtacante, aventureroDefendido, dadoDe20Falso)
+        val ataque2 = Ataque.para(aventureroAtacante, aventureroCompañero, dadoDe20Falso)
+        val vidaAntesDeAtaqueAventureroDefendido = aventureroDefendido.vida()
+        party.agregarUnAventurero(aventureroCompañero)
+
+        val defensa = Defensa.para(aventureroDefensor, aventureroDefendido)
+        val defensa2 = Defensa.para(aventureroDefensor, aventureroCompañero)
+
+        defensa.resolverse()
+        defensa2.resolverse()
+        ataque.resolverse()
+
+        ataque2.resolverse()
+
+        val vidaDespuesDeAtaque = vidaAntesDeAtaqueAventureroDefendido - aventureroAtacante.dañoFisico()
+        assertThat(aventureroDefendido.vida()).isEqualTo(vidaDespuesDeAtaque)
+        assertThat(aventureroCompañero.vida()).isEqualTo(vidaAntesDelAtaque)
+    }
+
+    @Test
+    fun `un aventurero no puede defender a un enemigo`(){
+        val otroAventurero = Aventurero("semantic-sugar")
+        Party("Leones", "lyon.jpg").agregarUnAventurero(otroAventurero)
+
+        val exception = assertThrows<RuntimeException>{ Defensa.para(aventureroDefensor, otroAventurero)}
+        assertThat(exception.message).isEqualTo("${aventureroDefensor.nombre()} no puede defender a un enemigo!")
+    }
+
+    @Test
+    fun `un aventurero no puede defenderse a si mismo`(){
+        val exception = assertThrows<RuntimeException>{ Defensa.para(aventureroDefensor, aventureroDefensor)}
+        assertThat(exception.message).isEqualTo("${aventureroDefensor.nombre()} no puede defenderse a si mismo!")
     }
 }
 
