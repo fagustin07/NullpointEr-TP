@@ -43,10 +43,10 @@ class Party(private var nombre: String, private var imagenURL: String) {
         return aliados
     }
 
-    internal fun actualizarse(partyDTO: PartyDTO) {
-        this.nombre = partyDTO.nombre
-        this.imagenURL = partyDTO.imagenURL
-        this.aventureros = partyDTO.aventureros.map { aventurero -> aventurero.aModelo() }.toMutableList()
+    internal fun actualizarse(otraParty: Party) {
+        this.nombre = otraParty.nombre()
+        this.imagenURL = otraParty.imagenURL()
+        this.aventureros = otraParty.aventureros()
     }
 
     private fun esLaParty(party: Party?) = party == null || this.nombre == party.nombre

@@ -33,5 +33,5 @@ data class PartyDTO(var id:Long?, var nombre:String, var imagenURL:String, var a
         return party
     }
 
-    fun actualizarModelo(party: Party) = party.actualizarse(this)
+    fun actualizarModelo(party: Party) = party.actualizarse(aModelo())
 }
