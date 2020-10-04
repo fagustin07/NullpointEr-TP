@@ -28,8 +28,8 @@ class Party(private var nombre: String, private var imagenURL: String) {
     fun removerA(aventurero: Aventurero) {
         if (!this.esLaParty(aventurero.party)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
 
-        aventurero.salirDeLaParty()
         aventureros.remove(aventurero)
+        aventurero.salirDeLaParty()
     }
 
     fun nombre()      = nombre
