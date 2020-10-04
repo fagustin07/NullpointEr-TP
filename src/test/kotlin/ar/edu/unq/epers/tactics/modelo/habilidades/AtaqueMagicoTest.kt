@@ -2,11 +2,9 @@ package ar.edu.unq.epers.tactics.modelo.habilidades
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
-import junit.framework.Assert.assertEquals
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 class AtaqueMagicoTest {
 
@@ -17,7 +15,7 @@ class AtaqueMagicoTest {
     @BeforeEach
     internal fun setUp() {
         party = Party("Los Increibles", "URL")
-        aventureroReceptor = Aventurero("Belen", 0, 6, 50, 10)
+        aventureroReceptor = Aventurero("Belen", "", 1, 6, 50, 10)
         aventureroEmisor = Aventurero("Coco", inteligencia = 5)
     }
 

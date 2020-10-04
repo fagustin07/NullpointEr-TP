@@ -14,13 +14,13 @@ import org.junit.jupiter.api.Test
 class HibernateAventureroDAOTest {
     private val aventureroDAO = HibernateAventureroDAO()
     private var partyDAO = HibernatePartyDAO()
-    lateinit var pepito : Aventurero
-    lateinit var bigTeam : Party
+    private lateinit var pepito : Aventurero
+    private lateinit var bigTeam : Party
 
     @BeforeEach
     fun setUp() {
-        bigTeam = Party("Big Team", "URL")
-        pepito = Aventurero("Pepito", party = bigTeam)
+        bigTeam = Party("MC-nificos", "soldados.jpg")
+        pepito = Aventurero("Pepito")
     }
 
     @Test
@@ -31,7 +31,6 @@ class HibernateAventureroDAOTest {
 
             assertThat(pepito).usingRecursiveComparison().isEqualTo(recoveryPepito)
         }
-
     }
 
     /*
@@ -62,7 +61,7 @@ class HibernateAventureroDAOTest {
         }
     }
 
-    fun generateModel(): Long {
+    private fun generateModel(): Long {
         val pepitoId = aventureroDAO.crear(pepito).id()!!
         bigTeam.agregarUnAventurero(pepito)
         partyDAO.crear(bigTeam)

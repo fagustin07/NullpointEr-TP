@@ -3,14 +3,15 @@ package ar.edu.unq.epers.tactics.modelo
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 
-class AventureroTest() {
+class AventureroTest {
     lateinit var cacho: Aventurero
 
     @BeforeEach
     fun setUp() {
-        cacho = Aventurero("Cacho", 45, 10, 20, 17)
+        cacho = Aventurero("Cacho","", 45, 10, 20, 17)
 
     }
 
@@ -104,6 +105,19 @@ class AventureroTest() {
 
         assertFalse(cacho.esEnemigoDe(aliado))
         assertTrue(cacho.esEnemigoDe(noAliado))
+    }
+
+    @Test
+    fun unAventureroNoPuedeTenerAtributosMayoresACienPuntos(){
+        val exception = assertThrows<RuntimeException> { Aventurero("juan","url",978) }
+        assertEquals("La fuerza no puede exceder los 100 puntos!", exception.message)
+    }
+
+    @Test
+    fun unAventureroNoPuedeTenerAtributosMenoresAUnPuntos(){
+        val exception = assertThrows<RuntimeException> { Aventurero("pepino",
+                "url",1,12,1, 0) }
+        assertEquals("La constitucion no puede ser menor a 1 punto!", exception.message)
     }
 
 
