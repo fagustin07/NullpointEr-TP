@@ -81,7 +81,6 @@ class AventureroServiceTest {
 
         HibernateTransactionRunner.runTrx {
             val partyRecuperada = partyService.recuperar(partyId)
-            partyRecuperada // Breakpoint... si se inspecciona partyRecuperada todavia tiene al aventurero. la variable de instancia "party" no lo tiene
             assertEquals(0, partyRecuperada.numeroDeAventureros())
             val exception = assertThrows<RuntimeException> { aventureroService.recuperar(aventureroId) }
             assertEquals("No existe una entidad con ese id", exception.message)
