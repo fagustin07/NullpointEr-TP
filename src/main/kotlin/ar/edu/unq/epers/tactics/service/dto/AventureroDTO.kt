@@ -1,6 +1,7 @@
 package ar.edu.unq.epers.tactics.service.dto
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
+import ar.edu.unq.epers.tactics.modelo.habilidades.*
 
 
 data class AventureroDTO(var id: Long?, var nivel: Int, var nombre: String, var imagenURL: String, var tacticas: List<TacticaDTO>, var atributos: AtributosDTO) {
@@ -50,7 +51,6 @@ enum class TipoDeReceptor {
     UNO_MISMO { override fun test(emisor: Aventurero, receptor: Aventurero) = emisor == receptor };
 
     abstract fun test(emisor: Aventurero, receptor: Aventurero): Boolean
-
 }
 
 enum class TipoDeEstadistica {
@@ -74,9 +74,11 @@ enum class Criterio {
 }
 
 enum class Accion {
-    ATAQUE_FISICO,
-    DEFENDER,
-    CURAR,
-    ATAQUE_MAGICO,
-    MEDITAR;
+    ATAQUE_FISICO { override fun generar(emisor:Aventurero, receptor: Aventurero) = Ataque.para(emisor,receptor, DadoDe20()) },
+    DEFENDER{ override fun generar(emisor:Aventurero, receptor: Aventurero) = Defensa.para(emisor,receptor) },
+    CURAR{ override fun generar(emisor:Aventurero, receptor: Aventurero) = Curacion.para(emisor,receptor)},
+    ATAQUE_MAGICO{ override fun generar(emisor:Aventurero, receptor: Aventurero) = AtaqueMagico.para(emisor,receptor, DadoDe20()) },
+    MEDITAR{ override fun generar(emisor:Aventurero, receptor: Aventurero) = Meditacion.para(emisor,receptor) };
+
+    abstract  fun generar(emisor:Aventurero, receptor: Aventurero) : Habilidad
 }

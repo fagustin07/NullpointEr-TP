@@ -1,5 +1,8 @@
 package ar.edu.unq.epers.tactics.modelo
 
+import ar.edu.unq.epers.tactics.modelo.habilidades.Ataque
+import ar.edu.unq.epers.tactics.modelo.habilidades.DadoDe20
+import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import ar.edu.unq.epers.tactics.service.dto.AventureroDTO
 import javax.persistence.*
 import kotlin.math.max
@@ -12,6 +15,10 @@ class Aventurero(
         private var destreza: Int = 0,
         private var inteligencia: Int = 0,
         private var constitucion: Int = 0) {
+
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    private var tacticas: MutableList<Tactica> = mutableListOf()
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private var id: Long? = null
@@ -120,6 +127,7 @@ class Aventurero(
         this.destreza = aventureroDTO.atributos.destreza
         this.constitucion = aventureroDTO.atributos.constitucion
         this.fuerza = aventureroDTO.atributos.fuerza
+        //TODO: aModelo TacticaDTO
         this.cambiarNombrePor(aventureroDTO.nombre)
         this.recalcularVidaYMana()
     }
@@ -148,4 +156,17 @@ class Aventurero(
     fun esEnemigoDe(otroAventurero: Aventurero) =
         otroAventurero != this && !esAliadoDe(otroAventurero)
 
+    fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
+        this.tacticas.sortBy { it.prioridad }
+        val posiblesReceptores = this.aliados()+enemigos+this
+
+        val tactica = this.tacticas.firstOrNull { it.evaluarse(this, posiblesReceptores) }
+        val receptor = posiblesReceptores.firstOrNull { tactica!!.receptor.test(this, it) }
+
+        return tactica!!.accion.generar(this, receptor!!)
+    }
+
+    fun agregarTactica(nuevaTactica: Tactica) {
+        this.tacticas.add(nuevaTactica)
+    }
 }
