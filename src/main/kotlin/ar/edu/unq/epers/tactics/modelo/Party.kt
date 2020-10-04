@@ -15,11 +15,7 @@ class Party(private var nombre: String, private var imagenURL: String) {
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     private var aventureros: MutableList<Aventurero> = mutableListOf()
 
-    @Transient
-    private val maximoDeAventureros = 5
-
     fun numeroDeAventureros() = aventureros.size
-
 
     fun agregarUnAventurero(aventurero: Aventurero) {
         this.validarQueNoPertenzcaAOtraParty(aventurero)
@@ -37,16 +33,24 @@ class Party(private var nombre: String, private var imagenURL: String) {
         this.id = id
     }
 
+    fun aliadosDe(aventurero: Aventurero): List<Aventurero> {
+        val aliados = aventureros.toMutableList()
+        aliados.remove(aventurero)
+        return aliados
+    }
+
     internal fun actualizarse(partyDTO: PartyDTO) {
         this.nombre = partyDTO.nombre
         this.imagenURL = partyDTO.imagenURL
         this.aventureros = partyDTO.aventureros.map { aventurero -> aventurero.aModelo() }.toMutableList()
     }
 
+
     private fun esLaParty(party: Party?) = party == null || this.nombre == party.nombre
 
+    private fun puedeAgregarAventureros() = this.numeroDeAventureros() < this.maximoDeAventureros()
 
-    private fun puedeAgregarAventureros() = this.numeroDeAventureros() < this.maximoDeAventureros
+    private fun maximoDeAventureros() = 5
 
     /* Assertions */
     private fun validarQueNoPertenzcaAOtraParty(aventurero: Aventurero) {
@@ -59,12 +63,6 @@ class Party(private var nombre: String, private var imagenURL: String) {
 
     private fun validarQueSeAdmitanNuevosIntegrantes() {
         if (!this.puedeAgregarAventureros()) throw RuntimeException("La party $nombre está completa.")
-    }
-
-    fun aliadosDe(aventurero: Aventurero): List<Aventurero> {
-        val aliados = aventureros.toMutableList()
-        aliados.remove(aventurero)
-        return aliados
     }
 
 
