@@ -67,11 +67,11 @@ enum class TipoDeEstadistica {
 }
 
 enum class Criterio {
-    IGUAL { override fun evaluarseCon(valorDeAventurero: Int, valorDeComparacion: Int) = valorDeAventurero == valorDeComparacion },
-    MAYOR_QUE { override fun evaluarseCon(valorDeAventurero: Int, valorDeComparacion: Int) = valorDeAventurero > valorDeComparacion },
-    MENOR_QUE { override fun evaluarseCon(valorDeAventurero: Int, valorDeComparacion: Int) = valorDeAventurero < valorDeComparacion };
+    IGUAL { override fun evaluarseCon(valorAComparar: Int, valorDeComparacion: Int) = valorAComparar == valorDeComparacion },
+    MAYOR_QUE { override fun evaluarseCon(valorAComparar: Int, valorDeComparacion: Int) = valorAComparar > valorDeComparacion },
+    MENOR_QUE { override fun evaluarseCon(valorAComparar: Int, valorDeComparacion: Int) = valorAComparar < valorDeComparacion };
 
-    abstract fun evaluarseCon(valorDeAventurero: Int, valorDeComparacion: Int): Boolean
+    abstract fun evaluarseCon(valorAComparar: Int, valorDeComparacion: Int): Boolean
 }
 
 enum class Accion {
