@@ -127,8 +127,7 @@ class Aventurero(
         this.destreza = aventureroDTO.atributos.destreza
         this.constitucion = aventureroDTO.atributos.constitucion
         this.fuerza = aventureroDTO.atributos.fuerza
-        //TODO: aModelo TacticaDTO
-        this.cambiarNombrePor(aventureroDTO.nombre)
+        this.nombre = aventureroDTO.nombre
         this.recalcularVidaYMana()
     }
 
@@ -136,11 +135,7 @@ class Aventurero(
         vida = ((nivel() * 5) + (constitucion * 2) + fuerza)
         mana = nivel() + inteligencia
     }
-
-    internal fun cambiarNombrePor(nuevoNombre: String) {
-        this.nombre = nuevoNombre
-    }
-
+    
     fun registarseEn(party: Party) {
         this.party = party
     }
