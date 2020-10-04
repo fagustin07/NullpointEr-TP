@@ -74,11 +74,11 @@ enum class Criterio {
 }
 
 enum class Accion {
-    ATAQUE_FISICO { override fun generar(emisor:Aventurero, receptor: Aventurero) = Ataque.para(emisor,receptor, DadoDe20()) },
-    DEFENDER{ override fun generar(emisor:Aventurero, receptor: Aventurero) = Defensa.para(emisor,receptor) },
-    CURAR{ override fun generar(emisor:Aventurero, receptor: Aventurero) = Curacion.para(emisor,receptor)},
-    ATAQUE_MAGICO{ override fun generar(emisor:Aventurero, receptor: Aventurero) = AtaqueMagico.para(emisor,receptor, DadoDe20()) },
-    MEDITAR{ override fun generar(emisor:Aventurero, receptor: Aventurero) = Meditacion.para(emisor,receptor) };
+    ATAQUE_FISICO { override fun generarHabilidad(emisor:Aventurero, receptor: Aventurero) = Ataque.para(emisor,receptor, DadoDe20()) },
+    DEFENDER{ override fun generarHabilidad(emisor:Aventurero, receptor: Aventurero) = Defensa.para(emisor,receptor) },
+    CURAR{ override fun generarHabilidad(emisor:Aventurero, receptor: Aventurero) = Curacion.para(emisor,receptor)},
+    ATAQUE_MAGICO{ override fun generarHabilidad(emisor:Aventurero, receptor: Aventurero) = AtaqueMagico.para(emisor,receptor, DadoDe20()) },
+    MEDITAR{ override fun generarHabilidad(emisor:Aventurero, receptor: Aventurero) = Meditacion.para(emisor,receptor) };
 
-    abstract  fun generar(emisor:Aventurero, receptor: Aventurero) : Habilidad
+    abstract  fun generarHabilidad(emisor:Aventurero, receptor: Aventurero) : Habilidad
 }
