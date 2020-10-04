@@ -12,6 +12,7 @@ import ar.edu.unq.epers.tactics.service.impl.AventureroServiceImpl
 import ar.edu.unq.epers.tactics.service.impl.PersistentPartyService
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -20,8 +21,8 @@ import org.junit.jupiter.api.assertThrows
 
 class AventureroServiceTest {
 
-    private val aventureroDao: AventureroDAO = HibernateAventureroDAO()
-    private val partyDao: PartyDAO = HibernatePartyDAO()
+    private lateinit var aventureroDao: AventureroDAO
+    private lateinit var partyDao: PartyDAO
 
     private lateinit var aventureroService: AventureroServiceImpl
     private lateinit var partyService: PersistentPartyService
@@ -31,6 +32,9 @@ class AventureroServiceTest {
 
     @BeforeEach
     fun setUp() {
+        aventureroDao = HibernateAventureroDAO()
+        partyDao = HibernatePartyDAO()
+
         aventureroService = AventureroServiceImpl(aventureroDao, partyDao)
         partyService = PersistentPartyService(partyDao)
 
@@ -40,56 +44,48 @@ class AventureroServiceTest {
 
     @Test
     fun seRecuperaUnAventurero() {
+        partyService.crear(party)
+        partyService.agregarAventureroAParty(party.id()!!, aventurero)
+
+        val aventureroRecuperado = aventureroService.recuperar(aventurero.id()!!)
+
         HibernateTransactionRunner.runTrx {
-            partyService.crear(party)
-            partyService.agregarAventureroAParty(party.id()!!, aventurero)
-
-            val aventureroRecuperado = aventureroService.recuperar(aventurero.id()!!)
-
-            Assertions.assertThat(aventurero).usingRecursiveComparison().isEqualTo(aventureroRecuperado)
+            assertThat(aventurero).usingRecursiveComparison().isEqualTo(aventureroRecuperado)
         }
 
     }
 
     @Test
     fun seActualizaUnAventurero() {
+        partyService.crear(party)
+        partyService.agregarAventureroAParty(party.id()!!, aventurero)
+
+        val aventureroDTO = AventureroDTO(aventurero.id()!!, 2, "Otro nombre", "/otra_imagen.jpg", listOf(), AtributosDTO(null, 1,2, 3, 4))
+        aventurero.actualizarse(aventureroDTO)
+
+        aventureroService.actualizar(aventurero)
+
         HibernateTransactionRunner.runTrx {
-            partyService.crear(party)
-            partyService.agregarAventureroAParty(party.id()!!, aventurero)
-
-            val aventureroDTO = AventureroDTO(aventurero.id()!!, 2, "Otro nombre", "/otra_imagen.jpg", listOf(), AtributosDTO(null, 1,2, 3, 4))
-            aventurero.actualizarse(aventureroDTO)
-
-
-            aventureroService.actualizar(aventurero)
-
-
             val aventureroRecuperado = aventureroService.recuperar(aventurero.id()!!)
-            Assertions.assertThat(aventurero).usingRecursiveComparison().isEqualTo(aventureroRecuperado)
+            assertThat(aventurero).usingRecursiveComparison().isEqualTo(aventureroRecuperado)
         }
 
     }
 
     @Test
     fun seEliminaUnAventurero() {
-        HibernateTransactionRunner.runTrx {
-            partyService.crear(party)
-            partyService.agregarAventureroAParty(party.id()!!, aventurero)
+        val partyId = partyService.crear(party).id()!!
+        val aventureroId = partyService.agregarAventureroAParty(partyId, aventurero).id()!!
 
-            aventureroService.eliminar(aventurero)
-        }
+        aventureroService.eliminar(aventurero)
 
         HibernateTransactionRunner.runTrx {
-            assertEquals(0, party.numeroDeAventureros())
-            val exception = assertThrows<RuntimeException> { aventureroService.recuperar(aventurero.id()!!) }
-            org.junit.jupiter.api.Assertions.assertEquals(exception.message, "No existe una entidad con ese id")
+            val partyRecuperada = partyService.recuperar(partyId)
+            partyRecuperada // Breakpoint... si se inspecciona partyRecuperada todavia tiene al aventurero. la variable de instancia "party" no lo tiene
+            assertEquals(0, partyRecuperada.numeroDeAventureros())
+            val exception = assertThrows<RuntimeException> { aventureroService.recuperar(aventureroId) }
+            assertEquals("No existe una entidad con ese id", exception.message)
         }
     }
-
-    @AfterEach
-    fun tearDown() {
-        partyDao.eliminarTodo()
-    }
-
 
 }
