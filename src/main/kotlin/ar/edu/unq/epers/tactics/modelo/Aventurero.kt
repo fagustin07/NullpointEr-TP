@@ -192,14 +192,12 @@ class Aventurero(private var nombre: String) {
         if (!this.esAliadoDe(receptor)) throw  RuntimeException("${this.nombre} no puede defender a un enemigo!")
     }
 
-    internal fun actualizarse(aventureroDTO: AventureroDTO) {
-        this.inteligencia = aventureroDTO.atributos.inteligencia
-        this.destreza = aventureroDTO.atributos.destreza
-        this.constitucion = aventureroDTO.atributos.constitucion
-        this.fuerza = aventureroDTO.atributos.fuerza
-        this.tacticas = aventureroDTO.tacticas.map { it.aModelo() }.toMutableList()
-        this.nombre = aventureroDTO.nombre
-        this.imagenURL = aventureroDTO.imagenURL
+    internal fun actualizarse(otroAventurero: Aventurero) {
+        this.inteligencia = otroAventurero.inteligencia()
+        this.destreza = otroAventurero.destreza()
+        this.constitucion = otroAventurero.constitucion()
+        this.fuerza = otroAventurero.fuerza()
+        this.nombre = otroAventurero.nombre()
         this.recalcularVidaYMana()
     }
 
