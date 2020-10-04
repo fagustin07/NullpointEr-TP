@@ -1,9 +1,8 @@
 package ar.edu.unq.epers.tactics.modelo
 
-import ar.edu.unq.epers.tactics.modelo.habilidades.Ataque
-import ar.edu.unq.epers.tactics.modelo.habilidades.DadoDe20
 import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import ar.edu.unq.epers.tactics.service.dto.AventureroDTO
+import java.lang.RuntimeException
 import javax.persistence.*
 import kotlin.math.max
 
@@ -153,12 +152,15 @@ class Aventurero(
 
     fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
         this.tacticas.sortBy { it.prioridad }
-        val posiblesReceptores = this.aliados()+enemigos+this
 
-        val tactica = this.tacticas.firstOrNull { it.evaluarse(this, posiblesReceptores) }
-        val receptor = posiblesReceptores.firstOrNull { tactica!!.receptor.test(this, it) }
+        val posiblesReceptores = this.aliados() + enemigos + this
 
-        return tactica!!.accion.generar(this, receptor!!)
+        for (tactica in tacticas) {
+            val receptor = posiblesReceptores.firstOrNull { receptor -> tactica.puedeAplicarseA(this, receptor) }
+            if (receptor != null) return tactica.aplicarseSobre(this, receptor)
+        }
+
+        throw RuntimeException("En ningun test se llega hasta aca. Siempre se retorna antes")
     }
 
     fun agregarTactica(nuevaTactica: Tactica) {
