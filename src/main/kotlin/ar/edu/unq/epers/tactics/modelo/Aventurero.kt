@@ -120,7 +120,7 @@ class Aventurero(
         this.destreza = aventureroDTO.atributos.destreza
         this.constitucion = aventureroDTO.atributos.constitucion
         this.fuerza = aventureroDTO.atributos.fuerza
-        this.cambiarNombrePor(aventureroDTO.nombre)
+        this.nombre = aventureroDTO.nombre
         this.recalcularVidaYMana()
     }
 
@@ -128,12 +128,20 @@ class Aventurero(
         vida = ((nivel() * 5) + (constitucion * 2) + fuerza)
         mana = nivel() + inteligencia
     }
-
-    internal fun cambiarNombrePor(nuevoNombre: String) {
-        this.nombre = nuevoNombre
-    }
-
+    
     fun registarseEn(party: Party) {
         this.party = party
     }
+
+    fun aliados(): List<Aventurero> {
+        if (party == null) return listOf()
+        return party!!.aliadosDe(this)
+    }
+
+    fun esAliadoDe(otroAventurero: Aventurero) =
+        aliados().contains(otroAventurero)
+
+    fun esEnemigoDe(otroAventurero: Aventurero) =
+        otroAventurero != this && !esAliadoDe(otroAventurero)
+
 }

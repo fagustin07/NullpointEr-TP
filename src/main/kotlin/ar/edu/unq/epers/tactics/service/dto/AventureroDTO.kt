@@ -45,8 +45,8 @@ data class AtributosDTO(var id: Long?, var fuerza: Int, var destreza: Int, var c
 data class TacticaDTO(var id: Long?, var prioridad: Int, var receptor: TipoDeReceptor, var tipoDeEstadistica: TipoDeEstadistica, var criterio: Criterio, var valor: Int, var accion: Accion)
 
 enum class TipoDeReceptor {
-    ALIADO { override fun test(emisor: Aventurero, receptor: Aventurero) = emisor != receptor && emisor.party!!.aventureros.contains(receptor) },
-    ENEMIGO { override fun test(emisor: Aventurero, receptor: Aventurero) = emisor != receptor && !emisor.party!!.aventureros.contains(receptor) },
+    ALIADO { override fun test(emisor: Aventurero, receptor: Aventurero) = emisor.esAliadoDe(receptor) },
+    ENEMIGO { override fun test(emisor: Aventurero, receptor: Aventurero) = emisor.esEnemigoDe(receptor) },
     UNO_MISMO { override fun test(emisor: Aventurero, receptor: Aventurero) = emisor == receptor };
 
     abstract fun test(emisor: Aventurero, receptor: Aventurero): Boolean

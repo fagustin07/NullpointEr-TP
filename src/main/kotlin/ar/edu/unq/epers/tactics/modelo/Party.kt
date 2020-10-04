@@ -60,5 +60,11 @@ class Party(private var nombre: String, private var imagenURL: String) {
         if (!this.puedeAgregarAventureros()) throw RuntimeException("La party $nombre está completa.")
     }
 
+    fun aliadosDe(aventurero: Aventurero): List<Aventurero> {
+        val aliados = aventureros.toMutableList()
+        aliados.remove(aventurero)
+        return aliados
+    }
+
 
 }

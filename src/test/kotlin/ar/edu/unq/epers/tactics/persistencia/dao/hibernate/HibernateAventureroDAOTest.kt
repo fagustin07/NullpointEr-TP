@@ -34,6 +34,7 @@ class HibernateAventureroDAOTest {
 
     }
 
+    /*
     @Test
     fun seActualizaElNombreDeUnAventureroYLuegoSeLoRecuperaActualizado() {
         HibernateTransactionRunner.runTrx {
@@ -46,6 +47,7 @@ class HibernateAventureroDAOTest {
             assertThat(pepito).usingRecursiveComparison().isEqualTo(recoveryPepito)
         }
     }
+    */
 
     @Test
     fun alEliminarUnAventureroPersistidoYLuegoRecuperarloNoExiste() {
