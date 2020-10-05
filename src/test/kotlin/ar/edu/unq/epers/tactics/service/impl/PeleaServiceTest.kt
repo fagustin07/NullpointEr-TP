@@ -16,6 +16,7 @@ import ar.edu.unq.epers.tactics.service.dto.Criterio
 import ar.edu.unq.epers.tactics.service.dto.TipoDeEstadistica
 import ar.edu.unq.epers.tactics.service.dto.TipoDeReceptor
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
+import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
@@ -33,24 +34,24 @@ internal class PeleaServiceTest {
     @BeforeEach
     fun setUp(){
         party = Party("Los geniales", "URL")
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             partyDAO.crear(party)
         }
     }
     @Test
     fun `una party inicialmente no esta en una pelea`() {
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             assertFalse(peleaService.estaEnPelea(party.id()!!))
         }
     }
 
     @Test
     fun `una party puede comenzar una pelea`() {
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             peleaService.iniciarPelea(party.id()!!)
         }
 
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             assertTrue(peleaService.estaEnPelea(party.id()!!))
         }
     }
@@ -61,11 +62,11 @@ internal class PeleaServiceTest {
         val partyDAO = HibernatePartyDAO()
         val aventureroDAO = HibernateAventureroDAO()
         val peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO)
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             peleaService.iniciarPelea(party.id()!!)
         }
 
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             val exception = assertThrows<RuntimeException> { peleaService.iniciarPelea(party.id()!!) }
             assertThat(exception.message).isEqualTo("No se puede iniciar una pelea: la party ya esta peleando")
         }
@@ -80,7 +81,7 @@ internal class PeleaServiceTest {
                                                     Criterio.MAYOR_QUE,0,Accion.CURAR)
         curador.agregarTactica(tactica)
 
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             party.agregarUnAventurero(curador)
             party.agregarUnAventurero(aliado)
             partyDAO.actualizar(party)
@@ -88,14 +89,14 @@ internal class PeleaServiceTest {
 
         lateinit var pelea : Pelea
         lateinit var habilidadGenerada : Habilidad
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             pelea = peleaService.iniciarPelea(party.id()!!)
         }
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
         }
         lateinit var curadorLuegoDeResolverTurno : Aventurero
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             curadorLuegoDeResolverTurno = aventureroDAO.recuperar(curador.id()!!)
         }
 
@@ -116,17 +117,17 @@ internal class PeleaServiceTest {
             Accion.ATAQUE_FISICO
         )
         atacante.agregarTactica(tactica)
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             party.agregarUnAventurero(atacante)
             partyDAO.actualizar(party)
         }
 
         lateinit var pelea: Pelea
         lateinit var habilidadGenerada: Ataque
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             pelea = peleaService.iniciarPelea(party.id()!!)
         }
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, atacante.id()!!, enemigos) as Ataque
         }
 
@@ -141,17 +142,17 @@ internal class PeleaServiceTest {
         val tactica2 = Tactica(2,TipoDeReceptor.UNO_MISMO,TipoDeEstadistica.VIDA,Criterio.MAYOR_QUE,0,Accion.MEDITAR)
         aventurero.agregarTactica(tactica1)
         aventurero.agregarTactica(tactica2)
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             party.agregarUnAventurero(aventurero)
             partyDAO.actualizar(party)
         }
 
         lateinit var pelea: Pelea
         lateinit var habilidadGenerada: Meditacion
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             pelea = peleaService.iniciarPelea(party.id()!!)
         }
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, aventurero.id()!!, listOf()) as Meditacion
         }
 
@@ -170,7 +171,7 @@ internal class PeleaServiceTest {
 
         curador.agregarTactica(tactica)
 
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             party.agregarUnAventurero(curador)
             party.agregarUnAventurero(aliado)
             partyDAO.actualizar(party)
@@ -179,13 +180,13 @@ internal class PeleaServiceTest {
         lateinit var pelea : Pelea
         lateinit var habilidadGenerada : Habilidad
         lateinit var aliadoQueRecibiraHabilidad:Aventurero
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             pelea = peleaService.iniciarPelea(party.id()!!)
         }
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
         }
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             aliadoQueRecibiraHabilidad = peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada)
         }
         val vidaEsperada = vidaAntesDeCuracion + curador.poderMagico()
@@ -196,7 +197,7 @@ internal class PeleaServiceTest {
 
     @Test
     fun `una party puede salir de una pelea`() {
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             peleaService.iniciarPelea(party.id()!!)
 
             peleaService.terminarPelea(party.id()!!)
@@ -207,7 +208,7 @@ internal class PeleaServiceTest {
 
     @Test
     fun `una party no puede salir de una pelea si no esta en ninguna`() {
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             val exception = assertThrows<RuntimeException> { peleaService.terminarPelea(party.id()!!) }
             assertThat(exception).hasMessage("La party no esta en ninguna pelea")
             assertFalse(peleaService.estaEnPelea(party.id()!!))
@@ -226,7 +227,7 @@ internal class PeleaServiceTest {
 
         curador.agregarTactica(tactica)
 
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             party.agregarUnAventurero(curador)
             party.agregarUnAventurero(aliado)
             partyDAO.actualizar(party)
@@ -234,17 +235,30 @@ internal class PeleaServiceTest {
 
         lateinit var pelea : Pelea
         lateinit var habilidadGenerada : Habilidad
-        HibernateTransactionRunner.runTrx { pelea = peleaService.iniciarPelea(party.id()!!) }
-        HibernateTransactionRunner.runTrx { habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf()) }
-        HibernateTransactionRunner.runTrx { peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada) }
+        runTrx { pelea = peleaService.iniciarPelea(party.id()!!) }
+        runTrx { habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf()) }
+        runTrx { peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada) }
 
-        HibernateTransactionRunner.runTrx {
+        runTrx {
             peleaService.terminarPelea(party.id()!!)
 
             assertThat(this.aventureroDAO.recuperar(curador.id()!!).mana()).isEqualTo(manaAntesDeCuracion)
             assertThat(this.aventureroDAO.recuperar(aliado.id()!!).vida()).isEqualTo(vidaAntesDeCuracion)
         }
 
+    }
+
+    @Test
+    fun `cuando una party estuvo en multiples peleas se retorna la ultima`() {
+        runTrx{
+            peleaService.iniciarPelea(party.id()!!)
+            peleaService.terminarPelea(party.id()!!)
+
+            peleaService.iniciarPelea(party.id()!!)
+            val ultimaPelea = peleaService.terminarPelea(party.id()!!)
+
+            assertThat(peleaDAO.recuperarUltimaPeleaDeParty(party.id()!!).id()).isEqualTo(ultimaPelea.id())
+        }
     }
 
     @AfterEach

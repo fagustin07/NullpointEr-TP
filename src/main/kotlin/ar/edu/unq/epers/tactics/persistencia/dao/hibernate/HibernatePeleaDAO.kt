@@ -5,8 +5,10 @@ import ar.edu.unq.epers.tactics.persistencia.dao.PeleaDAO
 
 class HibernatePeleaDAO: HibernateDAO<Pelea>(Pelea::class.java), PeleaDAO {
 
-    override fun recuperarPeleaDeParty(idDeLaParty: Long): Pelea {
-        return createQuery("from Pelea where idDeLaParty = $idDeLaParty").singleResult
+    override fun recuperarUltimaPeleaDeParty(idDeLaParty: Long): Pelea {
+        return createQuery("from Pelea where idDeLaParty = $idDeLaParty order by id desc")
+                .setMaxResults(1)
+                .singleResult
     }
 
 }
