@@ -13,7 +13,7 @@ class Aventurero(private var nombre: String) {
     private var id: Long? = null
     private var imagenURL: String = ""
 
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     private var tacticas: MutableList<Tactica> = mutableListOf()
 
     private var vida: Int = 0
@@ -56,10 +56,10 @@ class Aventurero(private var nombre: String) {
         this.recalcularVidaYMana()
     }
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     private var defensor: Aventurero? = null
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     private var aventureroDefendido: Aventurero? = null
     private var turnosDefendido = 0
 
