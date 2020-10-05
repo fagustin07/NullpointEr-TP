@@ -2,7 +2,7 @@ package ar.edu.unq.epers.tactics.modelo.habilidades
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 
-class AtaqueMagico(val poderMagicoEmisor: Int, val nivelEmisor: Int, val aventureroReceptor: Aventurero, val dadoDe20: DadoDe20) : Habilidad() {
+class AtaqueMagico(val poderMagicoEmisor: Int, val nivelEmisor: Int, aventureroReceptor: Aventurero, val dadoDe20: DadoDe20) : Habilidad(aventureroReceptor) {
 
     companion object {
         fun para(aventureroEmisor: Aventurero, aventureroReceptor: Aventurero, dadoDe20: DadoDe20): AtaqueMagico {

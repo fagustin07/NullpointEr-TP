@@ -211,4 +211,5 @@ class Aventurero(private var nombre: String) {
     fun agregarTactica(nuevaTactica: Tactica) {
         this.tacticas.add(nuevaTactica)
     }
+
 }

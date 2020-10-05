@@ -24,11 +24,11 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
     }
 
     override fun actualizar(pelea: Pelea): Pelea {
-        TODO("Not yet implemented")
+        return peleaDAO.actualizar(pelea)
     }
 
     override fun recuperar(idDeLaPelea: Long): Pelea {
-        TODO("Not yet implemented")
+       return peleaDAO.recuperar(idDeLaPelea)
     }
 
     override fun resolverTurno(peleaId: Long, aventureroId: Long, enemigos: List<Aventurero>): Habilidad {
@@ -38,8 +38,10 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
         return habilidadGenerada
     }
 
-    override fun recibirHabilidad(aventureroId: Long, habilidadId: Habilidad): Aventurero {
-        TODO("Not yet implemented")
+    override fun recibirHabilidad(aventureroId: Long, habilidad: Habilidad): Aventurero {
+        habilidad.resolverse()
+        val aventureroDespuesDeRecibirHabilidad = habilidad.aventureroReceptor
+        return aventureroDAO.actualizar(aventureroDespuesDeRecibirHabilidad)
     }
 
     override fun terminarPelea(idDeLaParty: Long): Pelea {

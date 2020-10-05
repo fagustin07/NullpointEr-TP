@@ -18,8 +18,7 @@ import ar.edu.unq.epers.tactics.service.dto.TipoDeReceptor
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -157,6 +156,42 @@ internal class PeleaServiceTest {
         }
 
         assertThat(habilidadGenerada.aventureroReceptor.id()).isEqualTo(aventurero.id())
+    }
+
+
+    @Test
+    fun `un aventurero que resuelve su turno ejecuta la habilidad de curar sobre otro y este recibe la habilidad`() {
+        val curador = Aventurero("Fede", "",10, 10, 10, 10)
+        val aliado = Aventurero("Jorge", "",10, 10, 10, 10)
+        val vidaAntesDeCuracion = aliado.vida()
+        val tactica = Tactica(1,TipoDeReceptor.ALIADO,
+                TipoDeEstadistica.VIDA,
+                Criterio.MAYOR_QUE,0,Accion.CURAR)
+
+        curador.agregarTactica(tactica)
+
+        HibernateTransactionRunner.runTrx {
+            party.agregarUnAventurero(curador)
+            party.agregarUnAventurero(aliado)
+            partyDAO.actualizar(party)
+        }
+
+        lateinit var pelea : Pelea
+        lateinit var habilidadGenerada : Habilidad
+        lateinit var aliadoQueRecibiraHabilidad:Aventurero
+        HibernateTransactionRunner.runTrx {
+            pelea = peleaService.iniciarPelea(party.id()!!)
+        }
+        HibernateTransactionRunner.runTrx {
+            habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
+        }
+        HibernateTransactionRunner.runTrx {
+            aliadoQueRecibiraHabilidad = peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada)
+        }
+        val vidaEsperada = vidaAntesDeCuracion + curador.poderMagico()
+        assertThat(aliado.id()).isEqualTo(aliadoQueRecibiraHabilidad.id())
+        assertEquals(vidaEsperada,aliadoQueRecibiraHabilidad.vida())
+
     }
 
     @AfterEach

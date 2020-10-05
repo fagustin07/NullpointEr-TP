@@ -3,7 +3,7 @@ package ar.edu.unq.epers.tactics.modelo.habilidades
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import java.lang.RuntimeException
 
-class Meditacion(val aventureroEmisor: Aventurero, val aventureroReceptor: Aventurero) : Habilidad() {
+class Meditacion(val aventureroEmisor: Aventurero, aventureroReceptor: Aventurero) : Habilidad(aventureroReceptor) {
 
     companion object {
 
