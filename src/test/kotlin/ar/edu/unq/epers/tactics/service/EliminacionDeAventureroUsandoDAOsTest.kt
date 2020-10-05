@@ -13,7 +13,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 
-class EliminacionDeAventureroUsandoDAOsssssssssssssssssssssZZZZZZZTest {
+class EliminacionDeAventureroUsandoDAOsTest {
     lateinit private var party: Party
     lateinit private var aventurero: Aventurero
 

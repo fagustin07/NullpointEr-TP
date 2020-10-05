@@ -190,7 +190,4 @@ class Aventurero(private var nombre : String) {
         this.party = null
     }
 
-    fun salirDeLaParty() {
-        this.party = null
-    }
 }
