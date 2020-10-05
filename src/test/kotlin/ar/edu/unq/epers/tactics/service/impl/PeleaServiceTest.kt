@@ -16,6 +16,7 @@ import ar.edu.unq.epers.tactics.service.dto.TipoDeReceptor
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
