@@ -2,9 +2,11 @@ package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
+import ar.edu.unq.epers.tactics.modelo.Pelea
 import ar.edu.unq.epers.tactics.modelo.Tactica
 import ar.edu.unq.epers.tactics.modelo.habilidades.Ataque
 import ar.edu.unq.epers.tactics.modelo.habilidades.Curacion
+import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import ar.edu.unq.epers.tactics.modelo.habilidades.Meditacion
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
@@ -16,9 +18,9 @@ import ar.edu.unq.epers.tactics.service.dto.TipoDeReceptor
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -27,14 +29,18 @@ internal class PeleaServiceTest {
     val partyDAO = HibernatePartyDAO()
     val aventureroDAO = HibernateAventureroDAO()
     val peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO)
-    val party = Party("Los geniales", "URL")
+    lateinit var party : Party
 
-    @Test
-    fun `una party inicialmente no esta en una pelea`() {
-        val party = Party("Los geniales", "URL")
+    @BeforeEach
+    fun setUp(){
+        party = Party("Los geniales", "URL")
         HibernateTransactionRunner.runTrx {
             partyDAO.crear(party)
-
+        }
+    }
+    @Test
+    fun `una party inicialmente no esta en una pelea`() {
+        HibernateTransactionRunner.runTrx {
             assertFalse(peleaService.estaEnPelea(party.id()!!))
         }
     }
@@ -42,10 +48,10 @@ internal class PeleaServiceTest {
     @Test
     fun `una party puede comenzar una pelea`() {
         HibernateTransactionRunner.runTrx {
-            partyDAO.crear(party)
-
             peleaService.iniciarPelea(party.id()!!)
+        }
 
+        HibernateTransactionRunner.runTrx {
             assertTrue(peleaService.estaEnPelea(party.id()!!))
         }
     }
@@ -56,13 +62,11 @@ internal class PeleaServiceTest {
         val partyDAO = HibernatePartyDAO()
         val aventureroDAO = HibernateAventureroDAO()
         val peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO)
-
-        val party = Party("Los geniales", "URL")
         HibernateTransactionRunner.runTrx {
-            partyDAO.crear(party)
-
             peleaService.iniciarPelea(party.id()!!)
+        }
 
+        HibernateTransactionRunner.runTrx {
             val exception = assertThrows<RuntimeException> { peleaService.iniciarPelea(party.id()!!) }
             assertThat(exception.message).isEqualTo("No se puede iniciar una pelea: la party ya esta peleando")
         }
@@ -72,39 +76,64 @@ internal class PeleaServiceTest {
     fun `un aventurero sabe resolver su turno`() {
         val curador = Aventurero("Fede", "",10, 10, 10, 10)
         val aliado = Aventurero("Jorge", "",10, 10, 10, 10)
-        val manaAnterior = curador.mana()
-        val tac = Tactica(1,TipoDeReceptor.ALIADO,TipoDeEstadistica.VIDA,Criterio.MAYOR_QUE,0,Accion.CURAR)
-        curador.agregarTactica(tac)
-        party.agregarUnAventurero(curador)
-        party.agregarUnAventurero(aliado)
+        val manaOriginal = curador.mana()
+        val tactica = Tactica(1,TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA,
+                                                    Criterio.MAYOR_QUE,0,Accion.CURAR)
+        curador.agregarTactica(tactica)
 
         HibernateTransactionRunner.runTrx {
-            partyDAO.crear(party)
-            val pelea = peleaService.iniciarPelea(party.id()!!)
-            val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
-
-            assertThat(curador.mana()).isEqualTo(manaAnterior - 5)
-            assertTrue(habilidadGenerada is Curacion)
+            party.agregarUnAventurero(curador)
+            party.agregarUnAventurero(aliado)
+            partyDAO.actualizar(party)
         }
+
+        lateinit var pelea : Pelea
+        lateinit var habilidadGenerada : Habilidad
+        HibernateTransactionRunner.runTrx {
+            pelea = peleaService.iniciarPelea(party.id()!!)
+        }
+        HibernateTransactionRunner.runTrx {
+            habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
+        }
+        lateinit var curadorLuegoDeResolverTurno : Aventurero
+        HibernateTransactionRunner.runTrx {
+            curadorLuegoDeResolverTurno = aventureroDAO.recuperar(curador.id()!!)
+        }
+
+        assertThat(curadorLuegoDeResolverTurno.mana()).isEqualTo(manaOriginal - 5)
+        assertTrue(habilidadGenerada is Curacion)
     }
 
     @Test
-    fun `un aventurero elige una tactica que ataca a un enemigo`(){
-        val atacante = Aventurero("Fede","", 10, 10, 10, 10)
-        val enemigo = Aventurero("Jorge","", 10, 10, 10, 10)
+    fun `un aventurero elige una tactica que ataca a un enemigo`() {
+        val atacante = Aventurero("Fede", "", 10, 10, 10, 10)
+        val enemigo = Aventurero("Jorge", "", 10, 10, 10, 10)
         val enemigos = listOf(enemigo)
-        val tac = Tactica(1,TipoDeReceptor.ENEMIGO,TipoDeEstadistica.VIDA,Criterio.MENOR_QUE,9999,Accion.ATAQUE_FISICO)
-        atacante.agregarTactica(tac)
-        party.agregarUnAventurero(atacante)
-
+        val tactica = Tactica(1,
+            TipoDeReceptor.ENEMIGO,
+            TipoDeEstadistica.VIDA,
+            Criterio.MENOR_QUE,
+            9999,
+            Accion.ATAQUE_FISICO
+        )
+        atacante.agregarTactica(tactica)
         HibernateTransactionRunner.runTrx {
-            partyDAO.crear(party)
-            val pelea = peleaService.iniciarPelea(party.id()!!)
-            val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, atacante.id()!!, enemigos) as Ataque
-
-            assertThat(habilidadGenerada.aventureroReceptor).isEqualTo(enemigo)
+            party.agregarUnAventurero(atacante)
+            partyDAO.actualizar(party)
         }
+
+        lateinit var pelea: Pelea
+        lateinit var habilidadGenerada: Ataque
+        HibernateTransactionRunner.runTrx {
+            pelea = peleaService.iniciarPelea(party.id()!!)
+        }
+        HibernateTransactionRunner.runTrx {
+            habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, atacante.id()!!, enemigos) as Ataque
+        }
+
+        assertThat(habilidadGenerada.aventureroReceptor.id()).isEqualTo(enemigo.id())
     }
+
 
     @Test
     fun `un aventurero resuelve su turno buscando la tactica que cumpla su criterio dependiendo de la prioridad `(){
@@ -113,15 +142,21 @@ internal class PeleaServiceTest {
         val tactica2 = Tactica(2,TipoDeReceptor.UNO_MISMO,TipoDeEstadistica.VIDA,Criterio.MAYOR_QUE,0,Accion.MEDITAR)
         aventurero.agregarTactica(tactica1)
         aventurero.agregarTactica(tactica2)
-        party.agregarUnAventurero(aventurero)
-
         HibernateTransactionRunner.runTrx {
-            partyDAO.crear(party)
-            val pelea = peleaService.iniciarPelea(party.id()!!)
-            val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, aventurero.id()!!, listOf()) as Meditacion
-
-            assertThat(habilidadGenerada.aventureroReceptor).isEqualTo(aventurero)
+            party.agregarUnAventurero(aventurero)
+            partyDAO.actualizar(party)
         }
+
+        lateinit var pelea: Pelea
+        lateinit var habilidadGenerada: Meditacion
+        HibernateTransactionRunner.runTrx {
+            pelea = peleaService.iniciarPelea(party.id()!!)
+        }
+        HibernateTransactionRunner.runTrx {
+            habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, aventurero.id()!!, listOf()) as Meditacion
+        }
+
+        assertThat(habilidadGenerada.aventureroReceptor.id()).isEqualTo(aventurero.id())
     }
 
     @AfterEach
