@@ -12,7 +12,7 @@ class Party(private var nombre: String, private var imagenURL: String) {
 
     init { if (nombre.isEmpty()) throw RuntimeException("Una party debe tener un nombre") }
 
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @OneToMany(mappedBy="party", orphanRemoval = true, cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     private var aventureros: MutableList<Aventurero> = mutableListOf()
 
     fun numeroDeAventureros() = aventureros.size
