@@ -76,4 +76,9 @@ class Party(private var nombre: String, private var imagenURL: String) {
         this.estaEnPelea = true
     }
 
+    fun salirDePelea() {
+        if(!this.estaEnPelea) throw RuntimeException("La party no esta en ninguna pelea")
+        this.estaEnPelea = false
+    }
+
 }

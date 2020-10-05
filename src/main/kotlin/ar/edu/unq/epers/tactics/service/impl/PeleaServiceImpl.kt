@@ -45,6 +45,14 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
     }
 
     override fun terminarPelea(idDeLaParty: Long): Pelea {
-        TODO("Not yet implemented")
+        val partyRecuperada = partyDAO.recuperar(idDeLaParty)
+        partyRecuperada.salirDePelea()
+        partyDAO.actualizar(partyRecuperada)
+
+        return this.peleaDeParty(idDeLaParty)
+    }
+
+    private fun peleaDeParty(idDeLaParty: Long): Pelea {
+        return peleaDAO.recuperarPeleaDeParty(idDeLaParty)
     }
 }

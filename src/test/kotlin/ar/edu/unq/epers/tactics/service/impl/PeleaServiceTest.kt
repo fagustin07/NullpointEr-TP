@@ -194,6 +194,26 @@ internal class PeleaServiceTest {
 
     }
 
+    @Test
+    fun `una party puede salir de una pelea`() {
+        HibernateTransactionRunner.runTrx {
+            peleaService.iniciarPelea(party.id()!!)
+
+            peleaService.terminarPelea(party.id()!!)
+
+            assertFalse(peleaService.estaEnPelea(party.id()!!))
+        }
+    }
+
+    @Test
+    fun `una party no puede salir de una pelea si no esta en ninguna`() {
+        HibernateTransactionRunner.runTrx {
+            val exception = assertThrows<RuntimeException> { peleaService.terminarPelea(party.id()!!) }
+            assertThat(exception).hasMessage("La party no esta en ninguna pelea")
+            assertFalse(peleaService.estaEnPelea(party.id()!!))
+        }
+    }
+
     @AfterEach
     fun tearDown() {
         partyDAO.eliminarTodo()
