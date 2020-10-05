@@ -33,21 +33,6 @@ class HibernateAventureroDAOTest {
         }
     }
 
-    /*
-    @Test
-    fun seActualizaElNombreDeUnAventureroYLuegoSeLoRecuperaActualizado() {
-        HibernateTransactionRunner.runTrx {
-            val pepitoId = generateModel()
-
-            pepito.cambiarNombrePor("Federico")
-            aventureroDAO.actualizar(pepito)
-            val recoveryPepito = aventureroDAO.recuperar(pepitoId)
-
-            assertThat(pepito).usingRecursiveComparison().isEqualTo(recoveryPepito)
-        }
-    }
-    */
-
     @Test
     fun alEliminarUnAventureroPersistidoYLuegoRecuperarloNoExiste() {
         HibernateTransactionRunner.runTrx {

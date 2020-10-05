@@ -69,8 +69,8 @@ internal class PeleaServiceTest {
 
     @Test
     fun `un aventurero sabe resolver su turno`() {
-        val curador = Aventurero("Fede", 10, 10, 10, 10)
-        val aliado = Aventurero("Jorge", 10, 10, 10, 10)
+        val curador = Aventurero("Fede", "",10, 10, 10, 10)
+        val aliado = Aventurero("Jorge", "",10, 10, 10, 10)
         val manaAnterior = curador.mana()
         val tac = Tactica(1,TipoDeReceptor.ALIADO,TipoDeEstadistica.VIDA,Criterio.MAYOR_QUE,0,Accion.CURAR)
         curador.agregarTactica(tac)
@@ -88,9 +88,9 @@ internal class PeleaServiceTest {
     }
 
     @Test
-    fun `ataque enemigo`(){
-        val atacante = Aventurero("Fede", 10, 10, 10, 10)
-        val enemigo = Aventurero("Jorge", 10, 10, 10, 10)
+    fun `un aventurero elige una tactica que ataca a un enemigo`(){
+        val atacante = Aventurero("Fede","", 10, 10, 10, 10)
+        val enemigo = Aventurero("Jorge","", 10, 10, 10, 10)
         val enemigos = listOf(enemigo)
         val tac = Tactica(1,TipoDeReceptor.ENEMIGO,TipoDeEstadistica.VIDA,Criterio.MENOR_QUE,9999,Accion.ATAQUE_FISICO)
         atacante.agregarTactica(tac)
@@ -106,8 +106,8 @@ internal class PeleaServiceTest {
     }
 
     @Test
-    fun `aventurero elige tactica que corresponda`(){
-        val aventurero = Aventurero("Fede", 10, 10, 10, 10)
+    fun `un aventurero resuelve su turno buscando la tactica que cumpla su criterio dependiendo de la prioridad `(){
+        val aventurero = Aventurero("Fede","", 10, 10, 10, 10)
         val tactica1 = Tactica(1,TipoDeReceptor.ENEMIGO,TipoDeEstadistica.VIDA,Criterio.MENOR_QUE,9999,Accion.ATAQUE_FISICO)
         val tactica2 = Tactica(2,TipoDeReceptor.UNO_MISMO,TipoDeEstadistica.VIDA,Criterio.MAYOR_QUE,0,Accion.MEDITAR)
         aventurero.agregarTactica(tactica1)

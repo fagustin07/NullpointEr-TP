@@ -2,7 +2,6 @@ package ar.edu.unq.epers.tactics.modelo
 
 import ar.edu.unq.epers.tactics.service.dto.PartyDTO
 import javax.persistence.*
-import kotlin.jvm.Transient
 
 @Entity
 class Party(private var nombre: String, private var imagenURL: String) {
@@ -27,12 +26,13 @@ class Party(private var nombre: String, private var imagenURL: String) {
         this.aventureros.add(aventurero)
         aventurero.registarseEn(this)
     }
-    fun nombre()      = nombre
-    fun id()          = id
-    fun aventureros() = aventureros
-    fun imagenURL()   = imagenURL
 
-    fun darleElId(id : Long?){
+    fun nombre() = nombre
+    fun id() = id
+    fun aventureros() = aventureros
+    fun imagenURL() = imagenURL
+
+    fun darleElId(id: Long?) {
         this.id = id
     }
 
@@ -72,7 +72,7 @@ class Party(private var nombre: String, private var imagenURL: String) {
     }
 
     fun entrarEnPelea() {
-        if(this.estaEnPelea) { throw RuntimeException("No se puede iniciar una pelea: la party ya esta peleando") }
+        if(this.estaEnPelea) throw RuntimeException("No se puede iniciar una pelea: la party ya esta peleando")
         this.estaEnPelea = true
     }
 

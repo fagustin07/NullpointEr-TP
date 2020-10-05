@@ -2,13 +2,12 @@ package ar.edu.unq.epers.tactics.modelo
 
 import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import ar.edu.unq.epers.tactics.service.dto.AventureroDTO
-import java.lang.RuntimeException
 import javax.persistence.*
 import kotlin.math.max
 
 
 @Entity(name = "Aventurero")
-class Aventurero(private var nombre : String) {
+class Aventurero(private var nombre: String) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private var id: Long? = null
@@ -45,8 +44,10 @@ class Aventurero(private var nombre : String) {
     @ManyToOne
     var party: Party? = null
 
-    constructor(nombre: String, imagenURL: String = "", fuerza: Int = 1,
-                destreza: Int = 1, inteligencia: Int = 1, constitucion: Int = 1) : this(nombre) {
+    constructor(
+        nombre: String, imagenURL: String = "", fuerza: Int = 1,
+        destreza: Int = 1, inteligencia: Int = 1, constitucion: Int = 1
+    ) : this(nombre) {
         this.imagenURL = imagenURL
         this.inteligencia = inteligencia
         this.destreza = destreza
@@ -57,6 +58,7 @@ class Aventurero(private var nombre : String) {
 
     @OneToOne(fetch = FetchType.LAZY)
     private var defensor: Aventurero? = null
+
     @OneToOne(fetch = FetchType.LAZY)
     private var aventureroDefendido: Aventurero? = null
     private var turnosDefendido = 0
@@ -110,10 +112,10 @@ class Aventurero(private var nombre : String) {
     }
 
     fun defenderA(receptor: Aventurero) {
-        if(this.aventureroDefendido==null) {
+        if (this.aventureroDefendido == null) {
             this.aventureroDefendido = receptor
             aventureroDefendido!!.defendidoPor(this)
-        }else{
+        } else {
             this.aventureroDefendido!!.perderDefensor()
             receptor.defendidoPor(this)
         }
@@ -191,7 +193,6 @@ class Aventurero(private var nombre : String) {
         this.id = id
     }
 
-
     fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
         this.tacticas.sortBy { it.prioridad }
 
@@ -204,6 +205,7 @@ class Aventurero(private var nombre : String) {
 
         throw RuntimeException("En ningun test se llega hasta aca. Siempre se retorna antes")
     }
+
     internal fun tacticas() = this.tacticas
 
     fun agregarTactica(nuevaTactica: Tactica) {
