@@ -14,14 +14,11 @@ class Party(private var nombre: String, private var imagenURL: String) {
     init { if (nombre.isEmpty()) throw RuntimeException("Una party debe tener un nombre") }
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    var aventureros: MutableList<Aventurero> = mutableListOf() // TODO: lo cambie TEMPORALMENTE a public (David) por lo de los enums. Hay que corregirlo despues
-
-    private val maximoDeAventureros = 5
+    private var aventureros: MutableList<Aventurero> = mutableListOf()
 
     var estaEnPelea = false
 
     fun numeroDeAventureros() = aventureros.size
-
 
     fun agregarUnAventurero(aventurero: Aventurero) {
         this.validarQueNoPertenzcaAOtraParty(aventurero)
@@ -39,6 +36,12 @@ class Party(private var nombre: String, private var imagenURL: String) {
         this.id = id
     }
 
+    fun aliadosDe(aventurero: Aventurero): List<Aventurero> {
+        val aliados = aventureros.toMutableList()
+        aliados.remove(aventurero)
+        return aliados
+    }
+
     internal fun actualizarse(partyDTO: PartyDTO) {
         this.nombre = partyDTO.nombre
         this.imagenURL = partyDTO.imagenURL
@@ -47,8 +50,9 @@ class Party(private var nombre: String, private var imagenURL: String) {
 
     private fun esLaParty(party: Party?) = party == null || this.nombre == party.nombre
 
+    private fun puedeAgregarAventureros() = this.numeroDeAventureros() < this.maximoDeAventureros()
 
-    private fun puedeAgregarAventureros() = this.numeroDeAventureros() < this.maximoDeAventureros
+    private fun maximoDeAventureros() = 5
 
     /* Assertions */
     private fun validarQueNoPertenzcaAOtraParty(aventurero: Aventurero) {
@@ -61,12 +65,6 @@ class Party(private var nombre: String, private var imagenURL: String) {
 
     private fun validarQueSeAdmitanNuevosIntegrantes() {
         if (!this.puedeAgregarAventureros()) throw RuntimeException("La party $nombre está completa.")
-    }
-
-    fun aliadosDe(aventurero: Aventurero): List<Aventurero> {
-        val aliados = aventureros.toMutableList()
-        aliados.remove(aventurero)
-        return aliados
     }
 
     fun estaEnPelea(): Boolean {

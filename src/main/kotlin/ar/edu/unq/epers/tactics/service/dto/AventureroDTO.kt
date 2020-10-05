@@ -14,7 +14,7 @@ data class AventureroDTO(var id: Long?, var nivel: Int, var nombre: String, var 
             return AventureroDTO(aventurero.id(),
                     aventurero.nivel(),
                     aventurero.nombre(),
-                    "imagen",
+                    aventurero.imagen(),
                     aventurero.tacticas().map { TacticaDTO.desdeModelo(it) },
                     AtributosDTO(
                             aventurero.id(),
@@ -30,6 +30,7 @@ data class AventureroDTO(var id: Long?, var nivel: Int, var nombre: String, var 
     fun aModelo(): Aventurero {
         val aventurero = Aventurero(
                 this.nombre,
+                this.imagenURL,
                 this.atributos.fuerza,
                 this.atributos.destreza,
                 this.atributos.inteligencia,
@@ -102,10 +103,10 @@ enum class TipoDeEstadistica {
 
 enum class Criterio {
     IGUAL { override fun evaluarseCon(valorAComparar: Int, valorDeComparacion: Int) = valorAComparar == valorDeComparacion },
-    MAYOR_QUE { override fun evaluarseCon(valorDeAventurero: Int, valorDeComparacion: Int) = valorDeAventurero > valorDeComparacion },
-    MENOR_QUE { override fun evaluarseCon(valorDeAventurero: Int, valorDeComparacion: Int) = valorDeAventurero < valorDeComparacion };
+    MAYOR_QUE { override fun evaluarseCon(valorAComparar: Int, valorDeComparacion: Int) = valorAComparar > valorDeComparacion },
+    MENOR_QUE { override fun evaluarseCon(valorAComparar: Int, valorDeComparacion: Int) = valorAComparar < valorDeComparacion };
 
-    abstract fun evaluarseCon(valorDeAventurero: Int, valorDeComparacion: Int): Boolean
+    abstract fun evaluarseCon(valorAComparar: Int, valorDeComparacion: Int): Boolean
 }
 
 enum class Accion {

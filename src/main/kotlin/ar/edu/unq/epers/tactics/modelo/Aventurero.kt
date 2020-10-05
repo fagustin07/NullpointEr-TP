@@ -8,40 +8,58 @@ import kotlin.math.max
 
 
 @Entity(name = "Aventurero")
-class Aventurero(
-        private var nombre: String,
-        private var fuerza: Int = 0,
-        private var destreza: Int = 0,
-        private var inteligencia: Int = 0,
-        private var constitucion: Int = 0) {
+class Aventurero(private var nombre : String) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private var id: Long? = null
+    private var imagenURL: String = ""
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     private var tacticas: MutableList<Tactica> = mutableListOf()
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private var id: Long? = null
-
-    @Transient
-    private var turnosDefendidos = 0
-
-    @Transient
-    private var defensor: Aventurero? = null
     private var vida: Int = 0
     private var mana: Int = 0
+    private var fuerza: Int = 1
+        set(nuevoPuntaje) {
+            this.validarPuntaje(nuevoPuntaje, "fuerza")
+            field = nuevoPuntaje
+        }
+    private var destreza: Int = 1
+        set(nuevoPuntaje) {
+            this.validarPuntaje(nuevoPuntaje, "destreza")
+            field = nuevoPuntaje
+        }
+
+    private var inteligencia: Int = 1
+        set(nuevoPuntaje) {
+            this.validarPuntaje(nuevoPuntaje, "inteligencia")
+            field = nuevoPuntaje
+        }
+
+    private var constitucion: Int = 1
+        set(nuevoPuntaje) {
+            this.validarPuntaje(nuevoPuntaje, "constitucion")
+            field = nuevoPuntaje
+        }
 
     @ManyToOne
     var party: Party? = null
 
-    constructor(nombre: String,
-                fuerza: Int = 0,
-                destreza: Int = 0,
-                inteligencia: Int = 0,
-                constitucion: Int = 0,
-                party: Party) : this(nombre, fuerza, destreza, inteligencia, constitucion) {
-
-        this.party = party
+    constructor(nombre: String, imagenURL: String = "", fuerza: Int = 1,
+                destreza: Int = 1, inteligencia: Int = 1, constitucion: Int = 1) : this(nombre) {
+        this.imagenURL = imagenURL
+        this.inteligencia = inteligencia
+        this.destreza = destreza
+        this.constitucion = constitucion
+        this.fuerza = fuerza
+        this.recalcularVidaYMana()
     }
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private var defensor: Aventurero? = null
+    @OneToOne(fetch = FetchType.LAZY)
+    private var aventureroDefendido: Aventurero? = null
+    private var turnosDefendido = 0
 
     init {
         this.recalcularVidaYMana()
@@ -49,6 +67,7 @@ class Aventurero(
 
     fun id() = id
     fun nombre() = nombre
+    fun imagen() = this.imagenURL
     fun nivel() = 1
 
     fun fuerza() = fuerza
@@ -90,13 +109,32 @@ class Aventurero(
         this.mana = max(0, this.mana - 5)
     }
 
-    fun defendidoPor(defensor: Aventurero) {
-        this.defensor = defensor
-        this.turnosDefendidos = 3
+    fun defenderA(receptor: Aventurero) {
+        if(this.aventureroDefendido==null) {
+            this.aventureroDefendido = receptor
+            aventureroDefendido!!.defendidoPor(this)
+        }else{
+            this.aventureroDefendido!!.perderDefensor()
+            receptor.defendidoPor(this)
+        }
     }
 
-    internal fun darleElId(id: Long?) {
-        this.id = id
+    fun esAliadoDe(otroAventurero: Aventurero) = aliados().contains(otroAventurero)
+
+    fun esEnemigoDe(otroAventurero: Aventurero) = otroAventurero != this && !this.esAliadoDe(otroAventurero)
+
+    fun aliados(): List<Aventurero> {
+        if (party == null) return listOf()
+        return party!!.aliadosDe(this)
+    }
+
+    fun registarseEn(party: Party) {
+        this.party = party
+    }
+
+    private fun recalcularVidaYMana() {
+        vida = ((nivel() * 5) + (constitucion * 2) + fuerza)
+        mana = nivel() + inteligencia
     }
 
     private fun recibirDaño(dañoRecibido: Int) {
@@ -108,18 +146,36 @@ class Aventurero(
         }
     }
 
-    private fun consumirTurnoDeDefensa() {
-        turnosDefendidos -= 1
+    private fun defendidoPor(defensor: Aventurero) {
+        this.defensor = defensor
+        this.turnosDefendido = 3
+    }
 
-        if (turnosDefendidos == 0) {
+    private fun consumirTurnoDeDefensa() {
+        turnosDefendido -= 1
+
+        if (turnosDefendido == 0) {
             defensor = null
         }
     }
 
+    private fun perderDefensor() {
+        this.defensor = null
+    }
+
     private fun tieneDefensor() = this.defensor != null && this.defensor!!.estaVivo()
 
-
     private fun estaVivo() = this.vida > 0
+
+    private fun validarPuntaje(nuevoPuntaje: Int, nombreDeAtributo: String) {
+        if (nuevoPuntaje > 100) throw  RuntimeException("La $nombreDeAtributo no puede exceder los 100 puntos!")
+        if (nuevoPuntaje < 1) throw  RuntimeException("La $nombreDeAtributo no puede ser menor a 1 punto!")
+    }
+
+    fun validacionParaDefenderA(receptor: Aventurero) {
+        if (this == receptor) throw  RuntimeException("${this.nombre} no puede defenderse a si mismo!")
+        if (!this.esAliadoDe(receptor)) throw  RuntimeException("${this.nombre} no puede defender a un enemigo!")
+    }
 
     internal fun actualizarse(aventureroDTO: AventureroDTO) {
         this.inteligencia = aventureroDTO.atributos.inteligencia
@@ -127,28 +183,14 @@ class Aventurero(
         this.constitucion = aventureroDTO.atributos.constitucion
         this.fuerza = aventureroDTO.atributos.fuerza
         this.nombre = aventureroDTO.nombre
+        this.imagenURL = aventureroDTO.imagenURL
         this.recalcularVidaYMana()
     }
 
-    private fun recalcularVidaYMana() {
-        vida = ((nivel() * 5) + (constitucion * 2) + fuerza)
-        mana = nivel() + inteligencia
-    }
-    
-    fun registarseEn(party: Party) {
-        this.party = party
+    internal fun darleElId(id: Long?) {
+        this.id = id
     }
 
-    fun aliados(): List<Aventurero> {
-        if (party == null) return listOf()
-        return party!!.aliadosDe(this)
-    }
-
-    fun esAliadoDe(otroAventurero: Aventurero) =
-        aliados().contains(otroAventurero)
-
-    fun esEnemigoDe(otroAventurero: Aventurero) =
-        otroAventurero != this && !esAliadoDe(otroAventurero)
 
     fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
         this.tacticas.sortBy { it.prioridad }

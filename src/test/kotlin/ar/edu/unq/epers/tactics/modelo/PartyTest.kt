@@ -13,7 +13,7 @@ class PartyTest {
     @BeforeEach
     fun setUp() {
         party = Party("Los Bulls", "URL")
-        pepe = Aventurero("Pepe", party = party)
+        pepe = Aventurero("Pepe")
     }
 
     @Test
@@ -29,7 +29,7 @@ class PartyTest {
 
     @Test
     fun noSePuedenAgregarAventurerosAUnaPartyCompleta() {
-        val cincoAventureros = (1..5).map { Aventurero("Aventurero${it}", party = party) }
+        val cincoAventureros = (1..5).map { Aventurero("Aventurero${it}") }
 
         cincoAventureros.forEach { aventurero -> party.agregarUnAventurero(aventurero) }
 
@@ -43,7 +43,8 @@ class PartyTest {
     @Test
     fun unaPartyNoAgregaAventurerosQueNoPertenezcanAElla() {
         val otraParty = Party("Champions of Red Hawk.", "URL")
-        val aventureroDeOtraParty = Aventurero("OTK Garfield", party = otraParty)
+        val aventureroDeOtraParty = Aventurero("OTK Garfield")
+        otraParty.agregarUnAventurero(aventureroDeOtraParty)
 
         val exception = assertThrows<RuntimeException> { party.agregarUnAventurero(aventureroDeOtraParty) }
         assertEquals(exception.message, "${aventureroDeOtraParty.nombre()} no pertenece a ${party.nombre()}.")
@@ -54,7 +55,7 @@ class PartyTest {
     @Test
     fun noPuedeAgregarseAUnaPartyUnAventureroQueYaFueAgregado() {
         val party = Party("Nombre de party", "URL")
-        val aventurero = Aventurero("Nombre de aventurero", party = party)
+        val aventurero = Aventurero("Nombre de aventurero")
 
         party.agregarUnAventurero(aventurero)
 

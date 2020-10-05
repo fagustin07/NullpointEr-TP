@@ -6,10 +6,11 @@ class Defensa(val aventureroEmisor: Aventurero, val aventureroReceptor: Aventure
 
     companion object {
         fun para(aventureroEmisor: Aventurero, aventureroReceptor: Aventurero): Defensa {
+            aventureroEmisor.validacionParaDefenderA(aventureroReceptor)
             return Defensa(aventureroEmisor, aventureroReceptor)
         }
     }
 
-    override fun resolverse() = aventureroReceptor.defendidoPor(aventureroEmisor)
+    override fun resolverse() = aventureroEmisor.defenderA(aventureroReceptor)
 
 }

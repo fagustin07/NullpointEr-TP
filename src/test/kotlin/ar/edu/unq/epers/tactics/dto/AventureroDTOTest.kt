@@ -11,7 +11,7 @@ class AventureroDTOTest {
 
     @Test
     fun `Al convertir un Aventurero a un AventureroDTO y de nuevo a un Aventurero se obtienen objetos similares`() {
-        val aventureroOriginal = Aventurero("Pepe", 40, 50, 60, 70)
+        val aventureroOriginal = Aventurero("Pepe", "",40, 50, 60, 70)
         val curarse = Tactica(1,TipoDeReceptor.UNO_MISMO,TipoDeEstadistica.VIDA,Criterio.MENOR_QUE,30,Accion.CURAR)
         val rematar = Tactica(2,TipoDeReceptor.ENEMIGO,TipoDeEstadistica.VIDA,Criterio.MENOR_QUE,15,Accion.ATAQUE_MAGICO)
         aventureroOriginal.agregarTactica(curarse)
@@ -24,7 +24,7 @@ class AventureroDTOTest {
 
     @Test
     fun `Al enviar el mensaje actualizar a un AventureroDTO se actualiza el objeto de dominio`(){
-        val aventurero = Aventurero("Pepe", 40, 50, 60, 70)
+        val aventurero = Aventurero("Pepe", "",40, 50, 60, 70)
         val aventureroDTO = AventureroDTO.desdeModelo(aventurero)
 
         aventureroDTO.atributos.fuerza = 56
