@@ -12,22 +12,31 @@ import javax.persistence.Id
 
 @Entity
 class Tactica(
-    var prioridad: Int,
-    var tipoDeReceptor: TipoDeReceptor,
-    var tipoDeEstadistica: TipoDeEstadistica,
-    var criterio: Criterio,
-    var valor: Int,
-    var accion: Accion) {
+    internal var prioridad: Int,
+    internal var receptor: TipoDeReceptor,
+    internal var tipoDeEstadistica: TipoDeEstadistica,
+    internal var criterio: Criterio,
+    internal var valor: Int,
+    internal var accion: Accion) {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null
+    internal var id: Long? = null
 
     fun puedeAplicarseA(emisor: Aventurero, receptor: Aventurero) =
-        tipoDeReceptor.test(emisor, receptor)
+        this.receptor.test(emisor, receptor)
 
     fun aplicarseSobre(emisor: Aventurero, receptor: Aventurero): Habilidad {
         return accion.generarHabilidad(emisor, receptor)
+    }
+
+    fun actualizarse(otraTactica: Tactica) {
+        this.prioridad = otraTactica.prioridad
+        this.receptor = otraTactica.receptor
+        this.tipoDeEstadistica = otraTactica.tipoDeEstadistica
+        this.criterio = otraTactica.criterio
+        this.valor = otraTactica.valor
+        this.accion = otraTactica.accion
     }
 
 }

@@ -42,7 +42,7 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
         TODO("Not yet implemented")
     }
 
-    override fun terminarPelea(idDeLaPelea: Long): Pelea {
+    override fun terminarPelea(idDeLaParty: Long): Pelea {
         TODO("Not yet implemented")
     }
 }

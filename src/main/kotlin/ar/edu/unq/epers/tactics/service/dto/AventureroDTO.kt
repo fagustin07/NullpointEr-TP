@@ -1,6 +1,7 @@
 package ar.edu.unq.epers.tactics.service.dto
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
+import ar.edu.unq.epers.tactics.modelo.Tactica
 import ar.edu.unq.epers.tactics.modelo.habilidades.*
 
 
@@ -9,11 +10,12 @@ data class AventureroDTO(var id: Long?, var nivel: Int, var nombre: String, var 
     companion object {
 
         fun desdeModelo(aventurero: Aventurero): AventureroDTO {
+
             return AventureroDTO(aventurero.id(),
                     aventurero.nivel(),
                     aventurero.nombre(),
                     "imagen",
-                    listOf(),
+                    aventurero.tacticas().map { TacticaDTO.desdeModelo(it) },
                     AtributosDTO(
                             aventurero.id(),
                             aventurero.fuerza(),
@@ -33,7 +35,7 @@ data class AventureroDTO(var id: Long?, var nivel: Int, var nombre: String, var 
                 this.atributos.inteligencia,
                 this.atributos.constitucion
         )
-
+        this.tacticas.forEach { aventurero.agregarTactica(it.aModelo()) }
         aventurero.darleElId(this.id)
 
         return aventurero
@@ -43,7 +45,40 @@ data class AventureroDTO(var id: Long?, var nivel: Int, var nombre: String, var 
 }
 
 data class AtributosDTO(var id: Long?, var fuerza: Int, var destreza: Int, var constitucion: Int, var inteligencia: Int)
-data class TacticaDTO(var id: Long?, var prioridad: Int, var receptor: TipoDeReceptor, var tipoDeEstadistica: TipoDeEstadistica, var criterio: Criterio, var valor: Int, var accion: Accion)
+
+data class TacticaDTO(var id: Long?, var prioridad: Int, var receptor: TipoDeReceptor, var tipoDeEstadistica: TipoDeEstadistica, var criterio: Criterio, var valor: Int, var accion: Accion){
+
+    companion object {
+
+        fun desdeModelo(tactica: Tactica): TacticaDTO {
+            return TacticaDTO(
+                tactica.id,
+                tactica.prioridad,
+                tactica.receptor,
+                tactica.tipoDeEstadistica,
+                tactica.criterio,
+                tactica.valor,
+                tactica.accion
+            )
+        }
+    }
+
+    fun aModelo(): Tactica {
+        val tactica = Tactica(
+            this.prioridad,
+            this.receptor,
+            this.tipoDeEstadistica,
+            this.criterio,
+            this.valor,
+            this.accion
+        )
+        tactica.id = this.id
+
+        return tactica
+    }
+
+    fun actualizarModelo(tactica: Tactica) = tactica.actualizarse(this.aModelo())
+}
 
 enum class TipoDeReceptor {
     ALIADO { override fun test(emisor: Aventurero, receptor: Aventurero) = emisor.esAliadoDe(receptor) },

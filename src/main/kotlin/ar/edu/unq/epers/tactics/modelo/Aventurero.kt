@@ -162,6 +162,7 @@ class Aventurero(
 
         throw RuntimeException("En ningun test se llega hasta aca. Siempre se retorna antes")
     }
+    internal fun tacticas() = this.tacticas
 
     fun agregarTactica(nuevaTactica: Tactica) {
         this.tacticas.add(nuevaTactica)
