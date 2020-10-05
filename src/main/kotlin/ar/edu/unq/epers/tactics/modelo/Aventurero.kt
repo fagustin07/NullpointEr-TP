@@ -212,4 +212,8 @@ class Aventurero(private var nombre: String) {
         this.tacticas.add(nuevaTactica)
     }
 
+    fun reestablecerse() {
+        this.recalcularVidaYMana()
+    }
+
 }

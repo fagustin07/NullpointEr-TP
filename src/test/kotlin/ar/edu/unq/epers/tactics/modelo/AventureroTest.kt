@@ -1,5 +1,6 @@
 package ar.edu.unq.epers.tactics.modelo
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -120,5 +121,16 @@ class AventureroTest {
         assertEquals("La constitucion no puede ser menor a 1 punto!", exception.message)
     }
 
+    @Test
+    fun `un aventurero puede reestablecer su vida y mana`() {
+        val vidaInicial = cacho.vida()
+        val manaInicial = cacho.mana()
+        cacho.recibirAtaqueFisicoSiDebe(10, 5000)
+        cacho.consumirMana()
 
+        cacho.reestablecerse()
+
+        assertThat(cacho.vida()).isEqualTo(vidaInicial)
+        assertThat(cacho.mana()).isEqualTo(manaInicial)
+    }
 }

@@ -214,6 +214,39 @@ internal class PeleaServiceTest {
         }
     }
 
+    @Test
+    fun `luego de una pelea, los aventureros vuelven a sus puntajes iniciales`() {
+        val curador = Aventurero("Fede", "",10, 10, 10, 10)
+        val aliado = Aventurero("Jorge", "",10, 10, 10, 10)
+        val vidaAntesDeCuracion = aliado.vida()
+        val manaAntesDeCuracion = curador.mana()
+        val tactica = Tactica(1,TipoDeReceptor.ALIADO,
+                TipoDeEstadistica.VIDA,
+                Criterio.MAYOR_QUE,0,Accion.CURAR)
+
+        curador.agregarTactica(tactica)
+
+        HibernateTransactionRunner.runTrx {
+            party.agregarUnAventurero(curador)
+            party.agregarUnAventurero(aliado)
+            partyDAO.actualizar(party)
+        }
+
+        lateinit var pelea : Pelea
+        lateinit var habilidadGenerada : Habilidad
+        HibernateTransactionRunner.runTrx { pelea = peleaService.iniciarPelea(party.id()!!) }
+        HibernateTransactionRunner.runTrx { habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf()) }
+        HibernateTransactionRunner.runTrx { peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada) }
+
+        HibernateTransactionRunner.runTrx {
+            peleaService.terminarPelea(party.id()!!)
+
+            assertThat(this.aventureroDAO.recuperar(curador.id()!!).mana()).isEqualTo(manaAntesDeCuracion)
+            assertThat(this.aventureroDAO.recuperar(aliado.id()!!).vida()).isEqualTo(vidaAntesDeCuracion)
+        }
+
+    }
+
     @AfterEach
     fun tearDown() {
         partyDAO.eliminarTodo()
