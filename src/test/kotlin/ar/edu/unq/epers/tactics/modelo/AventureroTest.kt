@@ -31,7 +31,7 @@ class AventureroTest {
 
     @Test
     fun sePuedeActualizarEnBaseALosAtributosDeOtroAventurero() {
-        val otroAventurero = Aventurero("Otro aventurero", 1, 2, 3, 4)
+        val otroAventurero = Aventurero("Otro aventurero", "xxx", 1, 2, 3, 4)
         cacho.actualizarse(otroAventurero)
 
         assertEquals(otroAventurero.fuerza(), cacho.fuerza())
