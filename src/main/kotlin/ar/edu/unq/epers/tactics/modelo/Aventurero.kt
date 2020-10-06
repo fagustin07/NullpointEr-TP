@@ -184,6 +184,7 @@ class Aventurero(private var nombre: String) {
         this.destreza = aventureroDTO.atributos.destreza
         this.constitucion = aventureroDTO.atributos.constitucion
         this.fuerza = aventureroDTO.atributos.fuerza
+        this.tacticas = aventureroDTO.tacticas.map { it.aModelo() }.toMutableList()
         this.nombre = aventureroDTO.nombre
         this.imagenURL = aventureroDTO.imagenURL
         this.recalcularVidaYMana()

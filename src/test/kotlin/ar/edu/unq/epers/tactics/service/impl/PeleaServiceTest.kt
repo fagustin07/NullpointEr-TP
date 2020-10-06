@@ -40,20 +40,14 @@ internal class PeleaServiceTest {
     }
     @Test
     fun `una party inicialmente no esta en una pelea`() {
-        runTrx {
             assertFalse(peleaService.estaEnPelea(party.id()!!))
-        }
     }
 
     @Test
     fun `una party puede comenzar una pelea`() {
-        runTrx {
             peleaService.iniciarPelea(party.id()!!)
-        }
 
-        runTrx {
             assertTrue(peleaService.estaEnPelea(party.id()!!))
-        }
     }
 
     @Test
@@ -62,14 +56,10 @@ internal class PeleaServiceTest {
         val partyDAO = HibernatePartyDAO()
         val aventureroDAO = HibernateAventureroDAO()
         val peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO)
-        runTrx {
-            peleaService.iniciarPelea(party.id()!!)
-        }
+        peleaService.iniciarPelea(party.id()!!)
 
-        runTrx {
-            val exception = assertThrows<RuntimeException> { peleaService.iniciarPelea(party.id()!!) }
-            assertThat(exception.message).isEqualTo("No se puede iniciar una pelea: la party ya esta peleando")
-        }
+        val exception = assertThrows<RuntimeException> { peleaService.iniciarPelea(party.id()!!) }
+        assertThat(exception.message).isEqualTo("No se puede iniciar una pelea: la party ya esta peleando")
     }
 
     @Test
@@ -87,14 +77,9 @@ internal class PeleaServiceTest {
             partyDAO.actualizar(party)
         }
 
-        lateinit var pelea : Pelea
-        lateinit var habilidadGenerada : Habilidad
-        runTrx {
-            pelea = peleaService.iniciarPelea(party.id()!!)
-        }
-        runTrx {
-            habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
-        }
+        val pelea = peleaService.iniciarPelea(party.id()!!)
+        val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
+
         lateinit var curadorLuegoDeResolverTurno : Aventurero
         runTrx {
             curadorLuegoDeResolverTurno = aventureroDAO.recuperar(curador.id()!!)
@@ -117,19 +102,14 @@ internal class PeleaServiceTest {
             Accion.ATAQUE_FISICO
         )
         atacante.agregarTactica(tactica)
+
         runTrx {
             party.agregarUnAventurero(atacante)
             partyDAO.actualizar(party)
         }
 
-        lateinit var pelea: Pelea
-        lateinit var habilidadGenerada: Ataque
-        runTrx {
-            pelea = peleaService.iniciarPelea(party.id()!!)
-        }
-        runTrx {
-            habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, atacante.id()!!, enemigos) as Ataque
-        }
+        val pelea = peleaService.iniciarPelea(party.id()!!)
+        val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, atacante.id()!!, enemigos) as Ataque
 
         assertThat(habilidadGenerada.aventureroReceptor.id()).isEqualTo(enemigo.id())
     }
@@ -147,16 +127,10 @@ internal class PeleaServiceTest {
             partyDAO.actualizar(party)
         }
 
-        lateinit var pelea: Pelea
-        lateinit var habilidadGenerada: Meditacion
-        runTrx {
-            pelea = peleaService.iniciarPelea(party.id()!!)
-        }
-        runTrx {
-            habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, aventurero.id()!!, listOf()) as Meditacion
-        }
+        val pelea = peleaService.iniciarPelea(party.id()!!)
+        val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, aventurero.id()!!, listOf()) as Meditacion
 
-        assertThat(habilidadGenerada.aventureroReceptor.id()).isEqualTo(aventurero.id())
+        assertThat(habilidadGenerada.aventureroReceptor.id()).isEqualTo(aventurero.id()!!)
     }
 
 
@@ -177,42 +151,29 @@ internal class PeleaServiceTest {
             partyDAO.actualizar(party)
         }
 
-        lateinit var pelea : Pelea
-        lateinit var habilidadGenerada : Habilidad
-        lateinit var aliadoQueRecibiraHabilidad:Aventurero
-        runTrx {
-            pelea = peleaService.iniciarPelea(party.id()!!)
-        }
-        runTrx {
-            habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
-        }
-        runTrx {
-            aliadoQueRecibiraHabilidad = peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada)
-        }
-        val vidaEsperada = vidaAntesDeCuracion + curador.poderMagico()
-        assertThat(aliado.id()).isEqualTo(aliadoQueRecibiraHabilidad.id())
-        assertEquals(vidaEsperada,aliadoQueRecibiraHabilidad.vida())
+        val pelea = peleaService.iniciarPelea(party.id()!!)
+        val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
+        val aliadoQueRecibiraHabilidad = peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada)
 
+        val vidaEsperada = vidaAntesDeCuracion + curador.poderMagico()
+        assertThat(aliado.id()!!).isEqualTo(aliadoQueRecibiraHabilidad.id())
+        assertEquals(vidaEsperada,aliadoQueRecibiraHabilidad.vida())
     }
 
     @Test
     fun `una party puede salir de una pelea`() {
-        runTrx {
             peleaService.iniciarPelea(party.id()!!)
 
             peleaService.terminarPelea(party.id()!!)
 
             assertFalse(peleaService.estaEnPelea(party.id()!!))
-        }
     }
 
     @Test
     fun `una party no puede salir de una pelea si no esta en ninguna`() {
-        runTrx {
             val exception = assertThrows<RuntimeException> { peleaService.terminarPelea(party.id()!!) }
             assertThat(exception).hasMessage("La party no esta en ninguna pelea")
             assertFalse(peleaService.estaEnPelea(party.id()!!))
-        }
     }
 
     @Test
@@ -233,15 +194,12 @@ internal class PeleaServiceTest {
             partyDAO.actualizar(party)
         }
 
-        lateinit var pelea : Pelea
-        lateinit var habilidadGenerada : Habilidad
-        runTrx { pelea = peleaService.iniciarPelea(party.id()!!) }
-        runTrx { habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf()) }
-        runTrx { peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada) }
+        val pelea = peleaService.iniciarPelea(party.id()!!)
+        val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
+        peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada)
 
+        peleaService.terminarPelea(party.id()!!)
         runTrx {
-            peleaService.terminarPelea(party.id()!!)
-
             assertThat(this.aventureroDAO.recuperar(curador.id()!!).mana()).isEqualTo(manaAntesDeCuracion)
             assertThat(this.aventureroDAO.recuperar(aliado.id()!!).vida()).isEqualTo(vidaAntesDeCuracion)
         }
@@ -250,13 +208,12 @@ internal class PeleaServiceTest {
 
     @Test
     fun `cuando una party estuvo en multiples peleas se retorna la ultima`() {
-        runTrx{
             peleaService.iniciarPelea(party.id()!!)
             peleaService.terminarPelea(party.id()!!)
 
             peleaService.iniciarPelea(party.id()!!)
             val ultimaPelea = peleaService.terminarPelea(party.id()!!)
-
+        runTrx{
             assertThat(peleaDAO.recuperarUltimaPeleaDeParty(party.id()!!).id()).isEqualTo(ultimaPelea.id())
         }
     }
