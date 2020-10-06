@@ -7,6 +7,7 @@ import ar.edu.unq.epers.tactics.modelo.enums.Criterio
 import ar.edu.unq.epers.tactics.modelo.enums.TipoDeEstadistica
 import ar.edu.unq.epers.tactics.modelo.enums.TipoDeReceptor
 import ar.edu.unq.epers.tactics.service.dto.AventureroDTO
+import ar.edu.unq.epers.tactics.service.dto.TacticaDTO
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -33,9 +34,12 @@ class AventureroDTOTest {
 
         aventureroDTO.atributos.fuerza = 56
         aventureroDTO.atributos.inteligencia = 2
+        val curarse = Tactica(1, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 30, Accion.CURAR)
+        aventureroDTO.tacticas = mutableListOf(TacticaDTO.desdeModelo(curarse))
         aventureroDTO.actualizarModelo(aventurero)
 
         assertThat(aventurero.fuerza()).isEqualTo(56)
         assertThat(aventurero.inteligencia()).isEqualTo(2)
+        assertThat(aventurero.tacticas().size).isEqualTo(1)
     }
 }

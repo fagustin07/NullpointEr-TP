@@ -198,6 +198,8 @@ class Aventurero(private var nombre: String) {
         this.constitucion = otroAventurero.constitucion()
         this.fuerza = otroAventurero.fuerza()
         this.nombre = otroAventurero.nombre()
+        this.tacticas = otroAventurero.tacticas()
+        this.imagenURL = otroAventurero.imagen()
         this.recalcularVidaYMana()
     }
 
