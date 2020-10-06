@@ -201,7 +201,7 @@ internal class PeleaServiceTest {
     }
     
     @Test
-    fun BUSCANDO_ERROR_asdasdasdasdadasd() {
+    fun `cuando se recupera la party de un aventurero que tenga varias tacticas, este aparece una sola vez`() {
         val party = Party("Nombre de Party", "/img.jpg")
         val aventurero = Aventurero("Nombre de Aventurero", "", 1, 2, 3, 4)
         aventurero.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0, Accion.CURAR))

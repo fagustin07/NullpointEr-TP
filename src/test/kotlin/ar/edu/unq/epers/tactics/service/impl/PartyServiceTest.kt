@@ -53,7 +53,7 @@ class PartyServiceTest {
     @Test
     fun noSePuedeRecuperarUnaPartySiNoExisteNingunaPartyConElIdProvisto() {
         val exception = assertThrows<RuntimeException> { partyService.recuperar(0) }
-        assertEquals(exception.message, "No existe una entidad con ese id")
+        assertEquals(exception.message, "No entity found for query")
     }
 
     @Test
@@ -84,7 +84,7 @@ class PartyServiceTest {
 
         val exception =
             assertThrows<RuntimeException> { partyService.agregarAventureroAParty(idNoRegistrado, aventurero) }
-        assertEquals(exception.message, "No existe una entidad con ese id")
+        assertEquals(exception.message, "No entity found for query")
     }
 
     @AfterEach

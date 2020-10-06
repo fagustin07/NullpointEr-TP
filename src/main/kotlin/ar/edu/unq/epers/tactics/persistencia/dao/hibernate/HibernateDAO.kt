@@ -1,5 +1,6 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.hibernate
 
+import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import org.hibernate.query.Query
 
@@ -19,8 +20,7 @@ open class HibernateDAO<T>(val entityType: Class<T>) {
     }
 
     open fun recuperar(id: Long): T {
-        val session = HibernateTransactionRunner.currentSession
-        return session.get(entityType, id) ?: throw RuntimeException("No existe una entidad con ese id")
+        return createQuery("from ${entityType.name} where id = :id").setParameter("id", id).singleResult
     }
 
     fun eliminarTodo() {
