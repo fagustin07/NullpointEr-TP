@@ -1,8 +1,6 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.hibernate
 
-import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
-import org.hibernate.query.Query
 
 
 open class HibernateDAO<T>(val entityType: Class<T>) {
@@ -20,7 +18,13 @@ open class HibernateDAO<T>(val entityType: Class<T>) {
     }
 
     open fun recuperar(id: Long): T {
-        return createQuery("from ${entityType.name} where id = :id").setParameter("id", id).singleResult
+        return try {
+            createQuery("from ${entityType.name} where id = :id")
+                .setParameter("id", id)
+                .singleResult
+        } catch (e: RuntimeException) {
+            throw RuntimeException("En la tabla solicitada no existe el id provisto")
+        }
     }
 
     fun eliminarTodo() {
