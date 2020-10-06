@@ -86,12 +86,25 @@ class Aventurero(private var nombre: String) {
     fun precisionFisica() = nivel() + fuerza + destreza
 
 
+    fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
+        this.tacticas.sortBy { it.prioridad }
+
+        val posiblesReceptores = this.aliados() + enemigos + this
+
+        for (tactica in tacticas) {
+            val receptor = posiblesReceptores.firstOrNull { receptor -> tactica.puedeAplicarseA(this, receptor) }
+            if (receptor != null) return tactica.aplicarseSobre(this, receptor)
+        }
+
+        throw RuntimeException("En ningun test se llega hasta aca. Siempre se retorna antes")
+    }
+
+
     fun recibirAtaqueFisicoSiDebe(dañoFisico: Int, precisionFisica: Int) {
         val claseDeArmadura = this.armadura() + (this.velocidad() / 2)
 
         if (precisionFisica >= claseDeArmadura) this.recibirDaño(dañoFisico)
     }
-
 
     fun recibirAtaqueMagicoSiDebe(tirada: Int, daño: Int) {
         if (tirada >= this.velocidad() / 2) {
@@ -134,11 +147,6 @@ class Aventurero(private var nombre: String) {
         this.party = party
     }
 
-    private fun recalcularVidaYMana() {
-        vida = ((nivel() * 5) + (constitucion * 2) + fuerza)
-        mana = nivel() + inteligencia
-    }
-
     private fun recibirDaño(dañoRecibido: Int) {
         if (this.tieneDefensor()) {
             defensor!!.recibirDaño(dañoRecibido / 2)
@@ -146,6 +154,11 @@ class Aventurero(private var nombre: String) {
         } else {
             this.vida = max(0, vida - dañoRecibido)
         }
+    }
+
+    private fun recalcularVidaYMana() {
+        vida = ((nivel() * 5) + (constitucion * 2) + fuerza)
+        mana = nivel() + inteligencia
     }
 
     private fun defendidoPor(defensor: Aventurero) {
@@ -192,19 +205,6 @@ class Aventurero(private var nombre: String) {
 
     internal fun darleElId(id: Long?) {
         this.id = id
-    }
-
-    fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
-        this.tacticas.sortBy { it.prioridad }
-
-        val posiblesReceptores = this.aliados() + enemigos + this
-
-        for (tactica in tacticas) {
-            val receptor = posiblesReceptores.firstOrNull { receptor -> tactica.puedeAplicarseA(this, receptor) }
-            if (receptor != null) return tactica.aplicarseSobre(this, receptor)
-        }
-
-        throw RuntimeException("En ningun test se llega hasta aca. Siempre se retorna antes")
     }
 
     internal fun tacticas() = this.tacticas

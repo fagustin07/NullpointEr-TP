@@ -3,12 +3,9 @@ package ar.edu.unq.epers.tactics.service.impl
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.modelo.Tactica
+import ar.edu.unq.epers.tactics.modelo.enums.*
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
-import ar.edu.unq.epers.tactics.service.dto.Accion
-import ar.edu.unq.epers.tactics.service.dto.Criterio
-import ar.edu.unq.epers.tactics.service.dto.TipoDeEstadistica
-import ar.edu.unq.epers.tactics.service.dto.TipoDeReceptor
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -16,8 +13,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class ListasLAZY_EAGERTest {
-    //TODO: Hacer que estos tests anden,
-    // posible solucion, listas en LAZY excepto cuando se recupera una entidad en especifico
 
     val partyDAO = HibernatePartyDAO()
     val aventureroDAO = HibernateAventureroDAO()

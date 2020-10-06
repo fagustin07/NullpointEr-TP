@@ -1,9 +1,6 @@
 package ar.edu.unq.epers.tactics.service.dto
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
-import ar.edu.unq.epers.tactics.modelo.Tactica
-import ar.edu.unq.epers.tactics.modelo.habilidades.*
-
 
 data class AventureroDTO(var id: Long?, var nivel: Int, var nombre: String, var imagenURL: String, var tacticas: List<TacticaDTO>, var atributos: AtributosDTO) {
 
@@ -46,75 +43,3 @@ data class AventureroDTO(var id: Long?, var nivel: Int, var nombre: String, var 
 }
 
 data class AtributosDTO(var id: Long?, var fuerza: Int, var destreza: Int, var constitucion: Int, var inteligencia: Int)
-
-data class TacticaDTO(var id: Long?, var prioridad: Int, var receptor: TipoDeReceptor, var tipoDeEstadistica: TipoDeEstadistica, var criterio: Criterio, var valor: Int, var accion: Accion){
-
-    companion object {
-
-        fun desdeModelo(tactica: Tactica): TacticaDTO {
-            return TacticaDTO(
-                tactica.id,
-                tactica.prioridad,
-                tactica.receptor,
-                tactica.tipoDeEstadistica,
-                tactica.criterio,
-                tactica.valor,
-                tactica.accion
-            )
-        }
-    }
-
-    fun aModelo(): Tactica {
-        val tactica = Tactica(
-            this.prioridad,
-            this.receptor,
-            this.tipoDeEstadistica,
-            this.criterio,
-            this.valor,
-            this.accion
-        )
-        tactica.id = this.id
-
-        return tactica
-    }
-
-    fun actualizarModelo(tactica: Tactica) = tactica.actualizarse(this.aModelo())
-}
-
-enum class TipoDeReceptor {
-    ALIADO { override fun test(emisor: Aventurero, receptor: Aventurero) = emisor.esAliadoDe(receptor) },
-    ENEMIGO { override fun test(emisor: Aventurero, receptor: Aventurero) = emisor.esEnemigoDe(receptor) },
-    UNO_MISMO { override fun test(emisor: Aventurero, receptor: Aventurero) = emisor == receptor };
-
-    abstract fun test(emisor: Aventurero, receptor: Aventurero): Boolean
-}
-
-enum class TipoDeEstadistica {
-    VIDA  { override fun valorPara(aventurero: Aventurero) = aventurero.vida() },
-    ARMADURA { override fun valorPara(aventurero: Aventurero) = aventurero.armadura() },
-    MANA { override fun valorPara(aventurero: Aventurero) = aventurero.mana() },
-    VELOCIDAD { override fun valorPara(aventurero: Aventurero) = aventurero.velocidad() },
-    DAÑO_FISICO { override fun valorPara(aventurero: Aventurero) = aventurero.dañoFisico() },
-    DAÑO_MAGICO { override fun valorPara(aventurero: Aventurero) = aventurero.poderMagico() },
-    PRECISION_FISICA { override fun valorPara(aventurero: Aventurero) = aventurero.precisionFisica() };
-
-    abstract fun valorPara(aventurero: Aventurero): Int
-}
-
-enum class Criterio {
-    IGUAL { override fun evaluarseCon(valorAComparar: Int, valorDeComparacion: Int) = valorAComparar == valorDeComparacion },
-    MAYOR_QUE { override fun evaluarseCon(valorAComparar: Int, valorDeComparacion: Int) = valorAComparar > valorDeComparacion },
-    MENOR_QUE { override fun evaluarseCon(valorAComparar: Int, valorDeComparacion: Int) = valorAComparar < valorDeComparacion };
-
-    abstract fun evaluarseCon(valorAComparar: Int, valorDeComparacion: Int): Boolean
-}
-
-enum class Accion {
-    ATAQUE_FISICO { override fun generarHabilidad(emisor:Aventurero, receptor: Aventurero) = Ataque.para(emisor,receptor, DadoDe20()) },
-    DEFENDER{ override fun generarHabilidad(emisor:Aventurero, receptor: Aventurero) = Defensa.para(emisor,receptor) },
-    CURAR{ override fun generarHabilidad(emisor:Aventurero, receptor: Aventurero) = Curacion.para(emisor,receptor)},
-    ATAQUE_MAGICO{ override fun generarHabilidad(emisor:Aventurero, receptor: Aventurero) = AtaqueMagico.para(emisor,receptor, DadoDe20()) },
-    MEDITAR{ override fun generarHabilidad(emisor:Aventurero, receptor: Aventurero) = Meditacion.para(emisor,receptor) };
-
-    abstract  fun generarHabilidad(emisor:Aventurero, receptor: Aventurero) : Habilidad
-}
