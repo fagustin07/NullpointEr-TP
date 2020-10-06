@@ -26,14 +26,13 @@ internal class PeleaServiceTest {
     val partyDAO = HibernatePartyDAO()
     val aventureroDAO = HibernateAventureroDAO()
     val peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO)
+    val partyService = PersistentPartyService(partyDAO)
     lateinit var party: Party
 
     @BeforeEach
     fun setUp() {
         party = Party("Los geniales", "URL")
-        runTrx {
-            partyDAO.crear(party)
-        }
+        partyService.crear(party)
     }
 
     @Test
@@ -50,10 +49,6 @@ internal class PeleaServiceTest {
 
     @Test
     fun `una party que esta en pelea no puede entrar en otra`() {
-        val peleaDAO = HibernatePeleaDAO()
-        val partyDAO = HibernatePartyDAO()
-        val aventureroDAO = HibernateAventureroDAO()
-        val peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO)
         peleaService.iniciarPelea(party.id()!!)
 
         val exception = assertThrows<RuntimeException> { peleaService.iniciarPelea(party.id()!!) }
@@ -65,34 +60,27 @@ internal class PeleaServiceTest {
         val curador = Aventurero("Fede", "", 10, 10, 10, 10)
         val aliado = Aventurero("Jorge", "", 10, 10, 10, 10)
         val manaOriginal = curador.mana()
-        val tactica = Tactica(
-            1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA,
-            Criterio.MAYOR_QUE, 0, Accion.CURAR
-        )
-        curador.agregarTactica(tactica)
 
-        runTrx {
-            party.agregarUnAventurero(curador)
-            party.agregarUnAventurero(aliado)
-            partyDAO.actualizar(party)
-        }
+        curador.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0, Accion.CURAR))
+        curador.agregarTactica(Tactica(2, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 3, Accion.CURAR))
+
+        partyService.agregarAventureroAParty(party.id()!!, curador)
+        partyService.agregarAventureroAParty(party.id()!!, aliado)
 
         val pelea = peleaService.iniciarPelea(party.id()!!)
         val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
 
-        lateinit var curadorLuegoDeResolverTurno: Aventurero
         runTrx {
-            curadorLuegoDeResolverTurno = aventureroDAO.recuperar(curador.id()!!)
+            val curadorLuegoDeResolverTurno = aventureroDAO.recuperar(curador.id()!!)
+            assertThat(curadorLuegoDeResolverTurno.mana()).isEqualTo(manaOriginal - 5)
+            assertTrue(habilidadGenerada is Curacion)
         }
-
-        assertThat(curadorLuegoDeResolverTurno.mana()).isEqualTo(manaOriginal - 5)
-        assertTrue(habilidadGenerada is Curacion)
     }
 
     @Test
     fun `un aventurero elige una tactica que ataca a un enemigo`() {
         val atacante = Aventurero("Fede", "", 10, 10, 10, 10)
-        val enemigo = Aventurero("Jorge", "", 10, 10, 10, 10)
+        val enemigo = Aventurero("Jorge", "", 20, 20, 20, 20)
         val enemigos = listOf(enemigo)
         val tactica = Tactica(
             1,
@@ -104,31 +92,24 @@ internal class PeleaServiceTest {
         )
         atacante.agregarTactica(tactica)
 
-        runTrx {
-            party.agregarUnAventurero(atacante)
-            partyDAO.actualizar(party)
-        }
+        partyService.agregarAventureroAParty(party.id()!!, atacante)
 
         val pelea = peleaService.iniciarPelea(party.id()!!)
         val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, atacante.id()!!, enemigos) as Ataque
 
-        assertThat(habilidadGenerada.aventureroReceptor.id()).isEqualTo(enemigo.id())
+        assertThat(habilidadGenerada.aventureroReceptor.id()).isEqualTo(enemigo.id()) // TODO: enemigo no esta en ninguna party. Su id es null
     }
 
 
     @Test
     fun `un aventurero resuelve su turno buscando la tactica que cumpla su criterio dependiendo de la prioridad `() {
         val aventurero = Aventurero("Fede", "", 10, 10, 10, 10)
-        val tactica1 =
-            Tactica(1, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 9999, Accion.ATAQUE_FISICO)
-        val tactica2 =
-            Tactica(2, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0, Accion.MEDITAR)
+        val tactica1 = Tactica(1, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 9999, Accion.ATAQUE_FISICO)
+        val tactica2 = Tactica(2, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0, Accion.MEDITAR)
         aventurero.agregarTactica(tactica1)
         aventurero.agregarTactica(tactica2)
-        runTrx {
-            party.agregarUnAventurero(aventurero)
-            partyDAO.actualizar(party)
-        }
+
+        partyService.agregarAventureroAParty(party.id()!!, aventurero)
 
         val pelea = peleaService.iniciarPelea(party.id()!!)
         val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, aventurero.id()!!, listOf()) as Meditacion
@@ -150,11 +131,8 @@ internal class PeleaServiceTest {
 
         curador.agregarTactica(tactica)
 
-        runTrx {
-            party.agregarUnAventurero(curador)
-            party.agregarUnAventurero(aliado)
-            partyDAO.actualizar(party)
-        }
+        partyService.agregarAventureroAParty(party.id()!!, curador)
+        partyService.agregarAventureroAParty(party.id()!!, aliado)
 
         val pelea = peleaService.iniciarPelea(party.id()!!)
         val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
@@ -195,11 +173,8 @@ internal class PeleaServiceTest {
 
         curador.agregarTactica(tactica)
 
-        runTrx {
-            party.agregarUnAventurero(curador)
-            party.agregarUnAventurero(aliado)
-            partyDAO.actualizar(party)
-        }
+        partyService.agregarAventureroAParty(party.id()!!, curador)
+        partyService.agregarAventureroAParty(party.id()!!, aliado)
 
         val pelea = peleaService.iniciarPelea(party.id()!!)
         val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
@@ -222,6 +197,22 @@ internal class PeleaServiceTest {
         val ultimaPelea = peleaService.terminarPelea(party.id()!!)
         runTrx {
             assertThat(peleaDAO.recuperarUltimaPeleaDeParty(party.id()!!).id()).isEqualTo(ultimaPelea.id())
+        }
+    }
+    
+    @Test
+    fun `cuando se recupera la party de un aventurero que tenga varias tacticas, este aparece una sola vez`() {
+        val party = Party("Nombre de Party", "/img.jpg")
+        val aventurero = Aventurero("Nombre de Aventurero", "", 1, 2, 3, 4)
+        aventurero.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0, Accion.CURAR))
+        aventurero.agregarTactica(Tactica(2, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0, Accion.CURAR))
+
+        val partyID = partyService.crear(party).id()!!
+        partyService.agregarAventureroAParty(partyID, aventurero)
+
+        runTrx {
+            val partyRecuperada = partyService.recuperar(partyID)
+            assertEquals(1, partyRecuperada.numeroDeAventureros())
         }
     }
 
