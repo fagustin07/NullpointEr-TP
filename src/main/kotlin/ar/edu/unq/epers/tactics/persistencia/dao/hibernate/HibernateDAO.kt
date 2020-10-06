@@ -22,7 +22,7 @@ open class HibernateDAO<T>(val entityType: Class<T>) {
             createQuery("from ${entityType.name} where id = :id")
                 .setParameter("id", id)
                 .singleResult
-        } catch (e: RuntimeException) {
+        } catch (e: NoResultException) {
             throw RuntimeException("En la tabla solicitada no existe el id provisto")
         }
     }
