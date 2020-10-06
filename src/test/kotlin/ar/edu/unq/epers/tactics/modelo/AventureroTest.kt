@@ -29,6 +29,17 @@ class AventureroTest {
         assertEquals(17, cacho.constitucion())
     }
 
+    @Test
+    fun sePuedeActualizarEnBaseALosAtributosDeOtroAventurero() {
+        val otroAventurero = Aventurero("Otro aventurero", "xxx", 1, 2, 3, 4)
+        cacho.actualizarse(otroAventurero)
+
+        assertEquals(otroAventurero.fuerza(), cacho.fuerza())
+        assertEquals(otroAventurero.destreza(), cacho.destreza())
+        assertEquals(otroAventurero.inteligencia(), cacho.inteligencia())
+        assertEquals(otroAventurero.constitucion(), cacho.constitucion())
+    }
+
 
     @Test
     fun sabeCuantaVidaTiene() = assertEquals(84, cacho.vida())

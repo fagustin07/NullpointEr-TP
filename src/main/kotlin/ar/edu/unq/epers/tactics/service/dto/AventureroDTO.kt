@@ -39,7 +39,7 @@ data class AventureroDTO(var id: Long?, var nivel: Int, var nombre: String, var 
         return aventurero
     }
 
-    fun actualizarModelo(aventurero: Aventurero) = aventurero.actualizarse(this)
+    fun actualizarModelo(aventurero: Aventurero) = aventurero.actualizarse(aModelo())
 }
 
 data class AtributosDTO(var id: Long?, var fuerza: Int, var destreza: Int, var constitucion: Int, var inteligencia: Int)
