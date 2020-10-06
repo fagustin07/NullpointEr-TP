@@ -13,6 +13,7 @@ class Party(private var nombre: String, private var imagenURL: String) {
     init { if (nombre.isEmpty()) throw RuntimeException("Una party debe tener un nombre") }
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @JoinColumn(name = "party_id")
     private var aventureros: MutableList<Aventurero> = mutableListOf()
 
     var estaEnPelea = false
