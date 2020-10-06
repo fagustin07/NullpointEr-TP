@@ -4,13 +4,13 @@ import ar.edu.unq.epers.tactics.modelo.Tactica
 import ar.edu.unq.epers.tactics.modelo.enums.*
 
 data class TacticaDTO(
-    var id: Long?,
-    var prioridad: Int,
-    var tipoDeReceptor: TipoDeReceptor,
-    var tipoDeEstadistica: TipoDeEstadistica,
-    var criterio: Criterio,
-    var valor: Int,
-    var accion: Accion
+        var id: Long?,
+        var prioridad: Int,
+        var receptor: TipoDeReceptor,
+        var tipoDeEstadistica: TipoDeEstadistica,
+        var criterio: Criterio,
+        var valor: Int,
+        var accion: Accion
 ) {
 
     companion object {
@@ -31,7 +31,7 @@ data class TacticaDTO(
     fun aModelo(): Tactica {
         val tactica = Tactica(
             this.prioridad,
-            this.tipoDeReceptor,
+            this.receptor,
             this.tipoDeEstadistica,
             this.criterio,
             this.valor,
