@@ -133,4 +133,24 @@ class AventureroTest {
         assertThat(cacho.vida()).isEqualTo(vidaInicial)
         assertThat(cacho.mana()).isEqualTo(manaInicial)
     }
+
+    @Test
+    fun `un aventurero deja de defender cuando se reestablece`() {
+        val otroAventurero = Aventurero("Pepe")
+        cacho.defenderA(otroAventurero)
+
+        cacho.reestablecerse()
+
+        assertFalse(cacho.estaDefendiendo())
+    }
+
+    @Test
+    fun `un aventurero deja de estar defendido cuando se reestablece`() {
+        val otroAventurero = Aventurero("Pepe")
+        cacho.defenderA(otroAventurero)
+
+        otroAventurero.reestablecerse()
+
+        assertFalse(otroAventurero.estaSiendoDefendiendo())
+    }
 }

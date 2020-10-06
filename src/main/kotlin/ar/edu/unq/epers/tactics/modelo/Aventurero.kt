@@ -215,6 +215,16 @@ class Aventurero(private var nombre: String) {
 
     fun reestablecerse() {
         this.recalcularVidaYMana()
+        this.aventureroDefendido = null
+        this.defensor = null
+    }
+
+    fun estaDefendiendo(): Boolean {
+        return this.aventureroDefendido != null
+    }
+
+    fun estaSiendoDefendiendo(): Boolean {
+        return this.defensor != null
     }
 
 }
