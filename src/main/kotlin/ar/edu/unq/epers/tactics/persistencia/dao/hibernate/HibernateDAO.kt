@@ -1,6 +1,7 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.hibernate
 
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
+import javax.persistence.NoResultException
 
 
 open class HibernateDAO<T>(val entityType: Class<T>) {

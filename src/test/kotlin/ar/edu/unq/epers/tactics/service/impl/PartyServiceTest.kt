@@ -78,7 +78,7 @@ class PartyServiceTest {
     }
 
     @Test
-    fun noSePuedeAgregarUnAventureroUnaPartyQueNoFueCreada() {
+    fun noSePuedeAgregarUnAventureroAUnaPartyQueNoFueCreada() {
         val aventurero = Aventurero("Pepe")
         val idNoRegistrado: Long = 45
 
