@@ -278,8 +278,8 @@ internal class PeleaServiceTest {
 
         val pelea = peleaService.iniciarPelea(partyEnemigo.id()!!)
         var habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, otroAventurero.id()!!, listOf(aventurero))
-        peleaService.recibirHabilidad(aventurero.id()!!, habilidadGenerada)
-        habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, otroAventurero.id()!!, listOf(aventurero))
+        val aventureroDañado = peleaService.recibirHabilidad(aventurero.id()!!, habilidadGenerada)
+        habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, otroAventurero.id()!!, listOf(aventureroDañado))
 
        assertTrue(habilidadGenerada is HabilidadNula)
 
@@ -308,7 +308,7 @@ internal class PeleaServiceTest {
         val peleaEnemigo = peleaService.iniciarPelea(partyEnemigo.id()!!)
         val peleaAventurero = peleaService.iniciarPelea(party.id()!!)
 
-        var habilidadGenerada = peleaService.resolverTurno(peleaEnemigo.id()!!, otroAventurero.id()!!, listOf(aventurero))
+        val habilidadGenerada = peleaService.resolverTurno(peleaEnemigo.id()!!, otroAventurero.id()!!, listOf(aventurero))
         peleaService.recibirHabilidad(aventurero.id()!!, habilidadGenerada)
 
         val exception = assertThrows<RuntimeException> {
