@@ -26,7 +26,7 @@ internal class AtaqueTest {
 
         val dadoDe20Falso = DadoSimulado(10)
         val ataque = Ataque.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
-        ataque.resolverse()
+        ataque.resolversePara(aventureroReceptor)
 
         Assertions.assertThat(aventureroReceptor.vida()).isLessThan(vidaAntesDelAtaque)
     }
@@ -37,7 +37,7 @@ internal class AtaqueTest {
 
         val dadoDe20Falso = DadoSimulado(1)
         val ataque = Ataque.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
-        ataque.resolverse()
+        ataque.resolversePara(aventureroReceptor)
 
         Assertions.assertThat(aventureroReceptor.vida()).isEqualTo(vidaAntesDelAtaque)
     }
@@ -48,7 +48,7 @@ internal class AtaqueTest {
         val ataque = Ataque.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
         val vidaAntesDelAtaque = aventureroReceptor.vida()
 
-        ataque.resolverse()
+        ataque.resolversePara(aventureroReceptor)
 
         Assertions.assertThat(aventureroReceptor.vida()).isEqualTo(vidaAntesDelAtaque - aventureroEmisor.dañoFisico())
     }

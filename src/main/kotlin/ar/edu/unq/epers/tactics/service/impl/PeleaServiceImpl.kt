@@ -17,8 +17,7 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
             val party = partyDAO.recuperar(idDeLaParty)
             party.entrarEnPelea()
             partyDAO.actualizar(party)
-
-            peleaDAO.crear(Pelea(idDeLaParty))
+            peleaDAO.crear(Pelea(party))
         }
 
     override fun estaEnPelea(partyId: Long) = runTrx { partyDAO.recuperar(partyId).estaEnPelea() }
@@ -40,9 +39,18 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
             //TODO: recibirHabilidad(idPelea:Long, idAventurero:Long, habilidad: Habilidad):Aventurero
             // - El aventurero debe resolver la habilidad que esta siendo ejecutada sobre el,
             // chequear esto para que se ejecute correctamente
+
+            val aventurero = aventureroDAO.recuperar(aventureroId)
+
+            habilidad.resolversePara(aventurero)
+
+            aventureroDAO.actualizar(aventurero)
+/*
             habilidad.resolverse()
             val aventureroDespuesDeRecibirHabilidad = habilidad.aventureroReceptor
             aventureroDAO.actualizar(aventureroDespuesDeRecibirHabilidad)
+
+ */
         }
 
     override fun terminarPelea(idDeLaParty: Long) =

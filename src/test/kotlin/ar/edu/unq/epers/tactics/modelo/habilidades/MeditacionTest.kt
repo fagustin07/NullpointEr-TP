@@ -15,7 +15,7 @@ class MeditacionTest {
         val manaInicial = aventurero.mana()
 
         val meditacion = Meditacion.para(aventurero, aventurero)
-        meditacion.resolverse()
+        meditacion.resolversePara(aventurero)
 
         assertThat(aventurero.mana()).isEqualTo(manaInicial + aventurero.nivel())
     }

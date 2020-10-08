@@ -11,6 +11,6 @@ class Defensa(val aventureroEmisor: Aventurero, aventureroReceptor: Aventurero):
         }
     }
 
-    override fun resolverse() = aventureroEmisor.defenderA(aventureroReceptor)
+    override fun resolversePara(receptor: Aventurero) = aventureroEmisor.defenderA(receptor)
 
 }

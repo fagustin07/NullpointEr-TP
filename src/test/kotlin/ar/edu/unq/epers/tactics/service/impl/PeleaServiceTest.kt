@@ -25,6 +25,7 @@ internal class PeleaServiceTest {
     val aventureroDAO = HibernateAventureroDAO()
     val peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO)
     val partyService = PersistentPartyService(partyDAO)
+    val aventureroService = AventureroServiceImpl(aventureroDAO, partyDAO)
     lateinit var party: Party
 
     @BeforeEach
@@ -120,25 +121,22 @@ internal class PeleaServiceTest {
     fun `un aventurero que resuelve su turno ejecuta la habilidad de curar sobre otro y este recibe la habilidad`() {
         val curador = Aventurero("Fede", "", 10, 10, 10, 10)
         val aliado = Aventurero("Jorge", "", 10, 10, 10, 10)
-        val vidaAntesDeCuracion = aliado.vida()
-        val tactica = Tactica(
-            1, TipoDeReceptor.ALIADO,
-            TipoDeEstadistica.VIDA,
-            Criterio.MAYOR_QUE, 0, Accion.CURAR
-        )
 
-        curador.agregarTactica(tactica)
+        curador.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0, Accion.CURAR))
 
         partyService.agregarAventureroAParty(party.id()!!, curador)
         partyService.agregarAventureroAParty(party.id()!!, aliado)
 
-        val pelea = peleaService.iniciarPelea(party.id()!!)
-        val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
-        val aliadoQueRecibiraHabilidad = peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada)
+        val peleaId = peleaService.iniciarPelea(party.id()!!).id()!!
+        val habilidadGenerada = peleaService.resolverTurno(peleaId, curador.id()!!, listOf())
+
+        val vidaAntesDeCuracion = aliado.vida()
+        peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada)
 
         val vidaEsperada = vidaAntesDeCuracion + curador.poderMagico()
-        assertThat(aliado.id()!!).isEqualTo(aliadoQueRecibiraHabilidad.id())
-        assertEquals(vidaEsperada, aliadoQueRecibiraHabilidad.vida())
+        val aliadoRecuperado = aventureroService.recuperar(aliado.id()!!)
+        assertThat(aliado.id()!!).isEqualTo(aliadoRecuperado.id())
+        assertEquals(vidaEsperada, aliadoRecuperado.vida())
     }
 
     @Test
@@ -280,12 +278,13 @@ internal class PeleaServiceTest {
 
         val pelea = peleaService.iniciarPelea(partyEnemigo.id()!!)
         var habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, otroAventurero.id()!!, listOf(aventurero))
-        peleaService.recibirHabilidad(aventurero.id()!!, habilidadGenerada)
-        habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, otroAventurero.id()!!, listOf(aventurero))
+        val aventureroDañado = peleaService.recibirHabilidad(aventurero.id()!!, habilidadGenerada)
+        habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, otroAventurero.id()!!, listOf(aventureroDañado))
 
        assertTrue(habilidadGenerada is HabilidadNula)
 
     }
+
 
     @Test
     fun `un aventurero muerto no puede resolver su turno`() {
@@ -309,7 +308,7 @@ internal class PeleaServiceTest {
         val peleaEnemigo = peleaService.iniciarPelea(partyEnemigo.id()!!)
         val peleaAventurero = peleaService.iniciarPelea(party.id()!!)
 
-        var habilidadGenerada = peleaService.resolverTurno(peleaEnemigo.id()!!, otroAventurero.id()!!, listOf(aventurero))
+        val habilidadGenerada = peleaService.resolverTurno(peleaEnemigo.id()!!, otroAventurero.id()!!, listOf(aventurero))
         peleaService.recibirHabilidad(aventurero.id()!!, habilidadGenerada)
 
         val exception = assertThrows<RuntimeException> {

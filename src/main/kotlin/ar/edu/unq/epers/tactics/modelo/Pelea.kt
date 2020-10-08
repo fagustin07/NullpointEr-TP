@@ -1,13 +1,14 @@
 package ar.edu.unq.epers.tactics.modelo
 
 import java.time.LocalDateTime
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import javax.persistence.*
+import kotlin.jvm.Transient
 
 @Entity
-class Pelea(private val idDeLaParty: Long) {
+class Pelea(
+    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val party: Party
+    ) {
 
     private val fecha = LocalDateTime.now()
 
@@ -19,5 +20,6 @@ class Pelea(private val idDeLaParty: Long) {
 
     fun fecha() = this.fecha
 
-    fun idDeLaParty() = this.idDeLaParty
+    fun idDeLaParty() = party.id()!!
+
 }
