@@ -1,40 +1,68 @@
 package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
-import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import ar.edu.unq.epers.tactics.modelo.Pelea
+import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import ar.edu.unq.epers.tactics.persistencia.dao.AventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.PeleaDAO
 import ar.edu.unq.epers.tactics.service.PeleaService
+import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
 
-class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO): PeleaService {
+class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO) :
+    PeleaService {
 
-    override fun iniciarPelea(idDeLaPelea: Long): Pelea {
-        TODO("Not yet implemented")
-    }
+    override fun iniciarPelea(idDeLaParty: Long) =
+        runTrx {
+            val party = partyDAO.recuperar(idDeLaParty)
+            party.entrarEnPelea()
+            partyDAO.actualizar(party)
+            peleaDAO.crear(Pelea(party))
+        }
 
-    override fun estaEnPelea(partyId: Double): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun estaEnPelea(partyId: Long) = runTrx { partyDAO.recuperar(partyId).estaEnPelea() }
 
-    override fun actualizar(pelea: Pelea): Pelea {
-        TODO("Not yet implemented")
-    }
+    override fun resolverTurno(peleaId: Long, aventureroId: Long, enemigos: List<Aventurero>) =
+        //TODO: resolverTurno(idPelea:Long, idAventurero:Long, enemigos: List<Aventurero>) : Habilidad
+        // - Dada la lista de enemigos, el aventurero debe utilizar sus Tacticas para elegir que
+        // habilidad utilizar sobre que receptor. Deberiamos utilizar la pelea y recuperar el aventurero
+        // desde la party que tenga vinculada?
+        runTrx {
+            val aventurero = aventureroDAO.recuperar(aventureroId)
+            val habilidadGenerada = aventurero.resolverTurno(enemigos)
+            aventureroDAO.actualizar(aventurero)
+            habilidadGenerada
+        }
 
-    override fun recuperar(idDeLaPelea: Long): Pelea {
-        TODO("Not yet implemented")
-    }
+    override fun recibirHabilidad(aventureroId: Long, habilidad: Habilidad) =
+        runTrx {
+            //TODO: recibirHabilidad(idPelea:Long, idAventurero:Long, habilidad: Habilidad):Aventurero
+            // - El aventurero debe resolver la habilidad que esta siendo ejecutada sobre el,
+            // chequear esto para que se ejecute correctamente
 
-    override fun resolverTurno(peleaId: Long, aventureroId: Long, enemigos: List<Aventurero>): Habilidad {
-        TODO("Not yet implemented")
-    }
+            val aventurero = aventureroDAO.recuperar(aventureroId)
 
-    override fun recibirHabilidad(aventureroId: Long, habilidadId: Habilidad): Aventurero {
-        TODO("Not yet implemented")
-    }
+            habilidad.resolversePara(aventurero)
 
-    override fun terminarPelea(idDeLaPelea: Long): Pelea {
-        TODO("Not yet implemented")
+            aventureroDAO.actualizar(aventurero)
+/*
+            habilidad.resolverse()
+            val aventureroDespuesDeRecibirHabilidad = habilidad.aventureroReceptor
+            aventureroDAO.actualizar(aventureroDespuesDeRecibirHabilidad)
+
+ */
+        }
+
+    override fun terminarPelea(idDeLaParty: Long) =
+        runTrx {
+            val partyRecuperada = partyDAO.recuperar(idDeLaParty)
+            partyRecuperada.salirDePelea()
+            partyDAO.actualizar(partyRecuperada)
+
+            this.peleaDeParty(idDeLaParty)
+        }
+
+    private fun peleaDeParty(idDeLaParty: Long): Pelea {
+        return peleaDAO.recuperarUltimaPeleaDeParty(idDeLaParty)
     }
 }

@@ -2,6 +2,7 @@ package ar.edu.unq.epers.tactics.modelo.habilidades
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
+import ar.edu.unq.epers.tactics.modelo.dado.DadoSimulado
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -23,9 +24,9 @@ class AtaqueMagicoTest {
     fun `un ataque magico con tirada mayor a la la mitad de la velocidad del receptor es exitoso`() {
         val vidaAntesDelAtaque = aventureroReceptor.vida()
 
-        val dadoDe20Falso = DadoDe20(20)
+        val dadoDe20Falso = DadoSimulado(20)
         val ataqueMagico = AtaqueMagico.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
-        ataqueMagico.resolverse()
+        ataqueMagico.resolversePara(aventureroReceptor)
 
         Assertions.assertThat(aventureroReceptor.vida()).isLessThan(vidaAntesDelAtaque)
     }
@@ -34,21 +35,21 @@ class AtaqueMagicoTest {
     fun `un ataque con tirada menor a la mitad de la velocidad del receptor falla`() {
         val vidaAntesDelAtaque = aventureroReceptor.vida()
 
-        val dadoDe20Falso = DadoDe20(1)
+        val dadoDe20Falso = DadoSimulado(1)
         val ataqueMagico = AtaqueMagico.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
-        ataqueMagico.resolverse()
+        ataqueMagico.resolversePara(aventureroReceptor)
 
         Assertions.assertThat(aventureroReceptor.vida()).isEqualTo(vidaAntesDelAtaque)
     }
 
     @Test
     fun `un ataque exitoso le resta al receptor una cantidad de vida igual al poder magico del emisor`() {
-        val dadoDe20Falso = DadoDe20(20)
+        val dadoDe20Falso = DadoSimulado(20)
         val poderMagicoDeAtaque = aventureroEmisor.poderMagico()
         val vidaAntesDeAtaque = aventureroReceptor.vida()
         val ataqueMagico = AtaqueMagico.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
 
-        ataqueMagico.resolverse()
+        ataqueMagico.resolversePara(aventureroReceptor)
 
         Assertions.assertThat(aventureroReceptor.vida()).isEqualTo(vidaAntesDeAtaque - poderMagicoDeAtaque)
     }

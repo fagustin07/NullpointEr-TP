@@ -1,8 +1,10 @@
 package ar.edu.unq.epers.tactics.modelo.habilidades
 
+import ar.edu.unq.epers.tactics.modelo.Aventurero
 
-abstract class Habilidad() {
 
-    abstract fun resolverse()
+abstract class Habilidad(val aventureroReceptor: Aventurero) {
+
+    abstract fun resolversePara(receptor: Aventurero)
 
 }

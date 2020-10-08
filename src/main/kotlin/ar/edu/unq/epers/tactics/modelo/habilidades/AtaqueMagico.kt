@@ -1,20 +1,21 @@
 package ar.edu.unq.epers.tactics.modelo.habilidades
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
+import ar.edu.unq.epers.tactics.modelo.dado.Dado
 
-class AtaqueMagico(val poderMagicoEmisor: Int, val nivelEmisor: Int, val aventureroReceptor: Aventurero, val dadoDe20: DadoDe20) : Habilidad() {
+class AtaqueMagico(val poderMagicoEmisor: Int, val nivelEmisor: Int, aventureroReceptor: Aventurero, val dado: Dado) : Habilidad(aventureroReceptor) {
 
     companion object {
-        fun para(aventureroEmisor: Aventurero, aventureroReceptor: Aventurero, dadoDe20: DadoDe20): AtaqueMagico {
-            val ataqueMagico = AtaqueMagico(aventureroEmisor.poderMagico(), aventureroEmisor.nivel(), aventureroReceptor, dadoDe20)
+        fun para(aventureroEmisor: Aventurero, aventureroReceptor: Aventurero, dado: Dado): AtaqueMagico {
+            val ataqueMagico = AtaqueMagico(aventureroEmisor.poderMagico(), aventureroEmisor.nivel(), aventureroReceptor, dado)
             aventureroEmisor.consumirMana()
             return ataqueMagico
         }
     }
 
-    override fun resolverse() {
-        val tirada = dadoDe20.tirada() + nivelEmisor
-        aventureroReceptor.recibirAtaqueMagicoSiDebe(tirada, poderMagicoEmisor)
+    override fun resolversePara(receptor: Aventurero) {
+        val tirada = dado.tirada() + nivelEmisor
+        receptor.recibirAtaqueMagicoSiDebe(tirada, poderMagicoEmisor)
     }
 
 }

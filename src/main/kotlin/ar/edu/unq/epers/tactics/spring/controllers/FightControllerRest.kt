@@ -4,6 +4,7 @@ import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.service.PeleaService
 import ar.edu.unq.epers.tactics.service.dto.AventureroDTO
 import ar.edu.unq.epers.tactics.service.dto.HabilidadDTO
+import ar.edu.unq.epers.tactics.service.dto.HabilidadNulaDTO
 import ar.edu.unq.epers.tactics.service.dto.PeleaDTO
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -25,7 +26,7 @@ class FightControllerRest(private val peleaService: PeleaService) {
 
     @PostMapping("/{fightId}/resolveTurn")
     fun resolveTurn(@PathVariable fightId: Long, @RequestBody request:ResolveTurnRequest):HabilidadDTO? {
-        val habilidad = peleaService.resolverTurno(fightId, request.adventurerId, request.enemies)
+        val habilidad = peleaService.resolverTurno(fightId, request.adventurerId, request.enemies.map { it.aModelo() })
         return HabilidadDTO.desdeModelo(habilidad)
     }
 
@@ -39,5 +40,5 @@ class FightControllerRest(private val peleaService: PeleaService) {
 
 
 data class CreateFightRequest(val partyId:Long)
-data class ResolveTurnRequest(val adventurerId:Long, val enemies:List<Aventurero>)
+data class ResolveTurnRequest(val adventurerId:Long, val enemies:List<AventureroDTO>)
 data class ReceiveAbilityRequest(val adventurerId:Long, val ability:HabilidadDTO)

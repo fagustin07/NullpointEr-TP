@@ -2,7 +2,7 @@ package ar.edu.unq.epers.tactics.modelo.habilidades
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 
-class Defensa(val aventureroEmisor: Aventurero, val aventureroReceptor: Aventurero): Habilidad() {
+class Defensa(val aventureroEmisor: Aventurero, aventureroReceptor: Aventurero): Habilidad(aventureroReceptor) {
 
     companion object {
         fun para(aventureroEmisor: Aventurero, aventureroReceptor: Aventurero): Defensa {
@@ -11,6 +11,6 @@ class Defensa(val aventureroEmisor: Aventurero, val aventureroReceptor: Aventure
         }
     }
 
-    override fun resolverse() = aventureroEmisor.defenderA(aventureroReceptor)
+    override fun resolversePara(receptor: Aventurero) = aventureroEmisor.defenderA(receptor)
 
 }

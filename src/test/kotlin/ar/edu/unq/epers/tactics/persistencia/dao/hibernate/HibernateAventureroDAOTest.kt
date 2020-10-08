@@ -33,21 +33,6 @@ class HibernateAventureroDAOTest {
         }
     }
 
-    /*
-    @Test
-    fun seActualizaElNombreDeUnAventureroYLuegoSeLoRecuperaActualizado() {
-        HibernateTransactionRunner.runTrx {
-            val pepitoId = generateModel()
-
-            pepito.cambiarNombrePor("Federico")
-            aventureroDAO.actualizar(pepito)
-            val recoveryPepito = aventureroDAO.recuperar(pepitoId)
-
-            assertThat(pepito).usingRecursiveComparison().isEqualTo(recoveryPepito)
-        }
-    }
-    */
-
     @Test
     fun alEliminarUnAventureroPersistidoYLuegoRecuperarloNoExiste() {
         HibernateTransactionRunner.runTrx {
@@ -57,7 +42,7 @@ class HibernateAventureroDAOTest {
             val exception = assertThrows<RuntimeException> {
                 aventureroDAO.recuperar(pepitoId)
             }
-            assertEquals(exception.message, "No existe una entidad con ese id")
+            assertEquals(exception.message, "En la tabla solicitada no existe el id provisto")
         }
     }
 

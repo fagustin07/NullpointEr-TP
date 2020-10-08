@@ -2,7 +2,6 @@ package ar.edu.unq.epers.tactics.modelo.enums
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
-import ar.edu.unq.epers.tactics.service.dto.TipoDeReceptor
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -17,7 +16,6 @@ class TipoDeReceptorTest {
     private lateinit var aliado: Aventurero
     private lateinit var enemigo: Aventurero
 
-    // TODO: los tests y la implementacion son una chanchada total
     @BeforeEach
     fun setUp() {
         partyDeEmisor = Party("Party del emisor", "/party.jpg")

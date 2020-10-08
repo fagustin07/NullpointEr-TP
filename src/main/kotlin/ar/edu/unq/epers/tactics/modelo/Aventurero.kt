@@ -1,16 +1,20 @@
 package ar.edu.unq.epers.tactics.modelo
 
-import ar.edu.unq.epers.tactics.service.dto.AventureroDTO
+import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
+import ar.edu.unq.epers.tactics.modelo.habilidades.HabilidadNula
 import javax.persistence.*
 import kotlin.math.max
 
 
 @Entity(name = "Aventurero")
-class Aventurero(private var nombre : String) {
+class Aventurero(private var nombre: String) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private var id: Long? = null
     private var imagenURL: String = ""
+
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    private var tacticas: MutableList<Tactica> = mutableListOf()
 
     private var vida: Int = 0
     private var mana: Int = 0
@@ -40,8 +44,10 @@ class Aventurero(private var nombre : String) {
     @ManyToOne
     var party: Party? = null
 
-    constructor(nombre: String, imagenURL: String = "", fuerza: Int = 1,
-                destreza: Int = 1, inteligencia: Int = 1, constitucion: Int = 1) : this(nombre) {
+    constructor(
+        nombre: String, imagenURL: String = "", fuerza: Int = 1,
+        destreza: Int = 1, inteligencia: Int = 1, constitucion: Int = 1
+    ) : this(nombre) {
         this.imagenURL = imagenURL
         this.inteligencia = inteligencia
         this.destreza = destreza
@@ -50,9 +56,10 @@ class Aventurero(private var nombre : String) {
         this.recalcularVidaYMana()
     }
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     private var defensor: Aventurero? = null
-    @OneToOne(fetch = FetchType.LAZY)
+
+    @OneToOne(fetch = FetchType.EAGER)
     private var aventureroDefendido: Aventurero? = null
     private var turnosDefendido = 0
 
@@ -79,12 +86,32 @@ class Aventurero(private var nombre : String) {
     fun precisionFisica() = nivel() + fuerza + destreza
 
 
+    fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
+        validarSiEstaVivo()
+
+        this.tacticas.sortBy { it.prioridad }
+
+        val posiblesReceptores = this.aliados() + enemigos + this
+
+
+        for (tactica in tacticas) {
+            val receptor = posiblesReceptores.firstOrNull { receptor -> tactica.puedeAplicarseA(this, receptor) }
+            if (receptor != null) {
+                return tactica.aplicarseSobre(this, receptor)
+            }
+        }
+        return HabilidadNula.para(this,this)
+    }
+
+    private fun validarSiEstaVivo() {
+        if (!this.estaVivo()) throw RuntimeException("Un aventurero muerto no puede resolver su turno");
+    }
+
     fun recibirAtaqueFisicoSiDebe(dañoFisico: Int, precisionFisica: Int) {
         val claseDeArmadura = this.armadura() + (this.velocidad() / 2)
 
         if (precisionFisica >= claseDeArmadura) this.recibirDaño(dañoFisico)
     }
-
 
     fun recibirAtaqueMagicoSiDebe(tirada: Int, daño: Int) {
         if (tirada >= this.velocidad() / 2) {
@@ -105,10 +132,10 @@ class Aventurero(private var nombre : String) {
     }
 
     fun defenderA(receptor: Aventurero) {
-        if(this.aventureroDefendido==null) {
+        if (this.aventureroDefendido == null) {
             this.aventureroDefendido = receptor
             aventureroDefendido!!.defendidoPor(this)
-        }else{
+        } else {
             this.aventureroDefendido!!.perderDefensor()
             receptor.defendidoPor(this)
         }
@@ -127,11 +154,6 @@ class Aventurero(private var nombre : String) {
         this.party = party
     }
 
-    private fun recalcularVidaYMana() {
-        vida = ((nivel() * 5) + (constitucion * 2) + fuerza)
-        mana = nivel() + inteligencia
-    }
-
     private fun recibirDaño(dañoRecibido: Int) {
         if (this.tieneDefensor()) {
             defensor!!.recibirDaño(dañoRecibido / 2)
@@ -139,6 +161,11 @@ class Aventurero(private var nombre : String) {
         } else {
             this.vida = max(0, vida - dañoRecibido)
         }
+    }
+
+    private fun recalcularVidaYMana() {
+        vida = ((nivel() * 5) + (constitucion * 2) + fuerza)
+        mana = nivel() + inteligencia
     }
 
     private fun defendidoPor(defensor: Aventurero) {
@@ -160,7 +187,7 @@ class Aventurero(private var nombre : String) {
 
     private fun tieneDefensor() = this.defensor != null && this.defensor!!.estaVivo()
 
-    private fun estaVivo() = this.vida > 0
+    fun estaVivo() = this.vida > 0
 
     private fun validarPuntaje(nuevoPuntaje: Int, nombreDeAtributo: String) {
         if (nuevoPuntaje > 100) throw  RuntimeException("La $nombreDeAtributo no puede exceder los 100 puntos!")
@@ -169,22 +196,44 @@ class Aventurero(private var nombre : String) {
 
     fun validacionParaDefenderA(receptor: Aventurero) {
         if (this == receptor) throw  RuntimeException("${this.nombre} no puede defenderse a si mismo!")
-        if (!this.esAliadoDe(receptor)) throw  RuntimeException("${this.nombre} no puede defender a un enemigo!")
+        if (this.esEnemigoDe(receptor)) throw  RuntimeException("${this.nombre} no puede defender a un enemigo!")
     }
 
-    internal fun actualizarse(aventureroDTO: AventureroDTO) {
-        this.inteligencia = aventureroDTO.atributos.inteligencia
-        this.destreza = aventureroDTO.atributos.destreza
-        this.constitucion = aventureroDTO.atributos.constitucion
-        this.fuerza = aventureroDTO.atributos.fuerza
-        this.nombre = aventureroDTO.nombre
-        this.imagenURL = aventureroDTO.imagenURL
+    internal fun actualizarse(otroAventurero: Aventurero) {
+        this.inteligencia = otroAventurero.inteligencia()
+        this.destreza = otroAventurero.destreza()
+        this.constitucion = otroAventurero.constitucion()
+        this.fuerza = otroAventurero.fuerza()
+        this.nombre = otroAventurero.nombre()
+        this.tacticas = otroAventurero.tacticas()
+        this.imagenURL = otroAventurero.imagen()
         this.recalcularVidaYMana()
     }
 
     internal fun darleElId(id: Long?) {
         this.id = id
     }
+
+    internal fun tacticas() = this.tacticas
+
+    fun agregarTactica(nuevaTactica: Tactica) {
+        this.tacticas.add(nuevaTactica)
+    }
+
+    fun reestablecerse() {
+        this.recalcularVidaYMana()
+        this.aventureroDefendido = null
+        this.defensor = null
+    }
+
+    fun estaDefendiendo(): Boolean {
+        return this.aventureroDefendido != null
+    }
+
+    fun estaSiendoDefendiendo(): Boolean {
+        return this.defensor != null
+    }
+
 
     fun salirDeLaParty() {
         this.party = null

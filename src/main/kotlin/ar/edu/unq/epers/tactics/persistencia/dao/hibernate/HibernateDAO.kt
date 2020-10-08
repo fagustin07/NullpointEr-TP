@@ -1,7 +1,7 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.hibernate
 
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
-import org.hibernate.query.Query
+import javax.persistence.NoResultException
 
 
 open class HibernateDAO<T>(val entityType: Class<T>) {
@@ -19,8 +19,13 @@ open class HibernateDAO<T>(val entityType: Class<T>) {
     }
 
     open fun recuperar(id: Long): T {
-        val session = HibernateTransactionRunner.currentSession
-        return session.get(entityType, id) ?: throw RuntimeException("No existe una entidad con ese id")
+        return try {
+            createQuery("from ${entityType.name} where id = :id")
+                .setParameter("id", id)
+                .singleResult
+        } catch (e: NoResultException) {
+            throw RuntimeException("En la tabla solicitada no existe el id provisto")
+        }
     }
 
     fun eliminarTodo() {

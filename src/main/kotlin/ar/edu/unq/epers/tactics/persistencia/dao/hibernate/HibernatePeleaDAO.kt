@@ -3,17 +3,13 @@ package ar.edu.unq.epers.tactics.persistencia.dao.hibernate
 import ar.edu.unq.epers.tactics.modelo.Pelea
 import ar.edu.unq.epers.tactics.persistencia.dao.PeleaDAO
 
-class HibernatePeleaDAO: PeleaDAO {
+class HibernatePeleaDAO: HibernateDAO<Pelea>(Pelea::class.java), PeleaDAO {
 
-    override fun crear(pelea: Pelea): Pelea {
-        TODO("Not yet implemented")
+    override fun recuperarUltimaPeleaDeParty(idDeLaParty: Long): Pelea {
+        return createQuery("from Pelea pelea where pelea.party.id = :idDeLaParty order by id desc")
+                .setParameter("idDeLaParty", idDeLaParty)
+                .setMaxResults(1)
+                .singleResult
     }
 
-    override fun actualizar(pelea: Pelea) {
-        TODO("Not yet implemented")
-    }
-
-    override fun recuperar(idDeLaPelea: Long): Pelea {
-        TODO("Not yet implemented")
-    }
 }

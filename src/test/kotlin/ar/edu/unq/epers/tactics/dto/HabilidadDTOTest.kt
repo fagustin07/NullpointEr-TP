@@ -1,6 +1,7 @@
 package ar.edu.unq.epers.tactics.dto
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
+import ar.edu.unq.epers.tactics.modelo.dado.DadoDe20
 import ar.edu.unq.epers.tactics.modelo.habilidades.*
 import ar.edu.unq.epers.tactics.service.dto.HabilidadDTO
 import org.assertj.core.api.Assertions.assertThat
@@ -63,5 +64,16 @@ internal class HabilidadDTOTest {
         val meditacionObtenida = meditarDTO.aModelo()
 
         assertThat(meditacionObtenida).usingRecursiveComparison().isEqualTo(meditacion)
+    }
+
+    @Test
+    fun `Al convertir un HabilidadNula a un HabilidadNUlaDTO y de nuevo a un HabilidadNula se obtienen objetos similares`() {
+        val aventurero = Aventurero("Raul")
+        val habilidadNula = HabilidadNula.para(aventurero, aventurero)
+
+        val habilidadNulaDTO = HabilidadDTO.desdeModelo(habilidadNula)
+        val habilidadNulaObtenida = habilidadNulaDTO.aModelo()
+
+        assertThat(habilidadNulaObtenida).usingRecursiveComparison().isEqualTo(habilidadNula)
     }
 }

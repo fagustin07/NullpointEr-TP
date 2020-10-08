@@ -1,6 +1,5 @@
 package ar.edu.unq.epers.tactics.modelo.enums
 
-import ar.edu.unq.epers.tactics.service.dto.Criterio
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

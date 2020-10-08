@@ -1,5 +1,6 @@
 package ar.edu.unq.epers.tactics.modelo
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -26,6 +27,17 @@ class AventureroTest {
         assertEquals(10, cacho.destreza())
         assertEquals(20, cacho.inteligencia())
         assertEquals(17, cacho.constitucion())
+    }
+
+    @Test
+    fun sePuedeActualizarEnBaseALosAtributosDeOtroAventurero() {
+        val otroAventurero = Aventurero("Otro aventurero", "xxx", 1, 2, 3, 4)
+        cacho.actualizarse(otroAventurero)
+
+        assertEquals(otroAventurero.fuerza(), cacho.fuerza())
+        assertEquals(otroAventurero.destreza(), cacho.destreza())
+        assertEquals(otroAventurero.inteligencia(), cacho.inteligencia())
+        assertEquals(otroAventurero.constitucion(), cacho.constitucion())
     }
 
 
@@ -120,5 +132,36 @@ class AventureroTest {
         assertEquals("La constitucion no puede ser menor a 1 punto!", exception.message)
     }
 
+    @Test
+    fun `un aventurero puede reestablecer su vida y mana`() {
+        val vidaInicial = cacho.vida()
+        val manaInicial = cacho.mana()
+        cacho.recibirAtaqueFisicoSiDebe(10, 5000)
+        cacho.consumirMana()
 
+        cacho.reestablecerse()
+
+        assertThat(cacho.vida()).isEqualTo(vidaInicial)
+        assertThat(cacho.mana()).isEqualTo(manaInicial)
+    }
+
+    @Test
+    fun `un aventurero deja de defender cuando se reestablece`() {
+        val otroAventurero = Aventurero("Pepe")
+        cacho.defenderA(otroAventurero)
+
+        cacho.reestablecerse()
+
+        assertFalse(cacho.estaDefendiendo())
+    }
+
+    @Test
+    fun `un aventurero deja de estar defendido cuando se reestablece`() {
+        val otroAventurero = Aventurero("Pepe")
+        cacho.defenderA(otroAventurero)
+
+        otroAventurero.reestablecerse()
+
+        assertFalse(otroAventurero.estaSiendoDefendiendo())
+    }
 }

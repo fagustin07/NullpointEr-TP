@@ -1,17 +1,18 @@
 package ar.edu.unq.epers.tactics.modelo.habilidades
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
+import ar.edu.unq.epers.tactics.modelo.dado.Dado
 
-class Ataque(val dañoFisico: Int, val precisionFisica: Int, val aventureroReceptor: Aventurero, val dadoDe20: DadoDe20) : Habilidad() {
+class Ataque(val dañoFisico: Int, val precisionFisica: Int, aventureroReceptor: Aventurero, val dado: Dado) : Habilidad(aventureroReceptor) {
 
     companion object {
-        fun para(aventureroEmisor: Aventurero, aventureroReceptor: Aventurero, dadoDe20: DadoDe20): Ataque {
-            return Ataque(aventureroEmisor.dañoFisico(), aventureroEmisor.precisionFisica(), aventureroReceptor, dadoDe20)
+        fun para(aventureroEmisor: Aventurero, aventureroReceptor: Aventurero, dado: Dado): Ataque {
+            return Ataque(aventureroEmisor.dañoFisico(), aventureroEmisor.precisionFisica(), aventureroReceptor, dado)
         }
     }
 
-    override fun resolverse() {
-        aventureroReceptor.recibirAtaqueFisicoSiDebe(dañoFisico, dadoDe20.tirada() + precisionFisica)
+    override fun resolversePara(receptor: Aventurero) {
+        receptor.recibirAtaqueFisicoSiDebe(dañoFisico, dado.tirada() + precisionFisica)
     }
 
 }

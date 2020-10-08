@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class PartyDTOTest {
 
     @Test
-    fun `Al convertir una Party a una PartyDAO y de nuevo a una Party se obtienen objetos similares`() {
+    fun `Al convertir una Party a una PartyDTO y de nuevo a una Party se obtienen objetos similares`() {
         val partyOriginal = Party("Party", "URL")
         partyOriginal.agregarUnAventurero(Aventurero(
                 "Pepe",
