@@ -91,7 +91,7 @@ class Aventurero(private var nombre: String) {
         this.tacticas.sortBy { it.prioridad }
 
         val posiblesReceptores = this.aliados() + enemigos + this
-        val nullHability = HabilidadNula(this, Aventurero(""))
+        val nullHability = HabilidadNula(this, this)
 
         for (tactica in tacticas) {
             val receptor = posiblesReceptores.firstOrNull { receptor -> tactica.puedeAplicarseA(this, receptor) }
@@ -182,7 +182,7 @@ class Aventurero(private var nombre: String) {
 
     private fun tieneDefensor() = this.defensor != null && this.defensor!!.estaVivo()
 
-    private fun estaVivo() = this.vida > 0
+    fun estaVivo() = this.vida > 0
 
     private fun validarPuntaje(nuevoPuntaje: Int, nombreDeAtributo: String) {
         if (nuevoPuntaje > 100) throw  RuntimeException("La $nombreDeAtributo no puede exceder los 100 puntos!")

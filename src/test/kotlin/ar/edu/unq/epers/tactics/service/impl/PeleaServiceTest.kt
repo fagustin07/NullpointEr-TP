@@ -7,10 +7,7 @@ import ar.edu.unq.epers.tactics.modelo.enums.Accion
 import ar.edu.unq.epers.tactics.modelo.enums.Criterio
 import ar.edu.unq.epers.tactics.modelo.enums.TipoDeEstadistica
 import ar.edu.unq.epers.tactics.modelo.enums.TipoDeReceptor
-import ar.edu.unq.epers.tactics.modelo.habilidades.Ataque
-import ar.edu.unq.epers.tactics.modelo.habilidades.Curacion
-import ar.edu.unq.epers.tactics.modelo.habilidades.HabilidadNula
-import ar.edu.unq.epers.tactics.modelo.habilidades.Meditacion
+import ar.edu.unq.epers.tactics.modelo.habilidades.*
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
@@ -232,6 +229,41 @@ internal class PeleaServiceTest {
             assertTrue(habilidadGenerada is HabilidadNula)
         }
     }
+
+    @Test
+    fun `un aventurero resuelve su turno y ejecuta su segunda tactica porque la primera no cumple el criterio`() {
+        val aventurero = Aventurero("Fede", "", 10, 10, 10, 10)
+        val enemigo = Aventurero("Pepe","URL",10,10,10,10)
+
+        val partyEnemigo = Party("Los Capos", "URL")
+        partyService.crear(partyEnemigo)
+
+        val tacticaUno = Tactica(
+                1, TipoDeReceptor.ENEMIGO,
+                TipoDeEstadistica.VIDA,
+                Criterio.MAYOR_QUE, 200, Accion.ATAQUE_FISICO
+        )
+        val  tacticaDos = Tactica(
+                2, TipoDeReceptor.ENEMIGO,
+                TipoDeEstadistica.VIDA,
+                Criterio.MAYOR_QUE, 0, Accion.ATAQUE_MAGICO
+        )
+
+        aventurero.agregarTactica(tacticaUno)
+        aventurero.agregarTactica(tacticaDos)
+
+        partyService.agregarAventureroAParty(party.id()!!, aventurero)
+
+
+        val pelea = peleaService.iniciarPelea(party.id()!!)
+        val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, aventurero.id()!!,listOf(enemigo))
+
+        assertTrue(habilidadGenerada is AtaqueMagico)
+
+    }
+
+
+
 
     @AfterEach
     fun tearDown() {

@@ -21,7 +21,9 @@ class Tactica(
     internal var id: Long? = null
 
     fun puedeAplicarseA(emisor: Aventurero, receptor: Aventurero) =
-        this.tipoDeReceptor.test(emisor, receptor)
+        this.tipoDeReceptor.test(emisor, receptor) &&
+                criterio.evaluarseCon(tipoDeEstadistica.valorPara(receptor),
+                        valor)
 
     fun aplicarseSobre(emisor: Aventurero, receptor: Aventurero): Habilidad {
         return accion.generarHabilidad(emisor, receptor)
