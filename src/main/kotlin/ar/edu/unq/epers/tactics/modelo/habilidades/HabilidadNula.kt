@@ -12,5 +12,5 @@ class HabilidadNula(aventureroReceptor: Aventurero) : Habilidad(aventureroRecept
         }
     }
 
-    override fun resolverse() {}
+    override fun resolversePara(receptor: Aventurero) { }
 }

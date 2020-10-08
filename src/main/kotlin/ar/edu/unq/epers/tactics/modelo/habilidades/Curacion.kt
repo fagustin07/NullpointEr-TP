@@ -12,6 +12,6 @@ class Curacion(val poderMagicoEmisor: Int, aventureroReceptor: Aventurero) : Hab
         }
     }
 
-    override fun resolverse() = aventureroReceptor.curar(poderMagicoEmisor)
+    override fun resolversePara(receptor: Aventurero) = receptor.curar(poderMagicoEmisor)
 
 }

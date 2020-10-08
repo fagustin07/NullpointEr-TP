@@ -25,6 +25,7 @@ internal class PeleaServiceTest {
     val aventureroDAO = HibernateAventureroDAO()
     val peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO)
     val partyService = PersistentPartyService(partyDAO)
+    val aventureroService = AventureroServiceImpl(aventureroDAO, partyDAO)
     lateinit var party: Party
 
     @BeforeEach
@@ -120,25 +121,22 @@ internal class PeleaServiceTest {
     fun `un aventurero que resuelve su turno ejecuta la habilidad de curar sobre otro y este recibe la habilidad`() {
         val curador = Aventurero("Fede", "", 10, 10, 10, 10)
         val aliado = Aventurero("Jorge", "", 10, 10, 10, 10)
-        val vidaAntesDeCuracion = aliado.vida()
-        val tactica = Tactica(
-            1, TipoDeReceptor.ALIADO,
-            TipoDeEstadistica.VIDA,
-            Criterio.MAYOR_QUE, 0, Accion.CURAR
-        )
 
-        curador.agregarTactica(tactica)
+        curador.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0, Accion.CURAR))
 
         partyService.agregarAventureroAParty(party.id()!!, curador)
         partyService.agregarAventureroAParty(party.id()!!, aliado)
 
-        val pelea = peleaService.iniciarPelea(party.id()!!)
-        val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
-        val aliadoQueRecibiraHabilidad = peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada)
+        val peleaId = peleaService.iniciarPelea(party.id()!!).id()!!
+        val habilidadGenerada = peleaService.resolverTurno(peleaId, curador.id()!!, listOf())
+
+        val vidaAntesDeCuracion = aliado.vida()
+        peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada)
 
         val vidaEsperada = vidaAntesDeCuracion + curador.poderMagico()
-        assertThat(aliado.id()!!).isEqualTo(aliadoQueRecibiraHabilidad.id())
-        assertEquals(vidaEsperada, aliadoQueRecibiraHabilidad.vida())
+        val aliadoRecuperado = aventureroService.recuperar(aliado.id()!!)
+        assertThat(aliado.id()!!).isEqualTo(aliadoRecuperado.id())
+        assertEquals(vidaEsperada, aliadoRecuperado.vida())
     }
 
     @Test
@@ -259,8 +257,26 @@ internal class PeleaServiceTest {
 
     }
 
+    /*@Test
+    fun asdasdasd() {
+        val party = Party("Party", "")
+        val aventurero = Aventurero("Aventurero")
 
+        aventurero.agregarTactica(tacticaParaMeditar())
 
+        partyService.agregarAventureroAParty(party.id()!!, aventurero)
+        val pelea = peleaService.iniciarPelea(party.id()!!)
+
+        val vidaAntesDeMeditar = aventurero.vida()
+        val meditacion = peleaService.resolverTurno(pelea.id()!!, aventurero.id()!!, listOf())
+        peleaService.recibirHabilidad(aventurero.id()!!, meditacion)
+
+        assertEquals(vidaAntesDeMeditar + 1, aventurero.vida())
+    }
+
+    private fun tacticaParaMeditar(prioridad: Int = 1) =
+        Tactica(prioridad, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0, Accion.MEDITAR)
+    */
 
     @AfterEach
     fun tearDown() {

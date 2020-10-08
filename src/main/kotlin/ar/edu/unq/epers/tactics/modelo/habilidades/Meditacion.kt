@@ -16,8 +16,8 @@ class Meditacion(val aventureroEmisor: Aventurero, aventureroReceptor: Aventurer
         }
     }
 
-    override fun resolverse() {
-        aventureroReceptor.meditar()
+    override fun resolversePara(receptor: Aventurero) {
+        receptor.meditar()
     }
 
 }

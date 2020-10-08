@@ -26,7 +26,7 @@ class AtaqueMagicoTest {
 
         val dadoDe20Falso = DadoSimulado(20)
         val ataqueMagico = AtaqueMagico.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
-        ataqueMagico.resolverse()
+        ataqueMagico.resolversePara(aventureroReceptor)
 
         Assertions.assertThat(aventureroReceptor.vida()).isLessThan(vidaAntesDelAtaque)
     }
@@ -37,7 +37,7 @@ class AtaqueMagicoTest {
 
         val dadoDe20Falso = DadoSimulado(1)
         val ataqueMagico = AtaqueMagico.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
-        ataqueMagico.resolverse()
+        ataqueMagico.resolversePara(aventureroReceptor)
 
         Assertions.assertThat(aventureroReceptor.vida()).isEqualTo(vidaAntesDelAtaque)
     }
@@ -49,7 +49,7 @@ class AtaqueMagicoTest {
         val vidaAntesDeAtaque = aventureroReceptor.vida()
         val ataqueMagico = AtaqueMagico.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
 
-        ataqueMagico.resolverse()
+        ataqueMagico.resolversePara(aventureroReceptor)
 
         Assertions.assertThat(aventureroReceptor.vida()).isEqualTo(vidaAntesDeAtaque - poderMagicoDeAtaque)
     }

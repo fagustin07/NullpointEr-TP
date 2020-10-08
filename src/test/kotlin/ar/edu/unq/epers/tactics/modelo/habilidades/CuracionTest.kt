@@ -25,7 +25,7 @@ class CuracionTest {
         val poderMagicoEmisor = aventureroCurador.poderMagico()
 
         val curacion = Curacion.para(aventureroCurador, aventureroCurado)
-        curacion.resolverse()
+        curacion.resolversePara(aventureroCurado)
 
         assertThat(aventureroCurado.vida()).isEqualTo(vidaAntesDeCurar + poderMagicoEmisor)
     }
@@ -35,7 +35,7 @@ class CuracionTest {
         val manaAntesDeCurar = aventureroCurador.mana()
 
         val curacion = Curacion.para(aventureroCurador, aventureroCurado)
-        curacion.resolverse()
+        curacion.resolversePara(aventureroCurado)
 
         assertThat(aventureroCurador.mana()).isEqualTo(manaAntesDeCurar - 5)
     }
