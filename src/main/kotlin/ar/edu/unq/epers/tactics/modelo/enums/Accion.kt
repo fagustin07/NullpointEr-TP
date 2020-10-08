@@ -1,6 +1,7 @@
 package ar.edu.unq.epers.tactics.modelo.enums
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
+import ar.edu.unq.epers.tactics.modelo.dado.DadoDe20
 import ar.edu.unq.epers.tactics.modelo.habilidades.*
 
 enum class Accion {

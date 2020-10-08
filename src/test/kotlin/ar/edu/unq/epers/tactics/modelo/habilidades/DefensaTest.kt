@@ -2,6 +2,7 @@ package ar.edu.unq.epers.tactics.modelo.habilidades
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
+import ar.edu.unq.epers.tactics.modelo.dado.DadoSimulado
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -26,7 +27,7 @@ internal class DefensaTest{
     @Test
     fun `cuando un aventurero defiende sufre la mitad de daño que recibe al que esta defendiendo`(){
         val defensa = Defensa.para(aventureroDefensor, aventureroDefendido)
-        val dadoDe20Falso = DadoDe20(20)
+        val dadoDe20Falso = DadoSimulado(20)
         val vidaAntesDelAtaque = aventureroDefensor.vida()
 
         defensa.resolverse()
@@ -40,7 +41,7 @@ internal class DefensaTest{
     @Test
     fun `cuando un aventurero es defendido, no sufre daño`(){
         val defensa = Defensa.para(aventureroDefensor, aventureroDefendido)
-        val dadoDe20Falso = DadoDe20(20)
+        val dadoDe20Falso = DadoSimulado(20)
         val vidaDelDefendidoAntesDelAtaque = aventureroDefendido.vida()
 
         defensa.resolverse()
@@ -53,7 +54,7 @@ internal class DefensaTest{
     @Test
     fun `luego de ser defendido por tres turnos, el aventurero se queda sin defensor y sufre todo el daño`(){
         val defensa = Defensa.para(aventureroDefensor, aventureroDefendido)
-        val dadoDe20Falso = DadoDe20(20)
+        val dadoDe20Falso = DadoSimulado(20)
         val vidaDelDefendidoAntesDelAtaque = aventureroDefendido.vida()
 
         defensa.resolverse()
@@ -71,7 +72,7 @@ internal class DefensaTest{
     fun `si el aventurero defensor de otro muere, el defendido pierde a su defensor y recibe todo el daño del ataque`() {
         val aventureroAtacante = Aventurero("Destructor","", 80)
         val defensa = Defensa.para(aventureroDefensor, aventureroDefendido)
-        val dadoDe20Falso = DadoDe20(20)
+        val dadoDe20Falso = DadoSimulado(20)
 
         val ataque = Ataque.para(aventureroAtacante, aventureroDefendido, dadoDe20Falso)
         defensa.resolverse()
@@ -86,7 +87,7 @@ internal class DefensaTest{
     fun `un aventurero solo puede defender a un compañero a la vez`() {
         val aventureroAtacante = Aventurero("Destructor", "imagen", 30)
         val aventureroCompañero = Aventurero("Jorge", "imagen", 21, constitucion = 20)
-        val dadoDe20Falso = DadoDe20(20)
+        val dadoDe20Falso = DadoSimulado(20)
         val vidaAntesDelAtaque = aventureroCompañero.vida()
         val ataque = Ataque.para(aventureroAtacante, aventureroDefendido, dadoDe20Falso)
         val ataque2 = Ataque.para(aventureroAtacante, aventureroCompañero, dadoDe20Falso)
