@@ -185,4 +185,9 @@ class Aventurero(private var nombre : String) {
     internal fun darleElId(id: Long?) {
         this.id = id
     }
+
+    fun salirDeLaParty() {
+        this.party = null
+    }
+
 }
