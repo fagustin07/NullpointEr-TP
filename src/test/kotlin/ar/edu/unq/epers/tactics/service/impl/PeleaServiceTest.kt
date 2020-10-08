@@ -257,26 +257,6 @@ internal class PeleaServiceTest {
 
     }
 
-    /*@Test
-    fun asdasdasd() {
-        val party = Party("Party", "")
-        val aventurero = Aventurero("Aventurero")
-
-        aventurero.agregarTactica(tacticaParaMeditar())
-
-        partyService.agregarAventureroAParty(party.id()!!, aventurero)
-        val pelea = peleaService.iniciarPelea(party.id()!!)
-
-        val vidaAntesDeMeditar = aventurero.vida()
-        val meditacion = peleaService.resolverTurno(pelea.id()!!, aventurero.id()!!, listOf())
-        peleaService.recibirHabilidad(aventurero.id()!!, meditacion)
-
-        assertEquals(vidaAntesDeMeditar + 1, aventurero.vida())
-    }
-
-    private fun tacticaParaMeditar(prioridad: Int = 1) =
-        Tactica(prioridad, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0, Accion.MEDITAR)
-    */
 
     @AfterEach
     fun tearDown() {
