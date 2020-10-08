@@ -9,6 +9,7 @@ import ar.edu.unq.epers.tactics.modelo.enums.TipoDeEstadistica
 import ar.edu.unq.epers.tactics.modelo.enums.TipoDeReceptor
 import ar.edu.unq.epers.tactics.modelo.habilidades.Ataque
 import ar.edu.unq.epers.tactics.modelo.habilidades.Curacion
+import ar.edu.unq.epers.tactics.modelo.habilidades.HabilidadNula
 import ar.edu.unq.epers.tactics.modelo.habilidades.Meditacion
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
@@ -213,6 +214,22 @@ internal class PeleaServiceTest {
         runTrx {
             val partyRecuperada = partyService.recuperar(partyID)
             assertEquals(1, partyRecuperada.numeroDeAventureros())
+        }
+    }
+
+    @Test
+    fun `un aventurero puede no poder aplicar ninguna habilidad`() {
+        val aventurero = Aventurero("Fede", "", 10, 10, 10, 10)
+
+        aventurero.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE,800, Accion.CURAR))
+
+        partyService.agregarAventureroAParty(party.id()!!, aventurero)
+
+        val pelea = peleaService.iniciarPelea(party.id()!!)
+        val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, aventurero.id()!!, listOf())
+
+        runTrx {
+            assertTrue(habilidadGenerada is HabilidadNula)
         }
     }
 

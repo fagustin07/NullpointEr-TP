@@ -1,7 +1,8 @@
 package ar.edu.unq.epers.tactics.modelo
 
+import ar.edu.unq.epers.tactics.modelo.enums.TipoDeReceptor
 import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
-import ar.edu.unq.epers.tactics.service.dto.AventureroDTO
+import ar.edu.unq.epers.tactics.modelo.habilidades.HabilidadNula
 import javax.persistence.*
 import kotlin.math.max
 
@@ -90,15 +91,16 @@ class Aventurero(private var nombre: String) {
         this.tacticas.sortBy { it.prioridad }
 
         val posiblesReceptores = this.aliados() + enemigos + this
+        val nullHability = HabilidadNula(this, Aventurero(""))
 
         for (tactica in tacticas) {
             val receptor = posiblesReceptores.firstOrNull { receptor -> tactica.puedeAplicarseA(this, receptor) }
-            if (receptor != null) return tactica.aplicarseSobre(this, receptor)
+            if (receptor != null) {
+                return tactica.aplicarseSobre(this, receptor)
+            }
         }
-
-        throw RuntimeException("En ningun test se llega hasta aca. Siempre se retorna antes")
+        return nullHability
     }
-
 
     fun recibirAtaqueFisicoSiDebe(dañoFisico: Int, precisionFisica: Int) {
         val claseDeArmadura = this.armadura() + (this.velocidad() / 2)
