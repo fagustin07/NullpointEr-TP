@@ -1,6 +1,5 @@
 package ar.edu.unq.epers.tactics.modelo
 
-import ar.edu.unq.epers.tactics.service.dto.PartyDTO
 import javax.persistence.*
 
 @Entity
@@ -12,7 +11,7 @@ class Party(private var nombre: String, private var imagenURL: String) {
 
     init { if (nombre.isEmpty()) throw RuntimeException("Una party debe tener un nombre") }
 
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @OneToMany(cascade = [CascadeType.ALL],orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "party_id")
     private var aventureros: MutableList<Aventurero> = mutableListOf()
 
@@ -26,6 +25,13 @@ class Party(private var nombre: String, private var imagenURL: String) {
         this.validarQueSeAdmitanNuevosIntegrantes()
         this.aventureros.add(aventurero)
         aventurero.registarseEn(this)
+    }
+
+    fun removerA(aventurero: Aventurero) {
+        if (aventurero.party == null || !this.esLaParty(aventurero.party!!)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
+
+        aventureros.remove(aventurero)
+        aventurero.salirDeLaParty()
     }
 
     fun nombre() = nombre
@@ -49,7 +55,8 @@ class Party(private var nombre: String, private var imagenURL: String) {
         this.aventureros = otraParty.aventureros()
     }
 
-    private fun esLaParty(party: Party?) = party == null || this.nombre == party.nombre
+    private fun esLaParty(party: Party) = (party.id != null && party.id()==this.id)
+                                        || this.nombre==party.nombre
 
     private fun puedeAgregarAventureros() = this.numeroDeAventureros() < this.maximoDeAventureros()
 
@@ -57,7 +64,8 @@ class Party(private var nombre: String, private var imagenURL: String) {
 
     /* Assertions */
     private fun validarQueNoPertenzcaAOtraParty(aventurero: Aventurero) {
-        if (!this.esLaParty(aventurero.party)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
+        // TODO: aventurero.party != null   parche momentaneo.
+        if (aventurero.party != null && !this.esLaParty(aventurero.party!!)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
     }
 
     private fun validarQueNoEsteRegistrado(aventurero: Aventurero) {

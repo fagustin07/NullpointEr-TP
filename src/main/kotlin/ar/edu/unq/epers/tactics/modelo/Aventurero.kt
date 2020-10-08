@@ -87,9 +87,12 @@ class Aventurero(private var nombre: String) {
 
 
     fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
+        validarSiEstaVivo()
+
         this.tacticas.sortBy { it.prioridad }
 
         val posiblesReceptores = this.aliados() + enemigos + this
+
 
         for (tactica in tacticas) {
             val receptor = posiblesReceptores.firstOrNull { receptor -> tactica.puedeAplicarseA(this, receptor) }
@@ -98,6 +101,10 @@ class Aventurero(private var nombre: String) {
             }
         }
         return HabilidadNula.para(this,this)
+    }
+
+    private fun validarSiEstaVivo() {
+        if (!this.estaVivo()) throw RuntimeException("Un aventurero muerto no puede resolver su turno");
     }
 
     fun recibirAtaqueFisicoSiDebe(dañoFisico: Int, precisionFisica: Int) {
@@ -225,6 +232,11 @@ class Aventurero(private var nombre: String) {
 
     fun estaSiendoDefendiendo(): Boolean {
         return this.defensor != null
+    }
+
+
+    fun salirDeLaParty() {
+        this.party = null
     }
 
 }

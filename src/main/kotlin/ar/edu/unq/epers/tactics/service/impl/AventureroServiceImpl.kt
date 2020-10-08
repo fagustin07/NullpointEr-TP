@@ -12,5 +12,17 @@ class AventureroServiceImpl(val aventureroDAO: AventureroDAO, val partyDAO: Part
 
     override fun recuperar(idDelAventurero: Long) = runTrx { aventureroDAO.recuperar(idDelAventurero) }
 
-    override fun eliminar(aventurero: Aventurero) = runTrx { aventureroDAO.eliminar(aventurero) }
+    override fun eliminar(aventurero: Aventurero) {
+        runTrx {
+            aventureroDAO.eliminar(aventurero)
+            /*
+            // Me gustaria consulta con los profes porque lo de abajo no funciona
+            val party = partyDAO.recuperar(aventurero.party!!.id()!!)
+            party.removerA(aventurero)
+            party // Breakpoint... si se inspecciona party sigue teniendo al aventurero. El aventurero si tiene en null su party
+            val partyActualizada = partyDAO.actualizar(party)
+            partyActualizada // Breakpoint... si se inspecciona party sigue teniendo al aventurero
+             */
+        }
+    }
 }

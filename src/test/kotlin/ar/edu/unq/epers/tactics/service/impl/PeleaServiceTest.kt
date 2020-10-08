@@ -257,6 +257,65 @@ internal class PeleaServiceTest {
 
     }
 
+    @Test
+    fun `no se puede aplicar una tactica a un aventurero muerto`() {
+        val aventurero = Aventurero("Fede","URL",10,10,10,10)
+        val otroAventurero = Aventurero("Cacho","URL",80,80,80,80)
+
+        val partyEnemigo = Party("Los Capos", "URL")
+        partyService.crear(partyEnemigo)
+
+        val tacticaEnemigo = Tactica(
+                1,TipoDeReceptor.ENEMIGO,
+                TipoDeEstadistica.VIDA,
+                Criterio.MENOR_QUE,100,Accion.ATAQUE_FISICO
+        )
+
+        otroAventurero.agregarTactica(tacticaEnemigo)
+
+        partyService.agregarAventureroAParty(party.id()!!,aventurero)
+        partyService.agregarAventureroAParty(partyEnemigo.id()!!,otroAventurero)
+
+        val pelea = peleaService.iniciarPelea(partyEnemigo.id()!!)
+        var habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, otroAventurero.id()!!, listOf(aventurero))
+        peleaService.recibirHabilidad(aventurero.id()!!, habilidadGenerada)
+        habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, otroAventurero.id()!!, listOf(aventurero))
+
+       assertTrue(habilidadGenerada is HabilidadNula)
+
+    }
+
+
+    @Test
+    fun `un aventurero muerto no puede resolver su turno`() {
+        val aventurero = Aventurero("Fede","URL",10,10,10,10)
+        val otroAventurero = Aventurero("Cacho","URL",80,80,80,80)
+
+        val partyEnemigo = Party("Los Capos", "URL")
+        partyService.crear(partyEnemigo)
+
+        val tacticaEnemigo = Tactica(
+                1,TipoDeReceptor.ENEMIGO,
+                TipoDeEstadistica.VIDA,
+                Criterio.MENOR_QUE,100,Accion.ATAQUE_FISICO
+        )
+
+        otroAventurero.agregarTactica(tacticaEnemigo)
+
+        partyService.agregarAventureroAParty(party.id()!!,aventurero)
+        partyService.agregarAventureroAParty(partyEnemigo.id()!!,otroAventurero)
+
+        val peleaEnemigo = peleaService.iniciarPelea(partyEnemigo.id()!!)
+        val peleaAventurero = peleaService.iniciarPelea(party.id()!!)
+
+        var habilidadGenerada = peleaService.resolverTurno(peleaEnemigo.id()!!, otroAventurero.id()!!, listOf(aventurero))
+        peleaService.recibirHabilidad(aventurero.id()!!, habilidadGenerada)
+
+        val exception = assertThrows<RuntimeException> {
+            peleaService.resolverTurno(peleaAventurero.id()!!,aventurero.id()!!, listOf(otroAventurero)) }
+        assertEquals(exception.message, "Un aventurero muerto no puede resolver su turno")
+
+    }
 
     @AfterEach
     fun tearDown() {
