@@ -1,6 +1,5 @@
 package ar.edu.unq.epers.tactics.service.dto
 
-import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.habilidades.*
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
@@ -41,16 +40,14 @@ abstract class HabilidadDTO() {
                         AventureroDTO.desdeModelo(habilidad.aventureroReceptor)
                 )
                 is Meditacion -> {
-                    val meditacion = habilidad
                     return MeditarDTO(
-                            AventureroDTO.desdeModelo(meditacion.aventureroReceptor)
+                            AventureroDTO.desdeModelo(habilidad.aventureroReceptor)
                     )
                 }
                 else -> {
-                    val habilidadNula = habilidad as HabilidadNula
                     HabilidadNulaDTO(
-                            AventureroDTO.desdeModelo(habilidadNula.aventureroEmisor),
-                            AventureroDTO.desdeModelo((habilidadNula.aventureroReceptor)))
+                        AventureroDTO.desdeModelo(habilidad.aventureroReceptor)
+                    )
                 }
             }
         }
@@ -59,8 +56,8 @@ abstract class HabilidadDTO() {
     abstract fun aModelo(): Habilidad
 
 }
-class HabilidadNulaDTO(val emisor : AventureroDTO, val objetivo: AventureroDTO) : HabilidadDTO(){
-    override fun aModelo() = HabilidadNula(emisor.aModelo(),objetivo!!.aModelo())
+class HabilidadNulaDTO(val objetivo: AventureroDTO) : HabilidadDTO(){
+    override fun aModelo() = HabilidadNula(objetivo.aModelo())
 }
 
 data class AtaqueDTO(val tipo: String, val daño: Int, val precisionFisica: Int, val objetivo: AventureroDTO) : HabilidadDTO() {

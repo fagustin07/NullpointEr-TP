@@ -215,19 +215,16 @@ internal class PeleaServiceTest {
     }
 
     @Test
-    fun `un aventurero puede no poder aplicar ninguna habilidad`() {
+    fun `un aventurero genera una habilidad nula cuando no puede aplicar ninguna de sus tacticas`() {
         val aventurero = Aventurero("Fede", "", 10, 10, 10, 10)
-
         aventurero.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE,800, Accion.CURAR))
-
-        partyService.agregarAventureroAParty(party.id()!!, aventurero)
-
+        val aventureroPersistido = partyService.agregarAventureroAParty(party.id()!!, aventurero)
         val pelea = peleaService.iniciarPelea(party.id()!!)
+
         val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, aventurero.id()!!, listOf())
 
-        runTrx {
-            assertTrue(habilidadGenerada is HabilidadNula)
-        }
+        assertTrue(habilidadGenerada is HabilidadNula)
+        assertThat(habilidadGenerada.aventureroReceptor.id()!!).isEqualTo(aventureroPersistido.id()!!)
     }
 
     @Test

@@ -1,6 +1,5 @@
 package ar.edu.unq.epers.tactics.modelo
 
-import ar.edu.unq.epers.tactics.modelo.enums.TipoDeReceptor
 import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import ar.edu.unq.epers.tactics.modelo.habilidades.HabilidadNula
 import javax.persistence.*
@@ -91,7 +90,6 @@ class Aventurero(private var nombre: String) {
         this.tacticas.sortBy { it.prioridad }
 
         val posiblesReceptores = this.aliados() + enemigos + this
-        val nullHability = HabilidadNula(this, this)
 
         for (tactica in tacticas) {
             val receptor = posiblesReceptores.firstOrNull { receptor -> tactica.puedeAplicarseA(this, receptor) }
@@ -99,7 +97,7 @@ class Aventurero(private var nombre: String) {
                 return tactica.aplicarseSobre(this, receptor)
             }
         }
-        return nullHability
+        return HabilidadNula.para(this,this)
     }
 
     fun recibirAtaqueFisicoSiDebe(dañoFisico: Int, precisionFisica: Int) {

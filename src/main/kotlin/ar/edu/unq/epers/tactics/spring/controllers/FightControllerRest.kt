@@ -32,8 +32,7 @@ class FightControllerRest(private val peleaService: PeleaService) {
 
     @PostMapping("/{fightId}/receiveAbility")
     fun receiveAbility(@PathVariable fightId: Long, @RequestBody request:ReceiveAbilityRequest):AventureroDTO {
-        val ability = request.ability ?: HabilidadNulaDTO(AventureroDTO.desdeModelo(Aventurero("")),AventureroDTO.desdeModelo(Aventurero("")))
-        val aventurero = peleaService.recibirHabilidad(request.adventurerId, ability.aModelo())
+        val aventurero = peleaService.recibirHabilidad(request.adventurerId, request.ability.aModelo())
         return AventureroDTO.desdeModelo(aventurero)
     }
 }

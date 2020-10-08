@@ -68,7 +68,7 @@ internal class HabilidadDTOTest {
     @Test
     fun `Al convertir un HabilidadNula a un HabilidadNUlaDTO y de nuevo a un HabilidadNula se obtienen objetos similares`() {
         val aventurero = Aventurero("Raul")
-        val habilidadNula = HabilidadNula(aventurero, aventurero)
+        val habilidadNula = HabilidadNula.para(aventurero, aventurero)
 
         val habilidadNulaDTO = HabilidadDTO.desdeModelo(habilidadNula)
         val habilidadNulaObtenida = habilidadNulaDTO.aModelo()
