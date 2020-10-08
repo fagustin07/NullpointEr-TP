@@ -16,7 +16,6 @@ class TipoDeReceptorTest {
     private lateinit var aliado: Aventurero
     private lateinit var enemigo: Aventurero
 
-    // TODO: los tests y la implementacion son una chanchada total
     @BeforeEach
     fun setUp() {
         partyDeEmisor = Party("Party del emisor", "/party.jpg")
