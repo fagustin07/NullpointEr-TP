@@ -23,7 +23,8 @@ class Tactica(
     fun puedeAplicarseA(emisor: Aventurero, receptor: Aventurero) =
         this.tipoDeReceptor.test(emisor, receptor) &&
                 criterio.evaluarseCon(tipoDeEstadistica.valorPara(receptor),
-                        valor)
+                        valor) &&
+                receptor.estaVivo()
 
     fun aplicarseSobre(emisor: Aventurero, receptor: Aventurero): Habilidad {
         return accion.generarHabilidad(emisor, receptor)
