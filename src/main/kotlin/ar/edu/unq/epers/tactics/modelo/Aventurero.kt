@@ -191,7 +191,7 @@ class Aventurero(private var nombre: String) {
 
     fun validacionParaDefenderA(receptor: Aventurero) {
         if (this == receptor) throw  RuntimeException("${this.nombre} no puede defenderse a si mismo!")
-        if (!this.esAliadoDe(receptor)) throw  RuntimeException("${this.nombre} no puede defender a un enemigo!")
+        if (this.esEnemigoDe(receptor)) throw  RuntimeException("${this.nombre} no puede defender a un enemigo!")
     }
 
     internal fun actualizarse(otroAventurero: Aventurero) {
