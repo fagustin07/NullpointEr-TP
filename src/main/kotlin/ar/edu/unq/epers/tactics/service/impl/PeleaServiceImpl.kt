@@ -23,10 +23,6 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
 
     override fun estaEnPelea(partyId: Long) = runTrx { partyDAO.recuperar(partyId).estaEnPelea() }
 
-    override fun actualizar(pelea: Pelea) = runTrx { peleaDAO.actualizar(pelea) }
-
-    override fun recuperar(idDeLaPelea: Long) = runTrx { peleaDAO.recuperar(idDeLaPelea) }
-
     override fun resolverTurno(peleaId: Long, aventureroId: Long, enemigos: List<Aventurero>) =
         //TODO: resolverTurno(idPelea:Long, idAventurero:Long, enemigos: List<Aventurero>) : Habilidad
         // - Dada la lista de enemigos, el aventurero debe utilizar sus Tacticas para elegir que

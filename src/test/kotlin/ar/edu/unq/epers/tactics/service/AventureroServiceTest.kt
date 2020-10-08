@@ -6,14 +6,10 @@ import ar.edu.unq.epers.tactics.persistencia.dao.AventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
-import ar.edu.unq.epers.tactics.service.dto.AtributosDTO
-import ar.edu.unq.epers.tactics.service.dto.AventureroDTO
 import ar.edu.unq.epers.tactics.service.impl.AventureroServiceImpl
 import ar.edu.unq.epers.tactics.service.impl.PersistentPartyService
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -60,7 +56,8 @@ class AventureroServiceTest {
         partyService.crear(party)
         partyService.agregarAventureroAParty(party.id()!!, aventurero)
 
-        val aventureroDTO = AventureroDTO(aventurero.id()!!, 2, "Otro nombre", "/otra_imagen.jpg", listOf(), AtributosDTO(null, 1,2, 3, 4))
+        val aventureroDTO = Aventurero("Otro nombre", "/otra_imagen.jpg", 1, 2, 3, 4)
+        aventureroDTO.darleElId(aventurero.id()!!)
         aventurero.actualizarse(aventureroDTO)
 
         aventureroService.actualizar(aventurero)
@@ -69,7 +66,6 @@ class AventureroServiceTest {
             val aventureroRecuperado = aventureroService.recuperar(aventurero.id()!!)
             assertThat(aventurero).usingRecursiveComparison().isEqualTo(aventureroRecuperado)
         }
-
     }
 
     @Test
@@ -83,7 +79,7 @@ class AventureroServiceTest {
             val partyRecuperada = partyService.recuperar(partyId)
             assertEquals(0, partyRecuperada.numeroDeAventureros())
             val exception = assertThrows<RuntimeException> { aventureroService.recuperar(aventureroId) }
-            assertEquals("No existe una entidad con ese id", exception.message)
+            assertEquals("En la tabla solicitada no existe el id provisto", exception.message)
         }
     }
 

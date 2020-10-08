@@ -1,6 +1,5 @@
 package ar.edu.unq.epers.tactics.modelo
 
-import ar.edu.unq.epers.tactics.service.dto.PartyDTO
 import javax.persistence.*
 
 @Entity
@@ -29,7 +28,7 @@ class Party(private var nombre: String, private var imagenURL: String) {
     }
 
     fun removerA(aventurero: Aventurero) {
-        if (!this.esLaParty(aventurero.party)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
+        if (aventurero.party == null || !this.esLaParty(aventurero.party!!)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
 
         aventureros.remove(aventurero)
         aventurero.salirDeLaParty()
@@ -56,7 +55,8 @@ class Party(private var nombre: String, private var imagenURL: String) {
         this.aventureros = otraParty.aventureros()
     }
 
-    private fun esLaParty(party: Party?) = party == null || this.nombre == party.nombre
+    private fun esLaParty(party: Party) = (party.id != null && party.id()==this.id)
+                                        || this.nombre==party.nombre
 
     private fun puedeAgregarAventureros() = this.numeroDeAventureros() < this.maximoDeAventureros()
 
@@ -65,7 +65,7 @@ class Party(private var nombre: String, private var imagenURL: String) {
     /* Assertions */
     private fun validarQueNoPertenzcaAOtraParty(aventurero: Aventurero) {
         // TODO: aventurero.party != null   parche momentaneo.
-        if (aventurero.party != null && !this.esLaParty(aventurero.party)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
+        if (aventurero.party != null && !this.esLaParty(aventurero.party!!)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
     }
 
     private fun validarQueNoEsteRegistrado(aventurero: Aventurero) {
