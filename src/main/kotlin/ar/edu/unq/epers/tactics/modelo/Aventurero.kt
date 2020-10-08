@@ -234,4 +234,9 @@ class Aventurero(private var nombre: String) {
         return this.defensor != null
     }
 
+
+    fun salirDeLaParty() {
+        this.party = null
+    }
+
 }

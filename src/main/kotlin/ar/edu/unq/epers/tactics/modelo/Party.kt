@@ -12,7 +12,7 @@ class Party(private var nombre: String, private var imagenURL: String) {
 
     init { if (nombre.isEmpty()) throw RuntimeException("Una party debe tener un nombre") }
 
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @OneToMany(cascade = [CascadeType.ALL],orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "party_id")
     private var aventureros: MutableList<Aventurero> = mutableListOf()
 
@@ -26,6 +26,13 @@ class Party(private var nombre: String, private var imagenURL: String) {
         this.validarQueSeAdmitanNuevosIntegrantes()
         this.aventureros.add(aventurero)
         aventurero.registarseEn(this)
+    }
+
+    fun removerA(aventurero: Aventurero) {
+        if (!this.esLaParty(aventurero.party)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
+
+        aventureros.remove(aventurero)
+        aventurero.salirDeLaParty()
     }
 
     fun nombre() = nombre
@@ -57,7 +64,8 @@ class Party(private var nombre: String, private var imagenURL: String) {
 
     /* Assertions */
     private fun validarQueNoPertenzcaAOtraParty(aventurero: Aventurero) {
-        if (!this.esLaParty(aventurero.party)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
+        // TODO: aventurero.party != null   parche momentaneo.
+        if (aventurero.party != null && !this.esLaParty(aventurero.party)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
     }
 
     private fun validarQueNoEsteRegistrado(aventurero: Aventurero) {
