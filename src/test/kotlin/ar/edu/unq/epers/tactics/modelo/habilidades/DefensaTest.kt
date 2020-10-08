@@ -84,63 +84,48 @@ internal class DefensaTest{
     }
 
     @Test
-    fun `un aventurero solo puede defender a un compañero a la vez`() {
-        val aventureroAtacante = Aventurero("Destructor", "imagen", 30)
-        val aventureroCompañero = Aventurero("Jorge", "imagen", 21, constitucion = 20)
+    fun `cuando un aventurero que estaba defendiendo a un aliado quiere defender a otro, el primero se queda sin defensor y recibe todo el daño`() {
         val dadoDe20Falso = DadoSimulado(20)
-        val vidaAntesDelAtaque = aventureroCompañero.vida()
-        val ataque = Ataque.para(aventureroAtacante, aventureroDefendido, dadoDe20Falso)
-        val ataque2 = Ataque.para(aventureroAtacante, aventureroCompañero, dadoDe20Falso)
-        val vidaAntesDeAtaqueAventureroDefendido = aventureroDefendido.vida()
-        party.agregarUnAventurero(aventureroCompañero)
 
-        val defensa = Defensa.para(aventureroDefensor, aventureroDefendido)
-        val defensa2 = Defensa.para(aventureroDefensor, aventureroCompañero)
-
-        defensa.resolversePara(aventureroDefendido)
-        defensa2.resolversePara(aventureroCompañero)
-        ataque.resolversePara(aventureroDefendido)
-
-        ataque2.resolversePara(aventureroCompañero)
-
-        val vidaDespuesDeAtaque = vidaAntesDeAtaqueAventureroDefendido - aventureroAtacante.dañoFisico()
-        assertThat(aventureroDefendido.vida()).isEqualTo(vidaDespuesDeAtaque)
-        assertThat(aventureroCompañero.vida()).isEqualTo(vidaAntesDelAtaque)
-    }
-
-    /*
-    @Test
-    fun `un aventurero solo puede defender a un compañero a la vez`() {
-        val party = Party("Party","URL")
-        val defensor = Aventurero("Pepe","", 10)
-        val defendido = Aventurero("Jorge","", 21, constitucion = 20)
+        val defensor = Aventurero("Defensor")
+        val aventureroSinDefensor = Aventurero("Sin Defensor")
+        val otroAliado = Aventurero("Defendido")
+        val enemigo = Aventurero("Enemigo")
 
         party.agregarUnAventurero(defensor)
-        party.agregarUnAventurero(defendido)
+        party.agregarUnAventurero(aventureroSinDefensor)
+        party.agregarUnAventurero(otroAliado)
 
-        val enemigo = Aventurero("Destructor", "imagen", 30)
+        Defensa.para(defensor, aventureroSinDefensor).resolversePara(aventureroSinDefensor)
+        Defensa.para(defensor, otroAliado).resolversePara(otroAliado)
 
-        val dadoQueOtorgaUn20 = DadoSimulado(20)
+        val vidaEsperadaDespuesDelAtaque = aventureroSinDefensor.vida() - enemigo.dañoFisico()
+        Ataque.para(enemigo, aventureroSinDefensor, dadoDe20Falso).resolversePara(aventureroSinDefensor)
 
-        //val ataque = Ataque.para(enemigo, defendido, dadoQueOtorgaUn20)
-        val ataque2 = Ataque.para(enemigo, defendido, dadoQueOtorgaUn20)
-        val vidaAntesDeAtaqueAventureroDefendido = defendido.vida()
-        party.agregarUnAventurero(defendido)
-
-        val defensa = Defensa.para(defensor, defendido)
-        val defensa2 = Defensa.para(defensor, defendido)
-
-        defensa.resolversePara(defendido)
-        defensa2.resolversePara(defendido)
-        ataque.resolversePara(defendido)
-
-        ataque2.resolversePara(defendido)
-
-        val vidaDespuesDeAtaque = vidaAntesDeAtaqueAventureroDefendido - enemigo.dañoFisico()
-        assertThat(defendido.vida()).isEqualTo(vidaDespuesDeAtaque)
-        assertThat(aventureroCompañero.vida()).isEqualTo(vidaAntesDelAtaque)
+        assertThat(aventureroSinDefensor.vida()).isEqualTo(vidaEsperadaDespuesDelAtaque)
     }
-    * */
+
+    @Test
+    fun `cuando un aventurero que estaba defendiendo a un aliado quiere defender a otro, el nuevo defendido no recibe daño`() {
+        val dadoDe20Falso = DadoSimulado(20)
+
+        val defensor = Aventurero("Defensor")
+        val aventureroSinDefensor = Aventurero("Sin Defensor")
+        val defendido = Aventurero("Defendido")
+        val enemigo = Aventurero("Enemigo")
+
+        party.agregarUnAventurero(defensor)
+        party.agregarUnAventurero(aventureroSinDefensor)
+        party.agregarUnAventurero(defendido)
+
+        Defensa.para(defensor, aventureroSinDefensor).resolversePara(aventureroSinDefensor)
+        Defensa.para(defensor, defendido).resolversePara(defendido)
+
+        val vidaDelDefendidoAntesDelAtaque = defendido.vida()
+        Ataque.para(enemigo, aventureroSinDefensor, dadoDe20Falso).resolversePara(aventureroSinDefensor)
+
+        assertThat(defendido.vida()).isEqualTo(vidaDelDefendidoAntesDelAtaque)
+    }
 
     @Test
     fun `un aventurero no puede defender a un enemigo`(){
