@@ -65,7 +65,4 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
             pelea
         }
 
-    private fun peleaDeParty(idDeLaParty: Long): Pelea {
-        return peleaDAO.recuperarUltimaPeleaDeParty(idDeLaParty)
-    }
 }

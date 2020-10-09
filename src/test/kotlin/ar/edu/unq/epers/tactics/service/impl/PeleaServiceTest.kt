@@ -144,9 +144,11 @@ internal class PeleaServiceTest {
 
     @Test
     fun `una party puede salir de una pelea`() {
-        peleaService.iniciarPelea(party.id()!!)
+        val party = Party("Nombre", "")
+        partyService.crear(party)
+        val peleaId = peleaService.iniciarPelea(party.id()!!).id()!!
 
-        peleaService.terminarPelea(party.id()!!)
+        peleaService.terminarPelea(peleaId)
 
         assertFalse(peleaService.estaEnPelea(party.id()!!))
     }
@@ -161,27 +163,22 @@ internal class PeleaServiceTest {
     }
 
     @Test
-    fun `luego de una pelea, los aventureros vuelven a sus puntajes iniciales`() {
+    fun `luego de una pelea, los aventureros vuelven a tener su vida y mana como antes de comenzar a pelear`() {
         val curador = Aventurero("Fede", "", 10.0, 10.0, 10.0, 10.0)
         val aliado = Aventurero("Jorge", "", 10.0, 10.0, 10.0, 10.0)
         val vidaAntesDeCuracion = aliado.vidaActual()
         val manaAntesDeCuracion = curador.mana()
-        val tactica = Tactica(
-            1, TipoDeReceptor.ALIADO,
-            TipoDeEstadistica.VIDA,
-            Criterio.MAYOR_QUE, 0.0, Accion.CURAR
-        )
 
-        curador.agregarTactica(tactica)
+        curador.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.CURAR))
 
         partyService.agregarAventureroAParty(party.id()!!, curador)
         partyService.agregarAventureroAParty(party.id()!!, aliado)
 
-        val pelea = peleaService.iniciarPelea(party.id()!!)
-        val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, curador.id()!!, listOf())
+        val peleaId = peleaService.iniciarPelea(party.id()!!).id()!!
+        val habilidadGenerada = peleaService.resolverTurno(peleaId, curador.id()!!, listOf())
         peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada)
 
-        peleaService.terminarPelea(party.id()!!)
+        peleaService.terminarPelea(peleaId)
         runTrx {
             assertThat(this.aventureroDAO.recuperar(curador.id()!!).mana()).isEqualTo(manaAntesDeCuracion)
             assertThat(this.aventureroDAO.recuperar(aliado.id()!!).vidaActual()).isEqualTo(vidaAntesDeCuracion)
