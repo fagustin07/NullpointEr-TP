@@ -231,31 +231,19 @@ internal class PeleaServiceTest {
 
     @Test
     fun `un aventurero resuelve su turno y ejecuta su segunda tactica porque la primera no cumple el criterio`() {
-        val aventurero = Aventurero("Fede", "", 10.0, 10.0, 10.0, 10.0)
+        val emisor = Aventurero("Fede", "", 10.0, 10.0, 10.0, 10.0)
         val enemigo = Aventurero("Pepe","URL",10.0,10.0,10.0,10.0)
 
         val partyEnemigo = Party("Los Capos", "URL")
         partyService.crear(partyEnemigo)
 
-        val tacticaUno = Tactica(
-                1, TipoDeReceptor.ENEMIGO,
-                TipoDeEstadistica.VIDA,
-                Criterio.MAYOR_QUE, 200.0, Accion.ATAQUE_FISICO
-        )
-        val  tacticaDos = Tactica(
-                2, TipoDeReceptor.ENEMIGO,
-                TipoDeEstadistica.VIDA,
-                Criterio.MAYOR_QUE, 0.0, Accion.ATAQUE_MAGICO
-        )
+        emisor.agregarTactica(Tactica(1, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 200.0, Accion.ATAQUE_FISICO))
+        emisor.agregarTactica(Tactica(2, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.ATAQUE_MAGICO))
 
-        aventurero.agregarTactica(tacticaUno)
-        aventurero.agregarTactica(tacticaDos)
-
-        partyService.agregarAventureroAParty(party.id()!!, aventurero)
-
+        partyService.agregarAventureroAParty(party.id()!!, emisor)
 
         val pelea = peleaService.iniciarPelea(party.id()!!)
-        val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, aventurero.id()!!,listOf(enemigo))
+        val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, emisor.id()!!,listOf(enemigo))
 
         assertTrue(habilidadGenerada is AtaqueMagico)
 
