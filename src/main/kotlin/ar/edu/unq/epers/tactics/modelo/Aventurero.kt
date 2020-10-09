@@ -104,7 +104,8 @@ class Aventurero(private var nombre: String) {
 //            val receptorRandom = Math.random()*(receptoresSeleccionados.size).toInt()
 //            receptoresSeleccionados[receptorRandom.toInt()]
 
-            val receptor = posiblesReceptores.firstOrNull { receptor -> tactica.puedeAplicarseA(this, receptor) }
+            val receptor = posiblesReceptores.firstOrNull { receptor ->
+                receptor.estaVivo() && tactica.puedeAplicarseA(this, receptor) }
             if (receptor != null) {
                 return tactica.aplicarseSobre(this, receptor)
             }
