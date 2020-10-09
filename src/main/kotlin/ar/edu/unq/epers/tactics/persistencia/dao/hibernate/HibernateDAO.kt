@@ -24,7 +24,7 @@ open class HibernateDAO<T>(val entityType: Class<T>) {
                 .setParameter("id", id)
                 .singleResult
         } catch (e: NoResultException) {
-            throw RuntimeException("En la tabla solicitada no existe el id provisto")
+            throw RuntimeException("No existe ${entityType.simpleName} con id ${id}")
         }
     }
 

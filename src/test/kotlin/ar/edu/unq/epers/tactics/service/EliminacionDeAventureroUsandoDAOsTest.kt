@@ -67,7 +67,7 @@ class EliminacionDeAventureroUsandoDAOsTest {
 
             assertEquals(0, partyRecuperada.numeroDeAventureros())
             val exception = assertThrows<RuntimeException> { aventureroDao.recuperar(aventurero.id()!!) }
-            assertEquals("En la tabla solicitada no existe el id provisto", exception.message)
+            assertEquals("No existe Aventurero con id ${aventurero.id()!!}", exception.message)
         }
     }
 

@@ -18,7 +18,10 @@ class AppConfiguration {
     @Bean
     fun groupName() : String {
         val groupName :String?  = System.getenv()["GROUP_NAME"]
-        return groupName!!
+        if (groupName == null)
+            return "NULL_POINTER"
+        else
+            return groupName!!
     }
 
 

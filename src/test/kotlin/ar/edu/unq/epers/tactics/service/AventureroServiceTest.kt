@@ -79,7 +79,7 @@ class AventureroServiceTest {
             val partyRecuperada = partyService.recuperar(partyId)
             assertEquals(0, partyRecuperada.numeroDeAventureros())
             val exception = assertThrows<RuntimeException> { aventureroService.recuperar(aventureroId) }
-            assertEquals("En la tabla solicitada no existe el id provisto", exception.message)
+            assertEquals("No existe Aventurero con id ${aventurero.id()!!}", exception.message)
         }
     }
 
