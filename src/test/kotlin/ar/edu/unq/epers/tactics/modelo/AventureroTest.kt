@@ -42,7 +42,7 @@ class AventureroTest {
 
 
     @Test
-    fun sabeCuantaVidaTiene() = assertEquals(84, cacho.vida())
+    fun sabeCuantaVidaTiene() = assertEquals(84, cacho.vidaActual())
 
     @Test
     fun sabeCuantaArmaduraTiene() = assertEquals(18, cacho.armadura())
@@ -134,14 +134,14 @@ class AventureroTest {
 
     @Test
     fun `un aventurero puede reestablecer su vida y mana`() {
-        val vidaInicial = cacho.vida()
+        val vidaInicial = cacho.vidaActual()
         val manaInicial = cacho.mana()
         cacho.recibirAtaqueFisicoSiDebe(10, 5000)
         cacho.consumirMana()
 
         cacho.reestablecerse()
 
-        assertThat(cacho.vida()).isEqualTo(vidaInicial)
+        assertThat(cacho.vidaActual()).isEqualTo(vidaInicial)
         assertThat(cacho.mana()).isEqualTo(manaInicial)
     }
 

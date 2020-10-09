@@ -6,7 +6,7 @@ import kotlin.jvm.Transient
 
 @Entity
 class Pelea(
-    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     val party: Party
     ) {
 

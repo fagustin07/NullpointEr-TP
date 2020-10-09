@@ -18,7 +18,7 @@ class TipoDeEstadisticaTest {
 
     @Test
     fun VIDA() {
-        Assertions.assertEquals(aventurero.vida(), TipoDeEstadistica.VIDA.valorPara(aventurero))
+        Assertions.assertEquals(aventurero.vidaActual(), TipoDeEstadistica.VIDA.valorPara(aventurero))
     }
 
     @Test

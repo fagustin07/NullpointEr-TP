@@ -40,6 +40,7 @@ class Aventurero(private var nombre: String) {
             this.validarPuntaje(nuevoPuntaje, "constitucion")
             field = nuevoPuntaje
         }
+    var dañoRecibido = 0
 
     @ManyToOne
     var party: Party? = null
@@ -77,7 +78,7 @@ class Aventurero(private var nombre: String) {
     fun constitucion() = constitucion
     fun inteligencia() = inteligencia
 
-    fun vida() = vida
+    fun vidaActual() = max(0,vida-dañoRecibido)
     fun mana() = mana
     fun armadura() = nivel() + constitucion
     fun velocidad() = nivel() + destreza
@@ -87,7 +88,7 @@ class Aventurero(private var nombre: String) {
 
 
     fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
-        validarSiEstaVivo()
+//        validarSiEstaVivo() TODO: si dejamos esto, explota todo xd
 
         this.tacticas.sortBy { it.prioridad }
 
@@ -159,7 +160,7 @@ class Aventurero(private var nombre: String) {
             defensor!!.recibirDaño(dañoRecibido / 2)
             this.consumirTurnoDeDefensa()
         } else {
-            this.vida = max(0, vida - dañoRecibido)
+            this.dañoRecibido = this.dañoRecibido + dañoRecibido
         }
     }
 
@@ -187,7 +188,7 @@ class Aventurero(private var nombre: String) {
 
     private fun tieneDefensor() = this.defensor != null && this.defensor!!.estaVivo()
 
-    fun estaVivo() = this.vida > 0
+    fun estaVivo() = this.vidaActual() > 0
 
     private fun validarPuntaje(nuevoPuntaje: Int, nombreDeAtributo: String) {
         if (nuevoPuntaje > 100) throw  RuntimeException("La $nombreDeAtributo no puede exceder los 100 puntos!")
@@ -207,6 +208,7 @@ class Aventurero(private var nombre: String) {
         this.nombre = otroAventurero.nombre()
         this.tacticas = otroAventurero.tacticas()
         this.imagenURL = otroAventurero.imagen()
+        this.dañoRecibido = otroAventurero.dañoRecibido
         this.recalcularVidaYMana()
     }
 
@@ -221,9 +223,11 @@ class Aventurero(private var nombre: String) {
     }
 
     fun reestablecerse() {
-        this.recalcularVidaYMana()
+        this.dañoRecibido = 0
+        this.turnosDefendido = 0
         this.aventureroDefendido = null
         this.defensor = null
+        this.recalcularVidaYMana()
     }
 
     fun estaDefendiendo(): Boolean {

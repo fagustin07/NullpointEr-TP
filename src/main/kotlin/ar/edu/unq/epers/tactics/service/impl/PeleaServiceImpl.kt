@@ -8,6 +8,7 @@ import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.PeleaDAO
 import ar.edu.unq.epers.tactics.service.PeleaService
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
+import java.lang.RuntimeException
 
 class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO) :
     PeleaService {
@@ -53,13 +54,15 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
  */
         }
 
-    override fun terminarPelea(idDeLaParty: Long) =
+    override fun terminarPelea(idDeLaPelea: Long) =
         runTrx {
-            val partyRecuperada = partyDAO.recuperar(idDeLaParty)
-            partyRecuperada.salirDePelea()
-            partyDAO.actualizar(partyRecuperada)
+            val pelea = peleaDAO.recuperar(idDeLaPelea)
+            val party = pelea.party
+            if (!party.estaEnPelea()) throw RuntimeException("La pelea ya ha terminado antes.")
+            pelea.party.salirDePelea()
+            partyDAO.actualizar(party)
 
-            this.peleaDeParty(idDeLaParty)
+            pelea
         }
 
     private fun peleaDeParty(idDeLaParty: Long): Pelea {

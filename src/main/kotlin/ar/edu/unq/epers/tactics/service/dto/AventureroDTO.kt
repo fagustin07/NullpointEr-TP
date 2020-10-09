@@ -2,24 +2,34 @@ package ar.edu.unq.epers.tactics.service.dto
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 
-data class AventureroDTO(var id: Long?, var nivel: Int, var nombre: String, var imagenURL: String, var tacticas: List<TacticaDTO>, var atributos: AtributosDTO) {
+data class AventureroDTO(
+    var id: Long?,
+    var nivel: Int,
+    var nombre: String,
+    var imagenURL: String,
+    var dañoRecibido: Int,
+    var tacticas: List<TacticaDTO>,
+    var atributos: AtributosDTO
+) {
 
     companion object {
 
         fun desdeModelo(aventurero: Aventurero): AventureroDTO {
 
-            return AventureroDTO(aventurero.id(),
-                    aventurero.nivel(),
-                    aventurero.nombre(),
-                    aventurero.imagen(),
-                    aventurero.tacticas().map { TacticaDTO.desdeModelo(it) },
-                    AtributosDTO(
-                            aventurero.id(),
-                            aventurero.fuerza(),
-                            aventurero.destreza(),
-                            aventurero.constitucion(),
-                            aventurero.inteligencia()
-                    )
+            return AventureroDTO(
+                aventurero.id(),
+                aventurero.nivel(),
+                aventurero.nombre(),
+                aventurero.imagen(),
+                aventurero.dañoRecibido,
+                aventurero.tacticas().map { TacticaDTO.desdeModelo(it) },
+                AtributosDTO(
+                        aventurero.id(),
+                        aventurero.fuerza(),
+                        aventurero.destreza(),
+                        aventurero.constitucion(),
+                        aventurero.inteligencia()
+                )
             )
         }
     }
@@ -35,7 +45,7 @@ data class AventureroDTO(var id: Long?, var nivel: Int, var nombre: String, var 
         )
         this.tacticas.forEach { aventurero.agregarTactica(it.aModelo()) }
         aventurero.darleElId(this.id)
-
+        aventurero.dañoRecibido = this.dañoRecibido
         return aventurero
     }
 
