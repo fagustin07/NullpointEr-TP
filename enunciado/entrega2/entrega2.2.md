@@ -3,11 +3,11 @@
 La primera demo fue un exito y todos los testers estan encantados con el sistema de juego. 
 Algunos de los reviews recibidos fueron:
 
-"Simple... pero profundo" -  Hideo Kojima
+- "Simple... pero profundo" -  Hideo Kojima
 
-"Literalmente me curo el cancer" - Francisco Perez Ramos
+- "Literalmente me curo el cancer" - Francisco Perez Ramos
 
-"120 de 100" - IGN
+- "120 de 100" - IGN
 
 Arman una gran celebracion por el inmediato exito con papafritas, chicitos, gaseosa, sombreros graciosos. 
 Todos los desarolladores e ingenieros atienden y comienzan a despotricarse, pero de pronto, la musica se corta y las luces se apagan.
