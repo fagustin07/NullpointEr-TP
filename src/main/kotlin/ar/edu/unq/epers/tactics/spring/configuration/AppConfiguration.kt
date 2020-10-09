@@ -6,6 +6,7 @@ import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDA
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
 import ar.edu.unq.epers.tactics.service.*
+import ar.edu.unq.epers.tactics.service.impl.AventureroLeaderboardServiceImpl
 import ar.edu.unq.epers.tactics.service.impl.AventureroServiceImpl
 import ar.edu.unq.epers.tactics.service.impl.PartyServiceImpl
 import ar.edu.unq.epers.tactics.service.impl.PeleaServiceImpl
@@ -48,7 +49,13 @@ class AppConfiguration {
     }
 
     @Bean
+    fun adventurerLeaderboardService(aventureroDAO: AventureroDAO) : AventureroLeaderboardService {
+        return AventureroLeaderboardServiceImpl(aventureroDAO)
+    }
+
+    @Bean
     fun fightService(peleaDAO: PeleaDAO, partyDAO: PartyDAO, aventureroDAO: AventureroDAO) : PeleaService {
         return PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO)
     }
+
 }
