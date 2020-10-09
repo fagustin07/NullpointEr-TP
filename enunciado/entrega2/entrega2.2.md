@@ -1,6 +1,6 @@
 ## Entrega 2 - ORM HIBERNATE - Hito 2
 
-La primera demo fue un exito y todos los testers estan encantados con el sistema de juego. 
+La primera demo fue un éxito y todos los testers están encantados con el sistema de juego. 
 Algunos de los reviews recibidos fueron:
 
 - "Simple... pero profundo" -  Hideo Kojima
@@ -9,25 +9,24 @@ Algunos de los reviews recibidos fueron:
 
 - "120 de 100" - IGN
 
-Arman una gran celebracion por el inmediato exito con papafritas, chicitos, gaseosa, sombreros graciosos. 
-Todos los desarolladores e ingenieros atienden y comienzan a despotricarse, pero de pronto, la musica se corta y las luces se apagan.
+Arman una gran celebración por el inmediato éxito con papas fritas, chizitos, gaseosa, sombreros graciosos. 
+Todos los desarrolladores e ingenieros atienden y comienzan a despotricarse, pero de pronto, la música se corta y las luces se apagan.
 Una singular luz se prende, iluminando al CEO de la empresa, quien con una poderosa voz anuncia:
 
-"Nuestra aventura... solo acaba de comenzar"
+"Nuestra aventura... sólo acaba de comenzar"
 
-Todos emocionados y con lagrimas en los ojos, lanzan los sombreros y se internan freneticamente en sus escritorios, listos para continuar el desarollo de lo que puede llegar a ser el mas grande y significante juego de la historia.
-
+Todos emocionados y con lágrimas en los ojos, lanzan los sombreros y se internan frenéticamente en sus escritorios, listos para continuar el desarrollo de lo que puede llegar a ser... el más grande y significante juego de la historia.
 
 
 ## Funcionalidad
 
-Los testers, si bien contentos, mencionaron que los ayudaria tener acceso a ciertos datos que les permitan mejorar sus estrategias y que sea mas facil ordenar sus parties y aventureros.
+Los testers, si bien contentos, mencionaron que los ayudaría tener acceso a ciertos datos que les permitan mejorar sus estrategias y que sea más fácil ordenar sus parties y aventureros.
 
-Nuestro objetivo para esta proxima iteracion es proveer esos datos para que el equipo del front los visualice.
+Nuestro objetivo para esta próxima iteración es proveer esos datos para que el equipo del front los visualice.
 
 ### Cambios en PeleaService
-- Cuando se inicia una pelea, además de nuestra partyId, se recibira el nombre de la party contra la que se pelea.
-- Cuando se finaliza una pelea, si nuestra party todavía tiene aventureros vivos, marcar la pelea como ganada, caso contrario, como perdida.
+- Cuando se inicia una pelea, además de nuestra partyId, se recibirá el nombre de la party contra la que se pelea.
+- Cuando se finaliza una pelea, si nuestra party todavía tiene aventureros vivos, marcar la pelea como ganada, caso contrario, como pérdida.
 - Cada vez que se resuelve un turno y se genera una nueva habilidad, hay que guardar esa habilidad en la pelea. 
 - Cada vez que se recibe una habilidad, hay que guardar esa habilidad en la pelea. 
 
