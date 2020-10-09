@@ -20,15 +20,16 @@ class HibernatePartyDAOTest {
 
     @Test
     fun alCrearUnaPartyYLuegoRecuperarlaSeObtienenObjetosEquivalentes() {
+        var idParty: Long? = null
+        lateinit var recoveryBigTeam:Party
         HibernateTransactionRunner.runTrx {
-            val idParty = partyDAO.crear(bigTeam).id()!!
+            idParty = partyDAO.crear(bigTeam).id()!!
+            recoveryBigTeam = partyDAO.recuperar(idParty!!)
 
-            val recoveryBigTeam = partyDAO.recuperar(idParty)
-
-            assertEquals(bigTeam.nombre(), recoveryBigTeam.nombre())
-            assertEquals(idParty, recoveryBigTeam.id())
-            assertEquals(0, recoveryBigTeam.numeroDeAventureros())
         }
+        assertEquals(bigTeam.nombre(), recoveryBigTeam.nombre())
+        assertEquals(idParty, recoveryBigTeam.id())
+        assertEquals(0, recoveryBigTeam.numeroDeAventureros())
     }
 
     @Test
@@ -50,15 +51,19 @@ class HibernatePartyDAOTest {
 
     @Test
     fun cuandoSeActualizaUnaParty_luegoSeLaRecuperaConLaInformacionActualizada() {
+        var partyId:Long? = null
         HibernateTransactionRunner.runTrx {
             val party = Party("Beta", "URL")
-            val partyId = partyDAO.crear(party).id()!!
+            partyId = partyDAO.crear(party).id()!!
             val wos = Aventurero("wos")
 
             party.agregarUnAventurero(wos)
 
             partyDAO.actualizar(party)
-            val partyActualizada = partyDAO.recuperar(partyId)
+        }
+
+        HibernateTransactionRunner.runTrx{
+            val partyActualizada = partyDAO.recuperar(partyId!!)
 
             assertEquals(1, partyActualizada.numeroDeAventureros())
         }
