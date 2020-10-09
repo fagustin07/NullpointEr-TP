@@ -21,15 +21,15 @@ class HibernatePartyDAOTest {
     @Test
     fun alCrearUnaPartyYLuegoRecuperarlaSeObtienenObjetosEquivalentes() {
         var idParty: Long? = null
-        lateinit var recoveryBigTeam:Party
+        lateinit var partyRecuperada:Party
         HibernateTransactionRunner.runTrx {
             idParty = partyDAO.crear(bigTeam).id()!!
-            recoveryBigTeam = partyDAO.recuperar(idParty!!)
+            partyRecuperada = partyDAO.recuperar(idParty!!)
 
         }
-        assertEquals(bigTeam.nombre(), recoveryBigTeam.nombre())
-        assertEquals(idParty, recoveryBigTeam.id())
-        assertEquals(0, recoveryBigTeam.numeroDeAventureros())
+        assertEquals(bigTeam.nombre(), partyRecuperada.nombre())
+        assertEquals(idParty, partyRecuperada.id())
+        assertEquals(0, partyRecuperada.numeroDeAventureros())
     }
 
     @Test

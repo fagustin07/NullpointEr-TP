@@ -1,4 +1,4 @@
-package ar.edu.unq.epers.tactics.service
+package ar.edu.unq.epers.tactics.persistencia.dao.hibernate
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
@@ -13,6 +13,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 
+//clase creada porque nos estaba fallando la eliminacion de aventureros.
 class EliminacionDeAventureroUsandoDAOsTest {
     lateinit private var party: Party
     lateinit private var aventurero: Aventurero

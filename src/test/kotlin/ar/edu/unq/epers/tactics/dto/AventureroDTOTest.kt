@@ -40,7 +40,7 @@ class AventureroDTOTest {
 
         aventureroDTO.actualizarModelo(aventurero)
 
-        assertThat(aventurero.nivel()).isEqualTo(aventureroDTO.nivel) // TODO: en el test no se modifica el nivel, porque en el modelo todavia no se hace
+        assertThat(aventurero.nivel()).isEqualTo(aventureroDTO.nivel)
         assertThat(aventurero.nombre()).isEqualTo(aventureroDTO.nombre)
         assertThat(aventurero.imagenURL()).isEqualTo(aventureroDTO.imagenURL)
         assertThat(aventurero.dañoRecibido()).isEqualTo(aventureroDTO.dañoRecibido)

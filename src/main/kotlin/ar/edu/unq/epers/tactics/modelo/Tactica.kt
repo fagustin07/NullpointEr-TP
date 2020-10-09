@@ -21,6 +21,7 @@ class Tactica(
     internal var id: Long? = null
 
     fun puedeAplicarseA(emisor: Aventurero, receptor: Aventurero) =
+        receptor.estaVivo() &&
         this.tipoDeReceptor.test(emisor, receptor) &&
         criterio.evaluarseCon(tipoDeEstadistica.valorPara(receptor), valor)
 

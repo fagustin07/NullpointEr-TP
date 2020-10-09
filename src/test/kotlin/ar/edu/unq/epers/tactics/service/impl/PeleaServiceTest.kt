@@ -187,8 +187,7 @@ internal class PeleaServiceTest {
     }
 
 
-    @Test   //TODO: Creo que con el cambio que tuve que meter en peleaService esta funcionalidad queda fuera
-    // de lo pedido, pero lo podemos dejar porque esta lindo. Lo modifico para que funcione
+    @Test
     fun `cuando una party estuvo en multiples peleas se retorna la ultima`() {
         val pelea = peleaService.iniciarPelea(party.id()!!)
         peleaService.terminarPelea(pelea.id()!!)
@@ -276,37 +275,6 @@ internal class PeleaServiceTest {
        assertTrue(habilidadGenerada is HabilidadNula)
 
     }
-
-//    @Test     Se rompe porque tuve que comentar la validacion para que ande el front
-//    fun `un aventurero muerto no puede resolver su turno`() {
-//        val aventurero = Aventurero("Fede","URL",10.0,10.0,10.0,10.0)
-//        val otroAventurero = Aventurero("Cacho","URL",80.0,80.0,80.0,80.0)
-//
-//        val partyEnemigo = Party("Los Capos", "URL")
-//        partyService.crear(partyEnemigo)
-//
-//        val tacticaEnemigo = Tactica(
-//                1,TipoDeReceptor.ENEMIGO,
-//                TipoDeEstadistica.VIDA,
-//                Criterio.MENOR_QUE,10.00.0,Accion.ATAQUE_FISICO
-//        )
-//
-//        otroAventurero.agregarTactica(tacticaEnemigo)
-//
-//        partyService.agregarAventureroAParty(party.id()!!,aventurero)
-//        partyService.agregarAventureroAParty(partyEnemigo.id()!!,otroAventurero)
-//
-//        val peleaEnemigo = peleaService.iniciarPelea(partyEnemigo.id()!!)
-//        val peleaAventurero = peleaService.iniciarPelea(party.id()!!)
-//
-//        val habilidadGenerada = peleaService.resolverTurno(peleaEnemigo.id()!!, otroAventurero.id()!!, listOf(aventurero))
-//        peleaService.recibirHabilidad(aventurero.id()!!, habilidadGenerada)
-//
-//        val exception = assertThrows<RuntimeException> {
-//            peleaService.resolverTurno(peleaAventurero.id()!!,aventurero.id()!!, listOf(otroAventurero)) }
-//        assertEquals(exception.message, "Un aventurero muerto no puede resolver su turno")
-//
-//    }
 
     @AfterEach
     fun tearDown() {

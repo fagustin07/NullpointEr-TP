@@ -89,23 +89,14 @@ class Aventurero(private var nombre: String) {
     fun dañoRecibido() = this.dañoRecibido
 
     fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
-//        validarSiEstaVivo() TODO: si dejamos esto, explota todo xd. En el FRONT le piden resolver turno a aventureros muertos
+//        validarSiEstaVivo() TODO: si dejamos esto, explota el front. En el FRONT le piden resolver turno a aventureros muertos
 
         this.tacticas.sortBy { it.prioridad }
 
         val posiblesReceptores = this.aliados() + enemigos + this
 
-
         for (tactica in tacticas) {
-//            TODO: se puede hacer algo de este estilo tambien
-//             val receptoresSeleccionados = posiblesReceptores.filter { posibleReceptor ->
-//                posibleReceptor.estaVivo() && tactica.puedeAplicarseA(this,posibleReceptor)
-//              }
-//            val receptorRandom = Math.random()*(receptoresSeleccionados.size).toInt()
-//            receptoresSeleccionados[receptorRandom.toInt()]
-
-            val receptor = posiblesReceptores.firstOrNull { receptor ->
-                receptor.estaVivo() && tactica.puedeAplicarseA(this, receptor) }
+            val receptor = posiblesReceptores.firstOrNull { receptor -> tactica.puedeAplicarseA(this, receptor) }
             if (receptor != null) {
                 return tactica.aplicarseSobre(this, receptor)
             }
@@ -113,9 +104,9 @@ class Aventurero(private var nombre: String) {
         return HabilidadNula.para(this,this)
     }
 
-    private fun validarSiEstaVivo() {
-        if (!this.estaVivo()) throw RuntimeException("Un aventurero muerto no puede resolver su turno");
-    }
+//    private fun validarSiEstaVivo() {
+//        if (!this.estaVivo()) throw RuntimeException("Un aventurero muerto no puede resolver su turno");
+//    }
 
     fun recibirAtaqueFisicoSiDebe(dañoFisico: Double, precisionFisica: Double) {
         val claseDeArmadura = this.armadura() + (this.velocidad() / 2)
