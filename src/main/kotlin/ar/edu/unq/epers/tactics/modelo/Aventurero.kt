@@ -71,7 +71,7 @@ class Aventurero(private var nombre: String) {
 
     fun id() = id
     fun nombre() = nombre
-    fun imagen() = this.imagenURL
+    fun imagenURL() = this.imagenURL
     fun nivel() = 1
 
     fun fuerza() = fuerza
@@ -216,7 +216,7 @@ class Aventurero(private var nombre: String) {
         this.fuerza = otroAventurero.fuerza()
         this.nombre = otroAventurero.nombre()
         this.tacticas = otroAventurero.tacticas()
-        this.imagenURL = otroAventurero.imagen()
+        this.imagenURL = otroAventurero.imagenURL()
         this.dañoRecibido = otroAventurero.dañoRecibido
         this.recalcularVidaYMana()
     }

@@ -6,40 +6,64 @@ import ar.edu.unq.epers.tactics.modelo.enums.Accion
 import ar.edu.unq.epers.tactics.modelo.enums.Criterio
 import ar.edu.unq.epers.tactics.modelo.enums.TipoDeEstadistica
 import ar.edu.unq.epers.tactics.modelo.enums.TipoDeReceptor
+import ar.edu.unq.epers.tactics.service.dto.AtributosDTO
 import ar.edu.unq.epers.tactics.service.dto.AventureroDTO
-import ar.edu.unq.epers.tactics.service.dto.TacticaDTO
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class AventureroDTOTest {
 
     @Test
     fun `Al convertir un Aventurero a un AventureroDTO y de nuevo a un Aventurero se obtienen objetos similares`() {
-        val aventureroOriginal = Aventurero("Pepe", "", 40.0, 50.0, 60.0, 70.0)
-        val curarse = Tactica(1, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 30.0, Accion.CURAR)
-        val rematar =
-            Tactica(2, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 15.0, Accion.ATAQUE_MAGICO)
-        aventureroOriginal.agregarTactica(curarse)
-        aventureroOriginal.agregarTactica(rematar)
+        val aventureroOriginal = aventureroConTacticas()
         val aventureroDTO = AventureroDTO.desdeModelo(aventureroOriginal)
+
         val aventureroDesdeDTO = aventureroDTO.aModelo()
 
         assertThat(aventureroDesdeDTO).usingRecursiveComparison().isEqualTo(aventureroOriginal)
     }
 
+
     @Test
     fun `Al enviar el mensaje actualizar a un AventureroDTO se actualiza el objeto de dominio`() {
-        val aventurero = Aventurero("Pepe", "", 40.0, 50.0, 60.0, 70.0)
-        val aventureroDTO = AventureroDTO.desdeModelo(aventurero)
+        val aventurero = aventureroConTacticas()
+        val aventureroDTO = AventureroDTO(
+            null,
+            aventurero.nivel(),
+            "Nombre en DTO",
+            "/otraImagen.jpg",
+            aventurero.dañoRecibido() + 1,
+            listOf(),
+            AtributosDTO(null, aventurero.fuerza() + 1, aventurero.destreza() + 1, aventurero.constitucion() + 1, aventurero.inteligencia() + 1)
+        )
 
-        aventureroDTO.atributos.fuerza = 56.0
-        aventureroDTO.atributos.inteligencia = 2.0
-        val curarse = Tactica(1, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 30.0, Accion.CURAR)
-        aventureroDTO.tacticas = mutableListOf(TacticaDTO.desdeModelo(curarse))
         aventureroDTO.actualizarModelo(aventurero)
 
-        assertThat(aventurero.fuerza()).isEqualTo(56.0)
-        assertThat(aventurero.inteligencia()).isEqualTo(2.0)
-        assertThat(aventurero.tacticas().size).isEqualTo(1)
+        assertThat(aventurero.nivel()).isEqualTo(aventureroDTO.nivel) // TODO: en el test no se modifica el nivel, porque en el modelo todavia no se hace
+        assertThat(aventurero.nombre()).isEqualTo(aventureroDTO.nombre)
+        assertThat(aventurero.imagenURL()).isEqualTo(aventureroDTO.imagenURL)
+        assertThat(aventurero.dañoRecibido()).isEqualTo(aventureroDTO.dañoRecibido)
+        assertTrue(aventurero.tacticas().isEmpty())
+        assertThat(aventurero.fuerza()).isEqualTo(aventureroDTO.atributos.fuerza)
+        assertThat(aventurero.destreza()).isEqualTo(aventureroDTO.atributos.destreza)
+        assertThat(aventurero.constitucion()).isEqualTo(aventureroDTO.atributos.constitucion)
+        assertThat(aventurero.inteligencia()).isEqualTo(aventureroDTO.atributos.inteligencia)
     }
+
+    private fun aventureroConTacticas(): Aventurero {
+        val aventurero = Aventurero("Pepe", "", 40.0, 50.0, 60.0, 70.0)
+
+        aventurero.agregarTactica(tacticaDeCuracion())
+        aventurero.agregarTactica(tacticaDeAtaque())
+
+        return aventurero
+    }
+
+    private fun tacticaDeCuracion() =
+        Tactica(1, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 30.0, Accion.CURAR)
+
+    private fun tacticaDeAtaque() =
+        Tactica(2, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 15.0, Accion.ATAQUE_MAGICO)
+
 }

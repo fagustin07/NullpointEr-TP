@@ -3,14 +3,7 @@ package ar.edu.unq.epers.tactics.service.dto
 import ar.edu.unq.epers.tactics.modelo.Tactica
 import ar.edu.unq.epers.tactics.modelo.enums.*
 
-data class TacticaDTO(
-    var id: Long?,
-    var prioridad: Int,
-    var receptor: TipoDeReceptor,
-    var tipoDeEstadistica: TipoDeEstadistica,
-    var criterio: Criterio,
-    var valor: Double,
-    var accion: Accion
+data class TacticaDTO(var id: Long?, var prioridad: Int, var receptor: TipoDeReceptor, var tipoDeEstadistica: TipoDeEstadistica, var criterio: Criterio, var valor: Double, var accion: Accion
 ) {
 
     companion object {
