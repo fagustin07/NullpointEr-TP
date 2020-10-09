@@ -6,10 +6,7 @@ import javax.persistence.*
 import kotlin.jvm.Transient
 
 @Entity
-class Pelea(
-    @OneToOne(fetch = FetchType.EAGER)
-    val party: Party
-    ) {
+class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party) {
 
     private val fecha = LocalDateTime.now()
     private var estaFinalizada = false
