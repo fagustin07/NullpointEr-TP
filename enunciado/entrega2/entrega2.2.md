@@ -1,16 +1,35 @@
 ## Entrega 2 - ORM HIBERNATE - Hito 2
 
-## Cambios desde el TP anterior
+La primera demo fue un exito y todos los testers estan encantados con el sistema de juego. 
+Algunos de los reviews recibidos fueron:
+
+"Simple... pero profundo" -  Hideo Kojima
+
+"Literalmente me curo el cancer" - Francisco Perez Ramos
+
+"120 de 100" - IGN
+
+Arman una gran celebracion por el inmediato exito con papafritas, chicitos, gaseosa, sombreros graciosos. 
+Todos los desarolladores e ingenieros atienden y comienzan a despotricarse, pero de pronto, la musica se corta y las luces se apagan.
+Una singular luz se prende, iluminando al CEO de la empresa, quien con una poderosa voz anuncia:
+
+"Nuestra aventura... solo acaba de comenzar"
+
+Todos emocionados y con lagrimas en los ojos, lanzan los sombreros y se internan freneticamente en sus escritorios, listos para continuar el desarollo de lo que puede llegar a ser el mas grande y significante juego de la historia.
+
 
 
 ## Funcionalidad
 
-### Cambios en PeleaService
-Cuando se inicia una pelea, además de la partyId, se recibe el nombre de la party con la que peleamos.
-Cuando se finaliza una pelea, si la party todavía tiene aventureros vivos, marcar la pelea como ganada, caso contrario, como perdida.
+Los testers, si bien contentos, mencionaron que los ayudaria tener acceso a ciertos datos que les permitan mejorar sus estrategias y que sea mas facil ordenar sus parties y aventureros.
 
-Cada vez que se resuelve un turno y se genera una nueva habilidad, hay que guardar esa habilidad en la pelea. 
-Cada vez que se recibe una habilidad, hay que guardar esa habilidad en la pelea. 
+Nuestro objetivo para esta proxima iteracion es proveer esos datos para que el equipo del front los visualice.
+
+### Cambios en PeleaService
+- Cuando se inicia una pelea, además de nuestra partyId, se recibira el nombre de la party contra la que se pelea.
+- Cuando se finaliza una pelea, si nuestra party todavía tiene aventureros vivos, marcar la pelea como ganada, caso contrario, como perdida.
+- Cada vez que se resuelve un turno y se genera una nueva habilidad, hay que guardar esa habilidad en la pelea. 
+- Cada vez que se recibe una habilidad, hay que guardar esa habilidad en la pelea. 
 
 
 ## Servicios
