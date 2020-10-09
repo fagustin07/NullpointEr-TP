@@ -57,7 +57,6 @@ Nuestro objetivo para esta próxima iteración es proveer esos datos para que el
 
 - Que provean implementaciones para las interfaces descriptas anteriormente.
 - Asignen propiamente las responsabilidades a todos los objetos intervinientes, discriminando entre servicios, DAOs y objetos de negocio.
-- Provean la implementación de todos los mensajes "TODO" de los DTO
 - Creen test que prueben todas las funcionalidades pedidas, con casos favorables y desfavorables.
 
 ### Recuerden que:
