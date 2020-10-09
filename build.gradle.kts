@@ -29,6 +29,9 @@ dependencies {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation ("junit:junit:4.12")
+
+    testImplementation("org.assertj:assertj-core:3.17.2")
+
     runtimeOnly("mysql:mysql-connector-java")
 }
 
