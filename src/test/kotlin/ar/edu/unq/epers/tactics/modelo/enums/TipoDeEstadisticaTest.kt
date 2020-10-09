@@ -13,12 +13,12 @@ class TipoDeEstadisticaTest {
     @BeforeEach
     fun setUp() {
         party = Party("Nombre de party", "/foto.jpg")
-        aventurero = Aventurero("Nombre", "",1, 2, 3, 4)
+        aventurero = Aventurero("Nombre", "",1.0, 2.0, 3.0, 4.0)
     }
 
     @Test
     fun VIDA() {
-        Assertions.assertEquals(aventurero.vida(), TipoDeEstadistica.VIDA.valorPara(aventurero))
+        Assertions.assertEquals(aventurero.vidaActual(), TipoDeEstadistica.VIDA.valorPara(aventurero))
     }
 
     @Test

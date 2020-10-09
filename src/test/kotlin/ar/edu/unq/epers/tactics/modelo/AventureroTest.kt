@@ -12,7 +12,7 @@ class AventureroTest {
 
     @BeforeEach
     fun setUp() {
-        cacho = Aventurero("Cacho","", 45, 10, 20, 17)
+        cacho = Aventurero("Cacho","", 45.0, 10.0, 20.0, 17.0)
 
     }
 
@@ -23,15 +23,15 @@ class AventureroTest {
 
     @Test
     fun tieneAtributos() {
-        assertEquals(45, cacho.fuerza())
-        assertEquals(10, cacho.destreza())
-        assertEquals(20, cacho.inteligencia())
-        assertEquals(17, cacho.constitucion())
+        assertEquals(45.0, cacho.fuerza())
+        assertEquals(10.0, cacho.destreza())
+        assertEquals(20.0, cacho.inteligencia())
+        assertEquals(17.0, cacho.constitucion())
     }
 
     @Test
     fun sePuedeActualizarEnBaseALosAtributosDeOtroAventurero() {
-        val otroAventurero = Aventurero("Otro aventurero", "xxx", 1, 2, 3, 4)
+        val otroAventurero = Aventurero("Otro aventurero", "xxx", 1.0, 2.0, 3.0, 4.0)
         cacho.actualizarse(otroAventurero)
 
         assertEquals(otroAventurero.fuerza(), cacho.fuerza())
@@ -42,25 +42,25 @@ class AventureroTest {
 
 
     @Test
-    fun sabeCuantaVidaTiene() = assertEquals(84, cacho.vida())
+    fun sabeCuantaVidaTiene() = assertEquals(84.0, cacho.vidaActual())
 
     @Test
-    fun sabeCuantaArmaduraTiene() = assertEquals(18, cacho.armadura())
+    fun sabeCuantaArmaduraTiene() = assertEquals(18.0, cacho.armadura())
 
     @Test
-    fun sabeCuantoManaTiene() = assertEquals(21, cacho.mana())
+    fun sabeCuantoManaTiene() = assertEquals(21.0, cacho.mana())
 
     @Test
-    fun sabeCuantoDañoFisicoTiene() = assertEquals(51, cacho.dañoFisico())
+    fun sabeCuantoDañoFisicoTiene() = assertEquals(51.0, cacho.dañoFisico())
 
     @Test
-    fun sabeCuantoPoderMagicoTiene() = assertEquals(22, cacho.poderMagico())
+    fun sabeCuantoPoderMagicoTiene() = assertEquals(22.0, cacho.poderMagico())
 
     @Test
-    fun sabeCuantaPrecisionFisica() = assertEquals(56, cacho.precisionFisica())
+    fun sabeCuantaPrecisionFisica() = assertEquals(56.0, cacho.precisionFisica())
 
     @Test
-    fun sabeCuantaVelocidadTiene() = assertEquals(11, cacho.velocidad())
+    fun sabeCuantaVelocidadTiene() = assertEquals(11.0, cacho.velocidad())
 
     @Test
     fun inicialmenteNoTieneNingunAliado() {
@@ -121,27 +121,27 @@ class AventureroTest {
 
     @Test
     fun unAventureroNoPuedeTenerAtributosMayoresACienPuntos(){
-        val exception = assertThrows<RuntimeException> { Aventurero("juan","url",978) }
+        val exception = assertThrows<RuntimeException> { Aventurero("juan","url",978.0) }
         assertEquals("La fuerza no puede exceder los 100 puntos!", exception.message)
     }
 
     @Test
     fun unAventureroNoPuedeTenerAtributosMenoresAUnPuntos(){
         val exception = assertThrows<RuntimeException> { Aventurero("pepino",
-                "url",1,12,1, 0) }
+                "url",1.0,12.0,1.0, 0.0) }
         assertEquals("La constitucion no puede ser menor a 1 punto!", exception.message)
     }
 
     @Test
     fun `un aventurero puede reestablecer su vida y mana`() {
-        val vidaInicial = cacho.vida()
+        val vidaInicial = cacho.vidaActual()
         val manaInicial = cacho.mana()
-        cacho.recibirAtaqueFisicoSiDebe(10, 5000)
+        cacho.recibirAtaqueFisicoSiDebe(10.0, 5000.0)
         cacho.consumirMana()
 
         cacho.reestablecerse()
 
-        assertThat(cacho.vida()).isEqualTo(vidaInicial)
+        assertThat(cacho.vidaActual()).isEqualTo(vidaInicial)
         assertThat(cacho.mana()).isEqualTo(manaInicial)
     }
 

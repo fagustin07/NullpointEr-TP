@@ -2,7 +2,7 @@ package ar.edu.unq.epers.tactics.modelo.habilidades
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 
-class Curacion(val poderMagicoEmisor: Int, aventureroReceptor: Aventurero) : Habilidad(aventureroReceptor) {
+class Curacion(val poderMagicoEmisor: Double, aventureroReceptor: Aventurero) : Habilidad(aventureroReceptor) {
 
     companion object {
         fun para(aventureroEmisor: Aventurero, aventureroReceptor: Aventurero): Curacion {

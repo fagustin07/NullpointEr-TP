@@ -19,34 +19,34 @@ abstract class HabilidadDTO() {
         fun desdeModelo(habilidad: Habilidad): HabilidadDTO {
             return when (habilidad) {
                 is Ataque -> AtaqueDTO(
-                        "Attack",
+                        "ATAQUE_FISICO",
                         habilidad.dañoFisico,
                         habilidad.precisionFisica,
                         AventureroDTO.desdeModelo(habilidad.aventureroReceptor)
                 )
                 is Defensa -> DefensaDTO(
-                        "Defend",
+                        "DEFENDER",
                         AventureroDTO.desdeModelo(habilidad.aventureroEmisor),
                         AventureroDTO.desdeModelo(habilidad.aventureroReceptor)
                 )
                 is Curacion -> CurarDTO(
-                        "Heal",
+                        "CURAR",
                         habilidad.poderMagicoEmisor,
                         AventureroDTO.desdeModelo(habilidad.aventureroReceptor)
                 )
                 is AtaqueMagico -> AtaqueMagicoDTO(
-                        "MagicAttack",
+                        "ATAQUE_MAGICO",
                         habilidad.poderMagicoEmisor,
                         habilidad.nivelEmisor,
                         AventureroDTO.desdeModelo(habilidad.aventureroReceptor)
                 )
                 is Meditacion -> {
-                    return MeditarDTO(
+                    return MeditarDTO("MEDITAR",
                             AventureroDTO.desdeModelo(habilidad.aventureroReceptor)
                     )
                 }
                 else -> {
-                    HabilidadNulaDTO(
+                    HabilidadNulaDTO("NADA",
                         AventureroDTO.desdeModelo(habilidad.aventureroReceptor)
                     )
                 }
@@ -57,11 +57,11 @@ abstract class HabilidadDTO() {
     abstract fun aModelo(): Habilidad
 
 }
-class HabilidadNulaDTO(val objetivo: AventureroDTO) : HabilidadDTO(){
+class HabilidadNulaDTO(var tipo: String, val objetivo: AventureroDTO) : HabilidadDTO(){
     override fun aModelo() = HabilidadNula(objetivo.aModelo())
 }
 
-data class AtaqueDTO(val tipo: String, val daño: Int, val precisionFisica: Int, val objetivo: AventureroDTO) : HabilidadDTO() {
+data class AtaqueDTO(val tipo: String, val daño: Double, val precisionFisica: Double, val objetivo: AventureroDTO) : HabilidadDTO() {
     override fun aModelo() = Ataque(daño, precisionFisica, objetivo.aModelo(), DadoDe20())
 }
 
@@ -69,15 +69,15 @@ class DefensaDTO(val tipo: String, val source: AventureroDTO, val objetivo: Aven
     override fun aModelo() = Defensa(source.aModelo(), objetivo.aModelo())
 }
 
-data class CurarDTO(val tipo: String, val poderMagico: Int, val objetivo: AventureroDTO) : HabilidadDTO() {
+data class CurarDTO(val tipo: String, val poderMagico: Double, val objetivo: AventureroDTO) : HabilidadDTO() {
     override fun aModelo() = Curacion(poderMagico, objetivo.aModelo())
 }
 
-data class AtaqueMagicoDTO(val tipo: String, val poderMagico: Int, val sourceLevel: Int, val objetivo: AventureroDTO) : HabilidadDTO() {
+data class AtaqueMagicoDTO(val tipo: String, val poderMagico: Double, val sourceLevel: Int, val objetivo: AventureroDTO) : HabilidadDTO() {
     override fun aModelo() = AtaqueMagico(poderMagico, sourceLevel, objetivo.aModelo(), DadoDe20())
 }
 
-class MeditarDTO(val objetivo: AventureroDTO) : HabilidadDTO() {
+class MeditarDTO(val tipo: String, val objetivo: AventureroDTO) : HabilidadDTO() {
     override fun aModelo(): Habilidad {
         val objetivo = objetivo.aModelo()
         return Meditacion(objetivo, objetivo)

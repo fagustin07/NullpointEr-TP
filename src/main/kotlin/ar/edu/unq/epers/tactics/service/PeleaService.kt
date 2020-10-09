@@ -9,5 +9,5 @@ interface PeleaService {
     fun estaEnPelea(partyId: Long):Boolean
     fun resolverTurno(peleaId: Long, aventureroId:Long, enemigos:List<Aventurero>): Habilidad
     fun recibirHabilidad(aventureroId: Long, habilidad: Habilidad): Aventurero
-    fun terminarPelea(idDeLaParty: Long): Pelea
+    fun terminarPelea(idDeLaPelea: Long): Pelea
 }

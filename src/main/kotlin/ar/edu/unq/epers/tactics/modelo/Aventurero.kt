@@ -14,39 +14,41 @@ class Aventurero(private var nombre: String) {
     private var imagenURL: String = ""
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @JoinColumn(name = "aventurero_id")
     private var tacticas: MutableList<Tactica> = mutableListOf()
 
-    private var vida: Int = 0
-    private var mana: Int = 0
-    private var fuerza: Int = 1
+    private var vida: Double = 0.0
+    private var mana: Double = 0.0
+    private var fuerza: Double = 1.0
         set(nuevoPuntaje) {
             this.validarPuntaje(nuevoPuntaje, "fuerza")
             field = nuevoPuntaje
         }
-    private var destreza: Int = 1
+    private var destreza: Double = 1.0
         set(nuevoPuntaje) {
             this.validarPuntaje(nuevoPuntaje, "destreza")
             field = nuevoPuntaje
         }
 
-    private var inteligencia: Int = 1
+    private var inteligencia: Double = 1.0
         set(nuevoPuntaje) {
             this.validarPuntaje(nuevoPuntaje, "inteligencia")
             field = nuevoPuntaje
         }
 
-    private var constitucion: Int = 1
+    private var constitucion: Double = 1.0
         set(nuevoPuntaje) {
             this.validarPuntaje(nuevoPuntaje, "constitucion")
             field = nuevoPuntaje
         }
+    private var dañoRecibido = 0.0
 
     @ManyToOne
     var party: Party? = null
 
     constructor(
-        nombre: String, imagenURL: String = "", fuerza: Int = 1,
-        destreza: Int = 1, inteligencia: Int = 1, constitucion: Int = 1
+        nombre: String, imagenURL: String = "", fuerza: Double = 1.0,
+        destreza: Double = 1.0, inteligencia: Double = 1.0, constitucion: Double = 1.0
     ) : this(nombre) {
         this.imagenURL = imagenURL
         this.inteligencia = inteligencia
@@ -69,7 +71,7 @@ class Aventurero(private var nombre: String) {
 
     fun id() = id
     fun nombre() = nombre
-    fun imagen() = this.imagenURL
+    fun imagenURL() = this.imagenURL
     fun nivel() = 1
 
     fun fuerza() = fuerza
@@ -77,17 +79,17 @@ class Aventurero(private var nombre: String) {
     fun constitucion() = constitucion
     fun inteligencia() = inteligencia
 
-    fun vida() = vida
+    fun vidaActual() = max(0.0,vida-dañoRecibido)
     fun mana() = mana
     fun armadura() = nivel() + constitucion
     fun velocidad() = nivel() + destreza
     fun dañoFisico() = nivel() + fuerza + (destreza / 2)
     fun poderMagico() = nivel() + mana
     fun precisionFisica() = nivel() + fuerza + destreza
-
+    fun dañoRecibido() = this.dañoRecibido
 
     fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
-        validarSiEstaVivo()
+//        validarSiEstaVivo() TODO: si dejamos esto, explota todo xd. En el FRONT le piden resolver turno a aventureros muertos
 
         this.tacticas.sortBy { it.prioridad }
 
@@ -95,7 +97,15 @@ class Aventurero(private var nombre: String) {
 
 
         for (tactica in tacticas) {
-            val receptor = posiblesReceptores.firstOrNull { receptor -> tactica.puedeAplicarseA(this, receptor) }
+//            TODO: se puede hacer algo de este estilo tambien
+//             val receptoresSeleccionados = posiblesReceptores.filter { posibleReceptor ->
+//                posibleReceptor.estaVivo() && tactica.puedeAplicarseA(this,posibleReceptor)
+//              }
+//            val receptorRandom = Math.random()*(receptoresSeleccionados.size).toInt()
+//            receptoresSeleccionados[receptorRandom.toInt()]
+
+            val receptor = posiblesReceptores.firstOrNull { receptor ->
+                receptor.estaVivo() && tactica.puedeAplicarseA(this, receptor) }
             if (receptor != null) {
                 return tactica.aplicarseSobre(this, receptor)
             }
@@ -107,20 +117,20 @@ class Aventurero(private var nombre: String) {
         if (!this.estaVivo()) throw RuntimeException("Un aventurero muerto no puede resolver su turno");
     }
 
-    fun recibirAtaqueFisicoSiDebe(dañoFisico: Int, precisionFisica: Int) {
+    fun recibirAtaqueFisicoSiDebe(dañoFisico: Double, precisionFisica: Double) {
         val claseDeArmadura = this.armadura() + (this.velocidad() / 2)
 
         if (precisionFisica >= claseDeArmadura) this.recibirDaño(dañoFisico)
     }
 
-    fun recibirAtaqueMagicoSiDebe(tirada: Int, daño: Int) {
+    fun recibirAtaqueMagicoSiDebe(tirada: Int, daño: Double) {
         if (tirada >= this.velocidad() / 2) {
             this.recibirDaño(daño)
         }
     }
 
-    fun curar(vidaACurar: Int) {
-        this.vida += vidaACurar
+    fun curar(vidaACurar: Double) {
+        this.dañoRecibido = max(0.0,dañoRecibido - vidaACurar)
     }
 
     fun meditar() {
@@ -128,7 +138,7 @@ class Aventurero(private var nombre: String) {
     }
 
     fun consumirMana() {
-        this.mana = max(0, this.mana - 5)
+        this.mana = max(0.0, this.mana - 5)
     }
 
     fun defenderA(receptor: Aventurero) {
@@ -154,12 +164,12 @@ class Aventurero(private var nombre: String) {
         this.party = party
     }
 
-    private fun recibirDaño(dañoRecibido: Int) {
+    private fun recibirDaño(dañoRecibido: Double) {
         if (this.tieneDefensor()) {
             defensor!!.recibirDaño(dañoRecibido / 2)
             this.consumirTurnoDeDefensa()
         } else {
-            this.vida = max(0, vida - dañoRecibido)
+            this.dañoRecibido = this.dañoRecibido + dañoRecibido
         }
     }
 
@@ -187,9 +197,9 @@ class Aventurero(private var nombre: String) {
 
     private fun tieneDefensor() = this.defensor != null && this.defensor!!.estaVivo()
 
-    fun estaVivo() = this.vida > 0
+    fun estaVivo() = this.vidaActual() > 0.0
 
-    private fun validarPuntaje(nuevoPuntaje: Int, nombreDeAtributo: String) {
+    private fun validarPuntaje(nuevoPuntaje: Double, nombreDeAtributo: String) {
         if (nuevoPuntaje > 100) throw  RuntimeException("La $nombreDeAtributo no puede exceder los 100 puntos!")
         if (nuevoPuntaje < 1) throw  RuntimeException("La $nombreDeAtributo no puede ser menor a 1 punto!")
     }
@@ -206,7 +216,8 @@ class Aventurero(private var nombre: String) {
         this.fuerza = otroAventurero.fuerza()
         this.nombre = otroAventurero.nombre()
         this.tacticas = otroAventurero.tacticas()
-        this.imagenURL = otroAventurero.imagen()
+        this.imagenURL = otroAventurero.imagenURL()
+        this.dañoRecibido = otroAventurero.dañoRecibido
         this.recalcularVidaYMana()
     }
 
@@ -221,9 +232,11 @@ class Aventurero(private var nombre: String) {
     }
 
     fun reestablecerse() {
-        this.recalcularVidaYMana()
+        this.dañoRecibido = 0.0
+        this.turnosDefendido = 0
         this.aventureroDefendido = null
         this.defensor = null
+        this.recalcularVidaYMana()
     }
 
     fun estaDefendiendo(): Boolean {
@@ -237,6 +250,10 @@ class Aventurero(private var nombre: String) {
 
     fun salirDeLaParty() {
         this.party = null
+    }
+
+    fun actualizarDañoRecibido(nuevoDañoRecibido: Double) {
+        this.dañoRecibido = nuevoDañoRecibido
     }
 
 }

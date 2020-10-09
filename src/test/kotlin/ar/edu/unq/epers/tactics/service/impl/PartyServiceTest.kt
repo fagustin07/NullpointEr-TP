@@ -52,8 +52,9 @@ class PartyServiceTest {
 
     @Test
     fun noSePuedeRecuperarUnaPartySiNoExisteNingunaPartyConElIdProvisto() {
-        val exception = assertThrows<RuntimeException> { partyService.recuperar(0) }
-        assertEquals(exception.message, "En la tabla solicitada no existe el id provisto")
+        val idInvalido = 0L
+        val exception = assertThrows<RuntimeException> { partyService.recuperar(idInvalido) }
+        assertEquals("No existe Party con id ${idInvalido}", exception.message)
     }
 
     @Test
@@ -82,9 +83,8 @@ class PartyServiceTest {
         val aventurero = Aventurero("Pepe")
         val idNoRegistrado: Long = 45
 
-        val exception =
-            assertThrows<RuntimeException> { partyService.agregarAventureroAParty(idNoRegistrado, aventurero) }
-        assertEquals(exception.message, "En la tabla solicitada no existe el id provisto")
+        val exception = assertThrows<RuntimeException> { partyService.agregarAventureroAParty(idNoRegistrado, aventurero) }
+        assertEquals("No existe Party con id ${idNoRegistrado}", exception.message)
     }
 
     @AfterEach

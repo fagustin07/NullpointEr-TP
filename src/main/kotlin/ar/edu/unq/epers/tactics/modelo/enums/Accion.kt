@@ -9,7 +9,8 @@ enum class Accion {
     DEFENDER{ override fun generarHabilidad(emisor: Aventurero, receptor: Aventurero) = Defensa.para(emisor,receptor) },
     CURAR{ override fun generarHabilidad(emisor: Aventurero, receptor: Aventurero) = Curacion.para(emisor,receptor)},
     ATAQUE_MAGICO{ override fun generarHabilidad(emisor: Aventurero, receptor: Aventurero) = AtaqueMagico.para(emisor,receptor, DadoDe20()) },
-    MEDITAR{ override fun generarHabilidad(emisor: Aventurero, receptor: Aventurero) = Meditacion.para(emisor,receptor) };
+    MEDITAR{ override fun generarHabilidad(emisor: Aventurero, receptor: Aventurero) = Meditacion.para(emisor,receptor) },
+    NADA{ override fun generarHabilidad(emisor: Aventurero, receptor: Aventurero) = HabilidadNula.para(emisor,receptor) };
 
     abstract  fun generarHabilidad(emisor: Aventurero, receptor: Aventurero) : Habilidad
 }

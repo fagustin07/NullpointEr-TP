@@ -42,7 +42,7 @@ class HibernateAventureroDAOTest {
             val exception = assertThrows<RuntimeException> {
                 aventureroDAO.recuperar(pepitoId)
             }
-            assertEquals(exception.message, "En la tabla solicitada no existe el id provisto")
+            assertEquals("No existe Aventurero con id ${pepito.id()!!}", exception.message)
         }
     }
 

@@ -13,7 +13,7 @@ class Tactica(
     internal var tipoDeReceptor: TipoDeReceptor,
     internal var tipoDeEstadistica: TipoDeEstadistica,
     internal var criterio: Criterio,
-    internal var valor: Int,
+    internal var valor: Double,
     internal var accion: Accion) {
 
     @Id
@@ -22,9 +22,7 @@ class Tactica(
 
     fun puedeAplicarseA(emisor: Aventurero, receptor: Aventurero) =
         this.tipoDeReceptor.test(emisor, receptor) &&
-                criterio.evaluarseCon(tipoDeEstadistica.valorPara(receptor),
-                        valor) &&
-                receptor.estaVivo()
+        criterio.evaluarseCon(tipoDeEstadistica.valorPara(receptor), valor)
 
     fun aplicarseSobre(emisor: Aventurero, receptor: Aventurero): Habilidad {
         return accion.generarHabilidad(emisor, receptor)

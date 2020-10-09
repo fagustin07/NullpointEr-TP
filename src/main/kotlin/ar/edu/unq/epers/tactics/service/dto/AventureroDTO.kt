@@ -2,24 +2,27 @@ package ar.edu.unq.epers.tactics.service.dto
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 
-data class AventureroDTO(var id: Long?, var nivel: Int, var nombre: String, var imagenURL: String, var tacticas: List<TacticaDTO>, var atributos: AtributosDTO) {
+// Si no esta todo en la misma linea el coverage tira falso positivo
+data class AventureroDTO(var id: Long?, var nivel: Int, var nombre: String, var imagenURL: String, var dañoRecibido: Double, var tacticas: List<TacticaDTO>, var atributos: AtributosDTO) {
 
     companion object {
 
         fun desdeModelo(aventurero: Aventurero): AventureroDTO {
 
-            return AventureroDTO(aventurero.id(),
-                    aventurero.nivel(),
-                    aventurero.nombre(),
-                    aventurero.imagen(),
-                    aventurero.tacticas().map { TacticaDTO.desdeModelo(it) },
-                    AtributosDTO(
-                            aventurero.id(),
-                            aventurero.fuerza(),
-                            aventurero.destreza(),
-                            aventurero.constitucion(),
-                            aventurero.inteligencia()
-                    )
+            return AventureroDTO(
+                aventurero.id(),
+                aventurero.nivel(),
+                aventurero.nombre(),
+                aventurero.imagenURL(),
+                aventurero.dañoRecibido(),
+                aventurero.tacticas().map { TacticaDTO.desdeModelo(it) },
+                AtributosDTO(
+                        aventurero.id(),
+                        aventurero.fuerza(),
+                        aventurero.destreza(),
+                        aventurero.constitucion(),
+                        aventurero.inteligencia()
+                )
             )
         }
     }
@@ -35,11 +38,11 @@ data class AventureroDTO(var id: Long?, var nivel: Int, var nombre: String, var 
         )
         this.tacticas.forEach { aventurero.agregarTactica(it.aModelo()) }
         aventurero.darleElId(this.id)
-
+        aventurero.actualizarDañoRecibido(this.dañoRecibido)
         return aventurero
     }
 
     fun actualizarModelo(aventurero: Aventurero) = aventurero.actualizarse(aModelo())
 }
 
-data class AtributosDTO(var id: Long?, var fuerza: Int, var destreza: Int, var constitucion: Int, var inteligencia: Int)
+data class AtributosDTO(var id: Long?, var fuerza: Double, var destreza: Double, var constitucion: Double, var inteligencia: Double)

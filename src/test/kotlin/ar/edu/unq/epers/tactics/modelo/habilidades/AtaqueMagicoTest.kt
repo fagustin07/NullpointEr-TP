@@ -16,41 +16,41 @@ class AtaqueMagicoTest {
     @BeforeEach
     internal fun setUp() {
         party = Party("Los Increibles", "URL")
-        aventureroReceptor = Aventurero("Belen", "", 1, 6, 50, 10)
-        aventureroEmisor = Aventurero("Coco", inteligencia = 5)
+        aventureroReceptor = Aventurero("Belen", "", 1.0, 6.0, 50.0, 10.0)
+        aventureroEmisor = Aventurero("Coco", inteligencia = 5.0)
     }
 
     @Test
     fun `un ataque magico con tirada mayor a la la mitad de la velocidad del receptor es exitoso`() {
-        val vidaAntesDelAtaque = aventureroReceptor.vida()
+        val vidaAntesDelAtaque = aventureroReceptor.vidaActual()
 
         val dadoDe20Falso = DadoSimulado(20)
         val ataqueMagico = AtaqueMagico.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
         ataqueMagico.resolversePara(aventureroReceptor)
 
-        Assertions.assertThat(aventureroReceptor.vida()).isLessThan(vidaAntesDelAtaque)
+        Assertions.assertThat(aventureroReceptor.vidaActual()).isLessThan(vidaAntesDelAtaque)
     }
 
     @Test
     fun `un ataque con tirada menor a la mitad de la velocidad del receptor falla`() {
-        val vidaAntesDelAtaque = aventureroReceptor.vida()
+        val vidaAntesDelAtaque = aventureroReceptor.vidaActual()
 
         val dadoDe20Falso = DadoSimulado(1)
         val ataqueMagico = AtaqueMagico.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
         ataqueMagico.resolversePara(aventureroReceptor)
 
-        Assertions.assertThat(aventureroReceptor.vida()).isEqualTo(vidaAntesDelAtaque)
+        Assertions.assertThat(aventureroReceptor.vidaActual()).isEqualTo(vidaAntesDelAtaque)
     }
 
     @Test
     fun `un ataque exitoso le resta al receptor una cantidad de vida igual al poder magico del emisor`() {
         val dadoDe20Falso = DadoSimulado(20)
         val poderMagicoDeAtaque = aventureroEmisor.poderMagico()
-        val vidaAntesDeAtaque = aventureroReceptor.vida()
+        val vidaAntesDeAtaque = aventureroReceptor.vidaActual()
         val ataqueMagico = AtaqueMagico.para(aventureroEmisor, aventureroReceptor, dadoDe20Falso)
 
         ataqueMagico.resolversePara(aventureroReceptor)
 
-        Assertions.assertThat(aventureroReceptor.vida()).isEqualTo(vidaAntesDeAtaque - poderMagicoDeAtaque)
+        Assertions.assertThat(aventureroReceptor.vidaActual()).isEqualTo(vidaAntesDeAtaque - poderMagicoDeAtaque)
     }
 }
