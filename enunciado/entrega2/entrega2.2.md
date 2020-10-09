@@ -9,7 +9,7 @@ Algunos de los reviews recibidos fueron:
 
 - "120 de 100" - IGN
 
-Arman una gran celebración por el inmediato éxito con papas fritas, chizitos, gaseosa, sombreros graciosos. 
+Arman una gran celebración por el inmediato éxito con papas fritas, chizitos, gaseosa y sombreros graciosos. 
 Todos los desarrolladores e ingenieros atienden y comienzan a despotricarse, pero de pronto, la música se corta y las luces se apagan.
 Una singular luz se prende, iluminando al CEO de la empresa, quien con una poderosa voz anuncia:
 
