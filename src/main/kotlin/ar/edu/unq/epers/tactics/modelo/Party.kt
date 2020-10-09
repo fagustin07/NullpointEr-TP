@@ -62,20 +62,6 @@ class Party(private var nombre: String, private var imagenURL: String) {
 
     private fun maximoDeAventureros() = 5
 
-    /* Assertions */
-    private fun validarQueNoPertenzcaAOtraParty(aventurero: Aventurero) {
-        // TODO: aventurero.party != null   parche momentaneo.
-        if (aventurero.party != null && !this.esLaParty(aventurero.party!!)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
-    }
-
-    private fun validarQueNoEsteRegistrado(aventurero: Aventurero) {
-        if (aventureros.contains(aventurero)) throw RuntimeException("${aventurero.nombre()} ya forma parte de la party ${nombre}.")
-    }
-
-    private fun validarQueSeAdmitanNuevosIntegrantes() {
-        if (!this.puedeAgregarAventureros()) throw RuntimeException("La party $nombre está completa.")
-    }
-
     fun estaEnPelea(): Boolean {
         return this.estaEnPelea
     }
@@ -88,6 +74,19 @@ class Party(private var nombre: String, private var imagenURL: String) {
     fun salirDePelea() {
         this.aventureros.forEach {it.reestablecerse() }
         this.estaEnPelea = false
+    }
+
+    /* Assertions */
+    private fun validarQueNoPertenzcaAOtraParty(aventurero: Aventurero) {
+        if (aventurero.party != null && !this.esLaParty(aventurero.party!!)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
+    }
+
+    private fun validarQueNoEsteRegistrado(aventurero: Aventurero) {
+        if (aventureros.contains(aventurero)) throw RuntimeException("${aventurero.nombre()} ya forma parte de la party ${nombre}.")
+    }
+
+    private fun validarQueSeAdmitanNuevosIntegrantes() {
+        if (!this.puedeAgregarAventureros()) throw RuntimeException("La party $nombre está completa.")
     }
 
 }

@@ -12,6 +12,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
+//clase creada porque nos estaba fallando la recuperacion de una party o de un aventurero
+// por como estabamos definiendo la forma de persistir las listas con las que estaban relacionados.
 class ListasLAZY_EAGERTest {
 
     val partyDAO = HibernatePartyDAO()
@@ -51,8 +53,6 @@ class ListasLAZY_EAGERTest {
         lateinit var partiesObtenidas: MutableList<Party>
 
         HibernateTransactionRunner.runTrx {
-            //Si 'tacticas' y 'aventureros' son EAGER, se rompen todos los tests
-            // cannot simultaneously fetch multiple bags: [ar.edu.unq.epers.tactics.modelo.Party.aventureros, ar.edu.unq.epers.tactics.modelo.Aventurero.tacticas]
             partiesObtenidas = partyDAO.recuperarTodas()
         }
 
@@ -64,7 +64,6 @@ class ListasLAZY_EAGERTest {
         lateinit var partyRecuperada: Party
 
         HibernateTransactionRunner.runTrx {
-            //Si 'aventureros es LAZY, cuando recuperas una party no podes acceder a sus aventureros
             partyRecuperada = partyDAO.recuperar(betaParty.id()!!)
         }
 
@@ -76,7 +75,6 @@ class ListasLAZY_EAGERTest {
         lateinit var aventureroRecuperado: Aventurero
 
         HibernateTransactionRunner.runTrx {
-            //Si 'tacticas' es LAZY, cuando recuperas un aventurero no podes acceder a sus tacticas
             aventureroRecuperado = aventureroDAO.recuperar(aventurero.id()!!)
         }
 

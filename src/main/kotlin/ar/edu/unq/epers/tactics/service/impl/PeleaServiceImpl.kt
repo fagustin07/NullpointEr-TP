@@ -27,7 +27,7 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
         //TODO: resolverTurno(idPelea:Long, idAventurero:Long, enemigos: List<Aventurero>) : Habilidad
         // - Dada la lista de enemigos, el aventurero debe utilizar sus Tacticas para elegir que
         // habilidad utilizar sobre que receptor. Deberiamos utilizar la pelea y recuperar el aventurero
-        // desde la party que tenga vinculada?
+        //  ---lo resolvimos sin utilizar la id de la pelea, por eso no la utilizamos.
         runTrx {
             val aventurero = aventureroDAO.recuperar(aventureroId)
             val habilidadGenerada = aventurero.resolverTurno(enemigos)
@@ -37,21 +37,15 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
 
     override fun recibirHabilidad(aventureroId: Long, habilidad: Habilidad) =
         runTrx {
-            //TODO: recibirHabilidad(idPelea:Long, idAventurero:Long, habilidad: Habilidad):Aventurero
-            // - El aventurero debe resolver la habilidad que esta siendo ejecutada sobre el,
-            // chequear esto para que se ejecute correctamente
+            //TODO: ENUNCIADO: recibirHabilidad(idPelea:Long, idAventurero:Long, habilidad: Habilidad):Aventurero
+            // El aventurero debe resolver la habilidad que esta siendo ejecutada sobre el,
+            // ---lo resolvimos sin utilizar la id de la pelea, por eso no lo cambiamos.
 
             val aventurero = aventureroDAO.recuperar(aventureroId)
 
             habilidad.resolversePara(aventurero)
 
             aventureroDAO.actualizar(aventurero)
-/*
-            habilidad.resolverse()
-            val aventureroDespuesDeRecibirHabilidad = habilidad.aventureroReceptor
-            aventureroDAO.actualizar(aventureroDespuesDeRecibirHabilidad)
-
- */
         }
 
     override fun terminarPelea(idDeLaPelea: Long) =

@@ -2,7 +2,6 @@ package ar.edu.unq.epers.tactics.service.dto
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 
-// Si no esta todo en la misma linea el coverage tira falso positivo
 data class AventureroDTO(var id: Long?, var nivel: Int, var nombre: String, var imagenURL: String, var dañoRecibido: Double, var tacticas: List<TacticaDTO>, var atributos: AtributosDTO) {
 
     companion object {
