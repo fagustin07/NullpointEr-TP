@@ -17,12 +17,15 @@ Una singular luz se prende, iluminando al CEO de la empresa, quien con una poder
 
 Todos emocionados y con lágrimas en los ojos, lanzan los sombreros y se internan frenéticamente en sus escritorios, listos para continuar el desarrollo de lo que puede llegar a ser... el más grande y significante juego de la historia.
 
-
 ## Funcionalidad
 
 Los testers, si bien contentos, mencionaron que los ayudaría tener acceso a ciertos datos que les permitan mejorar sus estrategias y que sea más fácil ordenar sus parties y aventureros.
 
 Nuestro objetivo para esta próxima iteración es proveer esos datos para que el equipo del front los visualice.
+
+<p align="center">
+  <img src="guildHall.jpg" />
+</p>
 
 ### Cambios en PeleaService
 - Cuando se inicia una pelea, además de nuestra partyId, se recibirá el nombre de la party contra la que se pelea.
