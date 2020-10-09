@@ -5,7 +5,7 @@ Algunos de los reviews recibidos fueron:
 
 - "Simple... pero profundo" -  Hideo Kojima
 
-- "Literalmente me curo el cancer" - Francisco Perez Ramos
+- "Me consiguio novia!" - Francisco Perez Ramos
 
 - "120 de 100" - IGN
 
