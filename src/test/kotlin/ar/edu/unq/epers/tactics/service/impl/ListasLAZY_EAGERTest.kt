@@ -30,7 +30,7 @@ class ListasLAZY_EAGERTest {
                 1, TipoDeReceptor.ENEMIGO,
                 TipoDeEstadistica.VIDA,
                 Criterio.MAYOR_QUE,
-                0,
+                0.0,
                 Accion.ATAQUE_MAGICO
             )
         )

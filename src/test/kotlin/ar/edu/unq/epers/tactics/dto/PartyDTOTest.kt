@@ -15,10 +15,10 @@ internal class PartyDTOTest {
         partyOriginal.agregarUnAventurero(Aventurero(
                 "Pepe",
                 "",
-                40,
-                50,
-                60,
-                70
+                40.0,
+                50.0,
+                60.0,
+                70.0
         ))
         val partyDTO = PartyDTO.desdeModelo(partyOriginal)
         val partyObtenida = partyDTO.aModelo()

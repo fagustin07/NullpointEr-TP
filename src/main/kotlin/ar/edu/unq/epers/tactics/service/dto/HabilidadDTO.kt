@@ -61,7 +61,7 @@ class HabilidadNulaDTO(var tipo: String, val objetivo: AventureroDTO) : Habilida
     override fun aModelo() = HabilidadNula(objetivo.aModelo())
 }
 
-data class AtaqueDTO(val tipo: String, val daño: Int, val precisionFisica: Int, val objetivo: AventureroDTO) : HabilidadDTO() {
+data class AtaqueDTO(val tipo: String, val daño: Double, val precisionFisica: Double, val objetivo: AventureroDTO) : HabilidadDTO() {
     override fun aModelo() = Ataque(daño, precisionFisica, objetivo.aModelo(), DadoDe20())
 }
 
@@ -69,11 +69,11 @@ class DefensaDTO(val tipo: String, val source: AventureroDTO, val objetivo: Aven
     override fun aModelo() = Defensa(source.aModelo(), objetivo.aModelo())
 }
 
-data class CurarDTO(val tipo: String, val poderMagico: Int, val objetivo: AventureroDTO) : HabilidadDTO() {
+data class CurarDTO(val tipo: String, val poderMagico: Double, val objetivo: AventureroDTO) : HabilidadDTO() {
     override fun aModelo() = Curacion(poderMagico, objetivo.aModelo())
 }
 
-data class AtaqueMagicoDTO(val tipo: String, val poderMagico: Int, val sourceLevel: Int, val objetivo: AventureroDTO) : HabilidadDTO() {
+data class AtaqueMagicoDTO(val tipo: String, val poderMagico: Double, val sourceLevel: Int, val objetivo: AventureroDTO) : HabilidadDTO() {
     override fun aModelo() = AtaqueMagico(poderMagico, sourceLevel, objetivo.aModelo(), DadoDe20())
 }
 

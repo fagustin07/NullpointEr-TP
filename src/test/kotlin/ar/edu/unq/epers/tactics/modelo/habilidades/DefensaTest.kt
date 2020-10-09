@@ -18,8 +18,8 @@ internal class DefensaTest{
     @BeforeEach
     internal fun setUp() {
         party = Party("Party","URL")
-        aventureroDefensor = Aventurero("Pepe","", 10)
-        aventureroDefendido = Aventurero("Jorge","", 21, constitucion = 20)
+        aventureroDefensor = Aventurero("Pepe","", 10.0)
+        aventureroDefendido = Aventurero("Jorge","", 21.0, constitucion = 20.0)
         party.agregarUnAventurero(aventureroDefensor)
         party.agregarUnAventurero(aventureroDefendido)
     }
@@ -70,7 +70,7 @@ internal class DefensaTest{
 
     @Test
     fun `si el aventurero defensor de otro muere, el defendido pierde a su defensor y recibe todo el daño del ataque`() {
-        val aventureroAtacante = Aventurero("Destructor","", 80)
+        val aventureroAtacante = Aventurero("Destructor","", 80.0)
         val defensa = Defensa.para(aventureroDefensor, aventureroDefendido)
         val dadoDe20Falso = DadoSimulado(20)
 
@@ -80,7 +80,7 @@ internal class DefensaTest{
 
         ataque.resolversePara(aventureroDefendido)
 
-        assertThat(aventureroDefendido.vidaActual()).isEqualTo(0)
+        assertThat(aventureroDefendido.vidaActual()).isEqualTo(0.0)
     }
 
     @Test

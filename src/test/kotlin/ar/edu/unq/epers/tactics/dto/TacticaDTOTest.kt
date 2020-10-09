@@ -18,7 +18,7 @@ internal class TacticaDTOTest {
             Tactica(1,TipoDeReceptor.ENEMIGO,
             TipoDeEstadistica.VIDA,
                 Criterio.MAYOR_QUE,
-                50,
+                50.0,
                 Accion.ATAQUE_MAGICO)
 
         val tacticaDTO = TacticaDTO.desdeModelo(tacticaOriginal)
@@ -33,7 +33,7 @@ internal class TacticaDTOTest {
             Tactica(1, TipoDeReceptor.ENEMIGO,
                 TipoDeEstadistica.VIDA,
                 Criterio.MAYOR_QUE,
-                50,
+                50.0,
                 Accion.ATAQUE_MAGICO)
         val tacticaDTO = TacticaDTO.desdeModelo(tacticaOriginal)
 

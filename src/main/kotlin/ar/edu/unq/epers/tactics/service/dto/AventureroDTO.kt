@@ -7,7 +7,7 @@ data class AventureroDTO(
     var nivel: Int,
     var nombre: String,
     var imagenURL: String,
-    var dañoRecibido: Int,
+    var dañoRecibido: Double,
     var tacticas: List<TacticaDTO>,
     var atributos: AtributosDTO
 ) {
@@ -21,7 +21,7 @@ data class AventureroDTO(
                 aventurero.nivel(),
                 aventurero.nombre(),
                 aventurero.imagen(),
-                aventurero.dañoRecibido,
+                aventurero.dañoRecibido(),
                 aventurero.tacticas().map { TacticaDTO.desdeModelo(it) },
                 AtributosDTO(
                         aventurero.id(),
@@ -45,11 +45,11 @@ data class AventureroDTO(
         )
         this.tacticas.forEach { aventurero.agregarTactica(it.aModelo()) }
         aventurero.darleElId(this.id)
-        aventurero.dañoRecibido = this.dañoRecibido
+        aventurero.actualizarDañoRecibido(this.dañoRecibido)
         return aventurero
     }
 
     fun actualizarModelo(aventurero: Aventurero) = aventurero.actualizarse(aModelo())
 }
 
-data class AtributosDTO(var id: Long?, var fuerza: Int, var destreza: Int, var constitucion: Int, var inteligencia: Int)
+data class AtributosDTO(var id: Long?, var fuerza: Double, var destreza: Double, var constitucion: Double, var inteligencia: Double)

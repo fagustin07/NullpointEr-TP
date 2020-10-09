@@ -3,7 +3,7 @@ package ar.edu.unq.epers.tactics.modelo.habilidades
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.dado.Dado
 
-class Ataque(val dañoFisico: Int, val precisionFisica: Int, aventureroReceptor: Aventurero, val dado: Dado) : Habilidad(aventureroReceptor) {
+class Ataque(val dañoFisico: Double, val precisionFisica: Double, aventureroReceptor: Aventurero, val dado: Dado) : Habilidad(aventureroReceptor) {
 
     companion object {
         fun para(aventureroEmisor: Aventurero, aventureroReceptor: Aventurero, dado: Dado): Ataque {

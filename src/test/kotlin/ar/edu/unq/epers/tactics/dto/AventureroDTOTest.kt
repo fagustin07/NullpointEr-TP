@@ -15,10 +15,10 @@ class AventureroDTOTest {
 
     @Test
     fun `Al convertir un Aventurero a un AventureroDTO y de nuevo a un Aventurero se obtienen objetos similares`() {
-        val aventureroOriginal = Aventurero("Pepe", "", 40, 50, 60, 70)
-        val curarse = Tactica(1, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 30, Accion.CURAR)
+        val aventureroOriginal = Aventurero("Pepe", "", 40.0, 50.0, 60.0, 70.0)
+        val curarse = Tactica(1, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 30.0, Accion.CURAR)
         val rematar =
-            Tactica(2, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 15, Accion.ATAQUE_MAGICO)
+            Tactica(2, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 15.0, Accion.ATAQUE_MAGICO)
         aventureroOriginal.agregarTactica(curarse)
         aventureroOriginal.agregarTactica(rematar)
         val aventureroDTO = AventureroDTO.desdeModelo(aventureroOriginal)
@@ -29,17 +29,17 @@ class AventureroDTOTest {
 
     @Test
     fun `Al enviar el mensaje actualizar a un AventureroDTO se actualiza el objeto de dominio`() {
-        val aventurero = Aventurero("Pepe", "", 40, 50, 60, 70)
+        val aventurero = Aventurero("Pepe", "", 40.0, 50.0, 60.0, 70.0)
         val aventureroDTO = AventureroDTO.desdeModelo(aventurero)
 
-        aventureroDTO.atributos.fuerza = 56
-        aventureroDTO.atributos.inteligencia = 2
-        val curarse = Tactica(1, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 30, Accion.CURAR)
+        aventureroDTO.atributos.fuerza = 56.0
+        aventureroDTO.atributos.inteligencia = 2.0
+        val curarse = Tactica(1, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 30.0, Accion.CURAR)
         aventureroDTO.tacticas = mutableListOf(TacticaDTO.desdeModelo(curarse))
         aventureroDTO.actualizarModelo(aventurero)
 
-        assertThat(aventurero.fuerza()).isEqualTo(56)
-        assertThat(aventurero.inteligencia()).isEqualTo(2)
+        assertThat(aventurero.fuerza()).isEqualTo(56.0)
+        assertThat(aventurero.inteligencia()).isEqualTo(2.0)
         assertThat(aventurero.tacticas().size).isEqualTo(1)
     }
 }

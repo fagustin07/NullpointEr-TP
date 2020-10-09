@@ -12,7 +12,7 @@ internal class HabilidadDTOTest {
     @Test
     fun `Al convertir un Ataque a un AtaqueDTO y de nuevo a un Ataque se obtienen objetos similares`() {
         val aventurero = Aventurero("Raul")
-        val ataqueOriginal = Ataque(10, 8, aventurero, DadoDe20())
+        val ataqueOriginal = Ataque(10.0, 8.0, aventurero, DadoDe20())
 
         val ataqueDTO = HabilidadDTO.desdeModelo(ataqueOriginal)
         val ataqueObtenido = ataqueDTO.aModelo()

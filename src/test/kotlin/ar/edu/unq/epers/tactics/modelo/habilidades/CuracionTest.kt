@@ -15,19 +15,20 @@ class CuracionTest {
     @BeforeEach
     internal fun setUp() {
         party = Party("Los Fabulosos", "URL")
-        aventureroCurador = Aventurero("Raul", "", 1, 1, 10, 1)
+        aventureroCurador = Aventurero("Raul", "", 1.0, 1.0, 10.0, 1.0)
         aventureroCurado = Aventurero("Sergio")
     }
 
     @Test
     fun `cuando un aventurero es curado, su vida aumenta una cantidad igual al poder magico del curador`() {
-        val vidaAntesDeCurar = aventureroCurado.vidaActual()
+        aventureroCurado.actualizarDañoRecibido(20.0)
+        val dañoAntesDeCurar = aventureroCurado.dañoRecibido()
         val poderMagicoEmisor = aventureroCurador.poderMagico()
-
         val curacion = Curacion.para(aventureroCurador, aventureroCurado)
+
         curacion.resolversePara(aventureroCurado)
 
-        assertThat(aventureroCurado.vidaActual()).isEqualTo(vidaAntesDeCurar + poderMagicoEmisor)
+        assertThat(aventureroCurado.dañoRecibido()).isEqualTo(dañoAntesDeCurar-poderMagicoEmisor)
     }
 
     @Test

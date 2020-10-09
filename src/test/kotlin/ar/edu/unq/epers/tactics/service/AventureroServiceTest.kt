@@ -56,7 +56,7 @@ class AventureroServiceTest {
         partyService.crear(party)
         partyService.agregarAventureroAParty(party.id()!!, aventurero)
 
-        val aventureroDTO = Aventurero("Otro nombre", "/otra_imagen.jpg", 1, 2, 3, 4)
+        val aventureroDTO = Aventurero("Otro nombre", "/otra_imagen.jpg", 1.0, 2.0, 3.0, 4.0)
         aventureroDTO.darleElId(aventurero.id()!!)
         aventurero.actualizarse(aventureroDTO)
 

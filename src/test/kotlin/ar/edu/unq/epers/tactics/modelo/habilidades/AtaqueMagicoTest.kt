@@ -16,8 +16,8 @@ class AtaqueMagicoTest {
     @BeforeEach
     internal fun setUp() {
         party = Party("Los Increibles", "URL")
-        aventureroReceptor = Aventurero("Belen", "", 1, 6, 50, 10)
-        aventureroEmisor = Aventurero("Coco", inteligencia = 5)
+        aventureroReceptor = Aventurero("Belen", "", 1.0, 6.0, 50.0, 10.0)
+        aventureroEmisor = Aventurero("Coco", inteligencia = 5.0)
     }
 
     @Test

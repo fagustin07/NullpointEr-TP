@@ -11,5 +11,5 @@ enum class TipoDeEstadistica {
     DAÑO_MAGICO { override fun valorPara(aventurero: Aventurero) = aventurero.poderMagico() },
     PRECISION_FISICA { override fun valorPara(aventurero: Aventurero) = aventurero.precisionFisica() };
 
-    abstract fun valorPara(aventurero: Aventurero): Int
+    abstract fun valorPara(aventurero: Aventurero): Double
 }

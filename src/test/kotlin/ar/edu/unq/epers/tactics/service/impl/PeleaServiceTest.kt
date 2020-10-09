@@ -56,12 +56,12 @@ internal class PeleaServiceTest {
 
     @Test
     fun `un aventurero sabe resolver su turno`() {
-        val curador = Aventurero("Fede", "", 10, 10, 10, 10)
-        val aliado = Aventurero("Jorge", "", 10, 10, 10, 10)
+        val curador = Aventurero("Fede", "", 10.0, 10.0, 10.0, 10.0)
+        val aliado = Aventurero("Jorge", "", 10.0, 10.0, 10.0, 10.0)
         val manaOriginal = curador.mana()
 
-        curador.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0, Accion.CURAR))
-        curador.agregarTactica(Tactica(2, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 3, Accion.CURAR))
+        curador.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.CURAR))
+        curador.agregarTactica(Tactica(2, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 3.0, Accion.CURAR))
 
         partyService.agregarAventureroAParty(party.id()!!, curador)
         partyService.agregarAventureroAParty(party.id()!!, aliado)
@@ -78,15 +78,17 @@ internal class PeleaServiceTest {
 
     @Test
     fun `un aventurero elige una tactica que ataca a un enemigo`() {
-        val atacante = Aventurero("Fede", "", 10, 10, 10, 10)
-        val enemigo = Aventurero("Jorge", "", 20, 20, 20, 20)
+        val atacante = Aventurero("Fede", "", 10.0, 10.0, 10.0, 10.0)
+        val partyEnemiga = Party("Enemigos","fotoEnemigo")
+        partyService.crear(partyEnemiga)
+        val enemigo = partyService.agregarAventureroAParty(partyEnemiga.id()!!,Aventurero("Kinoto"))
         val enemigos = listOf(enemigo)
         val tactica = Tactica(
             1,
             TipoDeReceptor.ENEMIGO,
             TipoDeEstadistica.VIDA,
             Criterio.MENOR_QUE,
-            9999,
+            9999.0,
             Accion.ATAQUE_FISICO
         )
         atacante.agregarTactica(tactica)
@@ -96,15 +98,15 @@ internal class PeleaServiceTest {
         val pelea = peleaService.iniciarPelea(party.id()!!)
         val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, atacante.id()!!, enemigos) as Ataque
 
-        assertThat(habilidadGenerada.aventureroReceptor.id()).isEqualTo(enemigo.id()) // TODO: enemigo no esta en ninguna party. Su id es null
+        assertThat(habilidadGenerada.aventureroReceptor.id()).isEqualTo(enemigo.id())
     }
 
 
     @Test
     fun `un aventurero resuelve su turno buscando la tactica que cumpla su criterio dependiendo de la prioridad `() {
-        val aventurero = Aventurero("Fede", "", 10, 10, 10, 10)
-        val tactica1 = Tactica(1, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 9999, Accion.ATAQUE_FISICO)
-        val tactica2 = Tactica(2, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0, Accion.MEDITAR)
+        val aventurero = Aventurero("Fede", "", 10.0, 10.0, 10.0, 10.0)
+        val tactica1 = Tactica(1, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MENOR_QUE, 9999.0, Accion.ATAQUE_FISICO)
+        val tactica2 = Tactica(2, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.MEDITAR)
         aventurero.agregarTactica(tactica1)
         aventurero.agregarTactica(tactica2)
 
@@ -119,24 +121,25 @@ internal class PeleaServiceTest {
 
     @Test
     fun `un aventurero que resuelve su turno ejecuta la habilidad de curar sobre otro y este recibe la habilidad`() {
-        val curador = Aventurero("Fede", "", 10, 10, 10, 10)
-        val aliado = Aventurero("Jorge", "", 10, 10, 10, 10)
+        val curador = Aventurero("Fede", "", 10.0, 10.0, 15.0, 10.0)
+        val aliado = Aventurero("Jorge", "", 10.0, 10.0, 10.0, 10.0)
 
-        curador.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0, Accion.CURAR))
+        curador.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.CURAR))
 
         partyService.agregarAventureroAParty(party.id()!!, curador)
+        aliado.actualizarDañoRecibido(20.0)
+        val dañoRecibidoAntesDeCuracion = aliado.dañoRecibido()
         partyService.agregarAventureroAParty(party.id()!!, aliado)
 
         val peleaId = peleaService.iniciarPelea(party.id()!!).id()!!
         val habilidadGenerada = peleaService.resolverTurno(peleaId, curador.id()!!, listOf())
 
-        val vidaAntesDeCuracion = aliado.vidaActual()
         peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada)
 
-        val vidaEsperada = vidaAntesDeCuracion + curador.poderMagico()
+        val dañoRecibidoEsperado = dañoRecibidoAntesDeCuracion - curador.poderMagico()
         val aliadoRecuperado = aventureroService.recuperar(aliado.id()!!)
         assertThat(aliado.id()!!).isEqualTo(aliadoRecuperado.id())
-        assertEquals(vidaEsperada, aliadoRecuperado.vidaActual())
+        assertEquals(dañoRecibidoEsperado, aliadoRecuperado.dañoRecibido())
     }
 
     @Test
@@ -159,14 +162,14 @@ internal class PeleaServiceTest {
 
     @Test
     fun `luego de una pelea, los aventureros vuelven a sus puntajes iniciales`() {
-        val curador = Aventurero("Fede", "", 10, 10, 10, 10)
-        val aliado = Aventurero("Jorge", "", 10, 10, 10, 10)
+        val curador = Aventurero("Fede", "", 10.0, 10.0, 10.0, 10.0)
+        val aliado = Aventurero("Jorge", "", 10.0, 10.0, 10.0, 10.0)
         val vidaAntesDeCuracion = aliado.vidaActual()
         val manaAntesDeCuracion = curador.mana()
         val tactica = Tactica(
             1, TipoDeReceptor.ALIADO,
             TipoDeEstadistica.VIDA,
-            Criterio.MAYOR_QUE, 0, Accion.CURAR
+            Criterio.MAYOR_QUE, 0.0, Accion.CURAR
         )
 
         curador.agregarTactica(tactica)
@@ -187,7 +190,7 @@ internal class PeleaServiceTest {
     }
 
 
-    @Test   //Creo que con el cambio que tuve que meter en peleaService esta funcionalidad queda fuera
+    @Test   //TODO: Creo que con el cambio que tuve que meter en peleaService esta funcionalidad queda fuera
     // de lo pedido, pero lo podemos dejar porque esta lindo. Lo modifico para que funcione
     fun `cuando una party estuvo en multiples peleas se retorna la ultima`() {
         val pelea = peleaService.iniciarPelea(party.id()!!)
@@ -203,9 +206,9 @@ internal class PeleaServiceTest {
     @Test
     fun `cuando se recupera la party de un aventurero que tenga varias tacticas, este aparece una sola vez`() {
         val party = Party("Nombre de Party", "/img.jpg")
-        val aventurero = Aventurero("Nombre de Aventurero", "", 1, 2, 3, 4)
-        aventurero.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0, Accion.CURAR))
-        aventurero.agregarTactica(Tactica(2, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0, Accion.CURAR))
+        val aventurero = Aventurero("Nombre de Aventurero", "", 1.0, 2.0, 3.0, 4.0)
+        aventurero.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.CURAR))
+        aventurero.agregarTactica(Tactica(2, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.CURAR))
 
         val partyID = partyService.crear(party).id()!!
         partyService.agregarAventureroAParty(partyID, aventurero)
@@ -218,8 +221,8 @@ internal class PeleaServiceTest {
 
     @Test
     fun `un aventurero genera una habilidad nula cuando no puede aplicar ninguna de sus tacticas`() {
-        val aventurero = Aventurero("Fede", "", 10, 10, 10, 10)
-        aventurero.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE,800, Accion.CURAR))
+        val aventurero = Aventurero("Fede", "", 10.0, 10.0, 10.0, 10.0)
+        aventurero.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE,800.0, Accion.CURAR))
         val aventureroPersistido = partyService.agregarAventureroAParty(party.id()!!, aventurero)
         val pelea = peleaService.iniciarPelea(party.id()!!)
 
@@ -231,8 +234,8 @@ internal class PeleaServiceTest {
 
     @Test
     fun `un aventurero resuelve su turno y ejecuta su segunda tactica porque la primera no cumple el criterio`() {
-        val aventurero = Aventurero("Fede", "", 10, 10, 10, 10)
-        val enemigo = Aventurero("Pepe","URL",10,10,10,10)
+        val aventurero = Aventurero("Fede", "", 10.0, 10.0, 10.0, 10.0)
+        val enemigo = Aventurero("Pepe","URL",10.0,10.0,10.0,10.0)
 
         val partyEnemigo = Party("Los Capos", "URL")
         partyService.crear(partyEnemigo)
@@ -240,12 +243,12 @@ internal class PeleaServiceTest {
         val tacticaUno = Tactica(
                 1, TipoDeReceptor.ENEMIGO,
                 TipoDeEstadistica.VIDA,
-                Criterio.MAYOR_QUE, 200, Accion.ATAQUE_FISICO
+                Criterio.MAYOR_QUE, 200.0, Accion.ATAQUE_FISICO
         )
         val  tacticaDos = Tactica(
                 2, TipoDeReceptor.ENEMIGO,
                 TipoDeEstadistica.VIDA,
-                Criterio.MAYOR_QUE, 0, Accion.ATAQUE_MAGICO
+                Criterio.MAYOR_QUE, 0.0, Accion.ATAQUE_MAGICO
         )
 
         aventurero.agregarTactica(tacticaUno)
@@ -263,8 +266,8 @@ internal class PeleaServiceTest {
 
     @Test
     fun `no se puede aplicar una tactica a un aventurero muerto`() {
-        val aventurero = Aventurero("Fede","URL",10,10,10,10)
-        val otroAventurero = Aventurero("Cacho","URL",80,80,80,80)
+        val aventurero = Aventurero("Fede","URL",10.0,10.0,10.0,10.0)
+        val otroAventurero = Aventurero("Cacho","URL",80.0,80.0,80.0,80.0)
 
         val partyEnemigo = Party("Los Capos", "URL")
         partyService.crear(partyEnemigo)
@@ -272,7 +275,7 @@ internal class PeleaServiceTest {
         val tacticaEnemigo = Tactica(
                 1,TipoDeReceptor.ENEMIGO,
                 TipoDeEstadistica.VIDA,
-                Criterio.MENOR_QUE,100,Accion.ATAQUE_FISICO
+                Criterio.MENOR_QUE,100.0,Accion.ATAQUE_FISICO
         )
 
         otroAventurero.agregarTactica(tacticaEnemigo)
@@ -289,11 +292,10 @@ internal class PeleaServiceTest {
 
     }
 
-
 //    @Test     Se rompe porque tuve que comentar la validacion para que ande el front
 //    fun `un aventurero muerto no puede resolver su turno`() {
-//        val aventurero = Aventurero("Fede","URL",10,10,10,10)
-//        val otroAventurero = Aventurero("Cacho","URL",80,80,80,80)
+//        val aventurero = Aventurero("Fede","URL",10.0,10.0,10.0,10.0)
+//        val otroAventurero = Aventurero("Cacho","URL",80.0,80.0,80.0,80.0)
 //
 //        val partyEnemigo = Party("Los Capos", "URL")
 //        partyService.crear(partyEnemigo)
@@ -301,7 +303,7 @@ internal class PeleaServiceTest {
 //        val tacticaEnemigo = Tactica(
 //                1,TipoDeReceptor.ENEMIGO,
 //                TipoDeEstadistica.VIDA,
-//                Criterio.MENOR_QUE,100,Accion.ATAQUE_FISICO
+//                Criterio.MENOR_QUE,10.00.0,Accion.ATAQUE_FISICO
 //        )
 //
 //        otroAventurero.agregarTactica(tacticaEnemigo)

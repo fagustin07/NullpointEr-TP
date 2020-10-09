@@ -16,10 +16,10 @@ class DataServiceHelper(val service: PartyService) : DataService {
         val idBTeam = service.crear(bTeam).id()!!
         val idCTeam = service.crear(cTeam).id()!!
 
-        val aventureroParaATeam = Aventurero("Legolas", "",15, 23, 57, 87)
-        val aventureroParaBTeam = Aventurero("Gimli","", 10, 24, 74, 16)
-        val aventureroParaCTeam1 = Aventurero("Frodo","", 99, 45, 7, 80)
-        val aventureroParaCTeam2 = Aventurero("Sam","", 16, 20, 76, 8)
+        val aventureroParaATeam = Aventurero("Legolas", "",15.0, 23.0, 57.0, 87.0)
+        val aventureroParaBTeam = Aventurero("Gimli","", 10.0, 24.0, 74.0, 16.0)
+        val aventureroParaCTeam1 = Aventurero("Frodo","", 99.0, 45.0, 7.0, 80.0)
+        val aventureroParaCTeam2 = Aventurero("Sam","", 16.0, 20.0, 76.0, 8.0)
 
         service.agregarAventureroAParty(idATeam, aventureroParaATeam)
         service.agregarAventureroAParty(idBTeam, aventureroParaBTeam)
