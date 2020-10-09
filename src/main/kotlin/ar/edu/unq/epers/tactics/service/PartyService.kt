@@ -21,6 +21,6 @@ enum class Orden {
 }
 
 enum class Direccion {
-    ASCENDIENTE,
-    DESCENDIENTE
+    ASCENDENTE,
+    DESCENDENTE
 }

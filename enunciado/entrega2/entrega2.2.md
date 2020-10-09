@@ -17,6 +17,8 @@ Una singular luz se prende, iluminando al CEO de la empresa, quien con una poder
 
 Todos emocionados y con lágrimas en los ojos, lanzan los sombreros y se internan frenéticamente en sus escritorios, listos para continuar el desarrollo de lo que puede llegar a ser... el más grande y significante juego de la historia.
 
+
+
 ## Funcionalidad
 
 Los testers, si bien contentos, mencionaron que los ayudaría tener acceso a ciertos datos que les permitan mejorar sus estrategias y que sea más fácil ordenar sus parties y aventureros.
@@ -45,7 +47,14 @@ Nuestro objetivo para esta próxima iteración es proveer esos datos para que el
 
 ### PartyService 
 
-- `recuperarOrdenadas(orden:Orden, direccion:Direccion, pagina:Int?):PartyPaginadas` - Devuelve las parties ordenadas en la en la dirección paginadas de a 10. 
+- `recuperarOrdenadas(orden:Orden, direccion:Direccion, pagina:Int?):PartyPaginadas` - Devuelve las parties ordenadas en la en la dirección paginadas de a 10.<br/> 
+Las parties se pueden ordenar por: poder, victorias o derrotas. <br/>
+`Poder`: La suma de _daño físico_ + _poder mágico_ + _precisión física_ de todos sus aventureros.<br/>
+`Victorias`: La suma de peleas ganadas que tenga la party.<br/>
+`Derrotas`: La suma de peleas perdidas que tenga la party. <br/>
+La `direccion` puede ser: ascendente o descendente.<br/>
+Un ejemplo: `recuperarOrdenadas(PODER, ASCENDENTE, 0)`: Devuelve las primeras 10 parties con más poder.<br/>
+La respuesta es un objeto del tipo `PartyPaginadas` que tiene la lista de parties y el total de parties disponibles: 
 
 
 ###  PeleaService
