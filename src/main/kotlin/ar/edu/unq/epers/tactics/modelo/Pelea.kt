@@ -1,5 +1,6 @@
 package ar.edu.unq.epers.tactics.modelo
 
+import java.lang.RuntimeException
 import java.time.LocalDateTime
 import javax.persistence.*
 import kotlin.jvm.Transient
@@ -11,6 +12,7 @@ class Pelea(
     ) {
 
     private val fecha = LocalDateTime.now()
+    private var estaFinalizada = false
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,5 +23,11 @@ class Pelea(
     fun fecha() = this.fecha
 
     fun idDeLaParty() = party.id()!!
+
+    fun finalizar() {
+        if (estaFinalizada) throw RuntimeException("La pelea ya ha terminado antes.")
+        estaFinalizada = true
+        party.salirDePelea()
+    }
 
 }

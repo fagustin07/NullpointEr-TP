@@ -89,7 +89,7 @@ class Aventurero(private var nombre: String) {
     fun dañoRecibido() = this.dañoRecibido
 
     fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
-//        validarSiEstaVivo() TODO: si dejamos esto, explota todo xd
+//        validarSiEstaVivo() TODO: si dejamos esto, explota todo xd. En el FRONT le piden resolver turno a aventureros muertos
 
         this.tacticas.sortBy { it.prioridad }
 

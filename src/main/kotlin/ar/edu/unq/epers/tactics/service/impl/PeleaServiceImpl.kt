@@ -57,10 +57,8 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
     override fun terminarPelea(idDeLaPelea: Long) =
         runTrx {
             val pelea = peleaDAO.recuperar(idDeLaPelea)
-            val party = pelea.party
-            if (!party.estaEnPelea()) throw RuntimeException("La pelea ya ha terminado antes.")
-            pelea.party.salirDePelea()
-            partyDAO.actualizar(party)
+            pelea.finalizar()
+            peleaDAO.actualizar(pelea)
 
             pelea
         }
