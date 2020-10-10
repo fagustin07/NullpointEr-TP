@@ -4,6 +4,7 @@ import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import ar.edu.unq.epers.tactics.modelo.habilidades.HabilidadNula
 import javax.persistence.*
 import kotlin.math.max
+import kotlin.math.min
 
 
 @Entity(name = "Aventurero")
@@ -79,7 +80,7 @@ class Aventurero(private var nombre: String) {
     fun constitucion() = constitucion
     fun inteligencia() = inteligencia
 
-    fun vidaActual() = max(0.0,vida-dañoRecibido)
+    fun vidaActual() = vida-dañoRecibido
     fun mana() = mana
     fun armadura() = nivel() + constitucion
     fun velocidad() = nivel() + destreza
@@ -155,12 +156,12 @@ class Aventurero(private var nombre: String) {
         this.party = party
     }
 
-    private fun recibirDaño(dañoRecibido: Double) {
+    private fun recibirDaño(dañoAAplicar: Double) {
         if (this.tieneDefensor()) {
-            defensor!!.recibirDaño(dañoRecibido / 2)
+            defensor!!.recibirDaño(dañoAAplicar / 2)
             this.consumirTurnoDeDefensa()
         } else {
-            this.dañoRecibido = this.dañoRecibido + dañoRecibido
+            this.dañoRecibido = min(this.dañoRecibido+dañoAAplicar, vida)
         }
     }
 

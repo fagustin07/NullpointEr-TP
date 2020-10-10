@@ -164,4 +164,13 @@ class AventureroTest {
 
         assertFalse(otroAventurero.estaSiendoDefendiendo())
     }
+
+    @Test
+    fun `un aventurero tiene como daño recibido maximo la misma cantidad de vida`(){
+        val aventurero = Aventurero("Juan")
+        val vidaAntesDeAtaque = aventurero.vidaActual()
+        aventurero.recibirAtaqueFisicoSiDebe(1000.0,23232.0)
+
+        assertThat(aventurero.dañoRecibido()).isEqualTo(vidaAntesDeAtaque)
+    }
 }
