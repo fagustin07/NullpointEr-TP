@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
-class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party, private val partyEnemiga: String) {
+class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party, private val nombrePartyEnemiga: String) {
 
     private val fecha = LocalDateTime.now()
     private var estaFinalizada = false
@@ -21,7 +21,7 @@ class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party, private val par
 
     fun idDeLaParty() = party.id()!!
 
-    fun partyEnemiga() = this.partyEnemiga
+    fun nombrePartyEnemiga() = this.nombrePartyEnemiga
 
     fun finalizar() {
         if (estaFinalizada) throw RuntimeException("La pelea ya ha terminado antes.")

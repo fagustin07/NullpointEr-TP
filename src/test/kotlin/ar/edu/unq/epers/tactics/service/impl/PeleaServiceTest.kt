@@ -280,7 +280,7 @@ internal class PeleaServiceTest {
     }
 
     @Test
-    fun `al terminar una pelea se la marca como perdida porque sus todos aventureros estan muertos`(){
+    fun `cuando una pelea termina y todos los aventureros estan muertos, se la marca como perdida`(){
         val aventurero = partyService.agregarAventureroAParty(party.id()!!, Aventurero("Cacho"))
         val pelea = peleaService.iniciarPelea(party.id()!!,"La otra party")
         peleaService.recibirHabilidad(
@@ -294,7 +294,7 @@ internal class PeleaServiceTest {
     }
 
     @Test
-    fun `al terminar una pelea se la marca como ganada porque la party tiene aventureros vivos`(){
+    fun `cuando una pelea termina y tiene aventureros vivos, se la marca como ganada`(){
         partyService.agregarAventureroAParty(party.id()!!, Aventurero("Cacho"))
         val pelea = peleaService.iniciarPelea(party.id()!!,"La otra party")
 

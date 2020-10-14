@@ -7,9 +7,11 @@ class PeleaTest {
 
     @Test
     fun `una pelea conoce el nombre de la party contra la que fue creada`(){
-        val pelea = Pelea(Party("Malotes","fotito"),"Party enemiga")
+        val party = Party("Malotes", "fotito")
 
-        Assertions.assertThat(pelea.partyEnemiga()).isEqualTo("Party enemiga")
+        val pelea = Pelea(party,"Party enemiga")
+
+        Assertions.assertThat(pelea.nombrePartyEnemiga()).isEqualTo("Party enemiga")
     }
 
 }
