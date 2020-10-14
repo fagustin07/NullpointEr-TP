@@ -36,7 +36,7 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
             habilidadGenerada
         }
 
-    override fun recibirHabilidad(aventureroId: Long, habilidad: Habilidad) = // TODO: en el PR decia habilidadId: Habilidad (¿es id o es objeto?)
+    override fun recibirHabilidad(aventureroId: Long, habilidad: Habilidad) =
         runTrx {
             //TODO: ENUNCIADO: recibirHabilidad(idPelea:Long, idAventurero:Long, habilidad: Habilidad):Aventurero
             // El aventurero debe resolver la habilidad que esta siendo ejecutada sobre el,
