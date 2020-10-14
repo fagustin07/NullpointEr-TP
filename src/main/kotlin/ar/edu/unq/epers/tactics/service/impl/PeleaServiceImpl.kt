@@ -9,26 +9,21 @@ import ar.edu.unq.epers.tactics.persistencia.dao.PeleaDAO
 import ar.edu.unq.epers.tactics.service.PeleaService
 import ar.edu.unq.epers.tactics.service.PeleasPaginadas
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
-import java.lang.RuntimeException
 
 class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO): PeleaService {
 
-    override fun iniciarPelea(idDeLaParty: Long, partyEnemiga:String): Pelea { // TODO: se agrego partyEnemiga:String
+    override fun iniciarPelea(partyId: Long, partyEnemiga:String): Pelea {
         return runTrx {
-            val party = partyDAO.recuperar(idDeLaParty)
+            val party = partyDAO.recuperar(partyId)
             party.entrarEnPelea()
             partyDAO.actualizar(party)
-            peleaDAO.crear(Pelea(party))
+            peleaDAO.crear(Pelea(party,partyEnemiga))
         }
     }
 
     override fun estaEnPelea(partyId: Long) = runTrx { partyDAO.recuperar(partyId).estaEnPelea() }
 
     override fun resolverTurno(peleaId: Long, aventureroId: Long, enemigos: List<Aventurero>) =
-        //TODO: resolverTurno(idPelea:Long, idAventurero:Long, enemigos: List<Aventurero>) : Habilidad
-        // - Dada la lista de enemigos, el aventurero debe utilizar sus Tacticas para elegir que
-        // habilidad utilizar sobre que receptor. Deberiamos utilizar la pelea y recuperar el aventurero
-        //  ---lo resolvimos sin utilizar la id de la pelea, por eso no la utilizamos.
         runTrx {
             val aventurero = aventureroDAO.recuperar(aventureroId)
             val habilidadGenerada = aventurero.resolverTurno(enemigos)
@@ -38,10 +33,7 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
 
     override fun recibirHabilidad(aventureroId: Long, habilidad: Habilidad) =
         runTrx {
-            //TODO: ENUNCIADO: recibirHabilidad(idPelea:Long, idAventurero:Long, habilidad: Habilidad):Aventurero
-            // El aventurero debe resolver la habilidad que esta siendo ejecutada sobre el,
-            // ---lo resolvimos sin utilizar la id de la pelea, por eso no lo cambiamos.
-
+            //TODO: agregar el peleaID.
             val aventurero = aventureroDAO.recuperar(aventureroId)
 
             habilidad.resolversePara(aventurero)
