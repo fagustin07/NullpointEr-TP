@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 
-data class PeleaDTO(var partyId:Long?, var date: LocalDateTime, var peleaId:Long?){
+data class PeleaDTO(var partyId:Long?, var date: LocalDateTime, var peleaId:Long?, var partyEnemiga:String){
 
     companion object {
 

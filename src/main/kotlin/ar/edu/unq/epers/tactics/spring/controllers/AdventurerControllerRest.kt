@@ -28,7 +28,6 @@ class AdventurerControllerRest(private val aventureroService: AventureroService,
         return AventureroDTO.desdeModelo(aventurero)
     }
 
-
     @DeleteMapping("/{id}")
     fun deleteAdventurer(@PathVariable id: Long):StatusResponse {
         val adventurer = aventureroService.recuperar(id)

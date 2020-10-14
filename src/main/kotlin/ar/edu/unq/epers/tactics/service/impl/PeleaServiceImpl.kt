@@ -7,13 +7,13 @@ import ar.edu.unq.epers.tactics.persistencia.dao.AventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.PeleaDAO
 import ar.edu.unq.epers.tactics.service.PeleaService
+import ar.edu.unq.epers.tactics.service.PeleasPaginadas
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
 import java.lang.RuntimeException
 
-class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO) :
-    PeleaService {
+class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO): PeleaService {
 
-    override fun iniciarPelea(idDeLaParty: Long) =
+    override fun iniciarPelea(idDeLaPelea: Long, partyEnemiga:String): Pelea { // TODO: se agrego partyEnemiga:String
         runTrx {
             val party = partyDAO.recuperar(idDeLaParty)
             party.entrarEnPelea()
@@ -35,7 +35,7 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
             habilidadGenerada
         }
 
-    override fun recibirHabilidad(aventureroId: Long, habilidad: Habilidad) =
+    override fun recibirHabilidad(aventureroId: Long, habilidad: Habilidad) = // TODO: en el PR decia habilidadId: Habilidad (¿es id o es objeto?)
         runTrx {
             //TODO: ENUNCIADO: recibirHabilidad(idPelea:Long, idAventurero:Long, habilidad: Habilidad):Aventurero
             // El aventurero debe resolver la habilidad que esta siendo ejecutada sobre el,
@@ -57,4 +57,7 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
             pelea
         }
 
+    override fun recuperarOrdenadas(partyId: Long, pagina: Int?): PeleasPaginadas {
+        TODO("Not yet implemented")
+    }
 }
