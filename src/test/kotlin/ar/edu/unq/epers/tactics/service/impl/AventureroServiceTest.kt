@@ -19,7 +19,7 @@ class AventureroServiceTest {
     private lateinit var partyDao: PartyDAO
 
     private lateinit var aventureroService: AventureroServiceImpl
-    private lateinit var partyService: PersistentPartyService
+    private lateinit var partyService: PartyServiceImpl
 
     private lateinit var party: Party
     private lateinit var aventurero: Aventurero
@@ -30,7 +30,7 @@ class AventureroServiceTest {
         partyDao = HibernatePartyDAO()
 
         aventureroService = AventureroServiceImpl(aventureroDao, partyDao)
-        partyService = PersistentPartyService(partyDao)
+        partyService = PartyServiceImpl(partyDao)
 
         party = Party("Party", "")
         aventurero = Aventurero("Aventurero")

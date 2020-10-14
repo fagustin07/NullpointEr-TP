@@ -14,11 +14,11 @@ import org.junit.jupiter.api.assertThrows
 class PartyServiceTest {
 
     private val dao: PartyDAO = HibernatePartyDAO()
-    private lateinit var partyService: PersistentPartyService
+    private lateinit var partyService: PartyServiceImpl
 
     @BeforeEach
     fun setUp() {
-        partyService = PersistentPartyService(dao)
+        partyService = PartyServiceImpl(dao)
     }
 
     @Test

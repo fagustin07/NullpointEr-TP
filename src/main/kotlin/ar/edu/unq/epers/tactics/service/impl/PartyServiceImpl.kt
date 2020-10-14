@@ -7,31 +7,32 @@ import ar.edu.unq.epers.tactics.service.Direccion
 import ar.edu.unq.epers.tactics.service.Orden
 import ar.edu.unq.epers.tactics.service.PartyPaginadas
 import ar.edu.unq.epers.tactics.service.PartyService
+import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
 
-// TODO: este archivo no lo teniamos porque le habiamos cambiado el nombre a la clase
-class PartyServiceImpl(val partyDAO: PartyDAO): PartyService {
 
-    override fun crear(party: Party): Party {
-        TODO("Not yet implemented")
-    }
+class PartyServiceImpl(val dao: PartyDAO) : PartyService {
 
-    override fun actualizar(party: Party): Party {
-        TODO("Not yet implemented")
-    }
+    override fun crear(party: Party) = runTrx { dao.crear(party) }
 
-    override fun recuperar(idDeLaParty: Long): Party {
-        TODO("Not yet implemented")
-    }
+    override fun actualizar(party: Party) = runTrx { dao.actualizar(party) }
 
-    override fun recuperarTodas(): List<Party> {
-        TODO("Not yet implemented")
+    override fun recuperar(idDeLaParty: Long) = runTrx { dao.recuperar(idDeLaParty) }
+
+    override fun recuperarTodas() = runTrx { dao.recuperarTodas() }
+
+    override fun recuperarOrdenadas(orden: Orden, direccion: Direccion, pagina: Int?): PartyPaginadas {
+        TODO("Not yet implemented") // TODO: se agrego en el HITO 2
     }
 
     override fun agregarAventureroAParty(idDeLaParty: Long, aventurero: Aventurero): Aventurero {
-        TODO("Not yet implemented")
+        return runTrx {
+            val party = dao.recuperar(idDeLaParty)
+            party.agregarUnAventurero(aventurero)
+            dao.actualizar(party)
+            aventurero
+        }
     }
 
-    override fun recuperarOrdenadas(orden: Orden, direccion: Direccion, pagina: Int?): PartyPaginadas {
-        TODO("Not yet implemented")
-    }
+    override fun eliminarTodo() = runTrx { dao.eliminarTodo() }
+
 }

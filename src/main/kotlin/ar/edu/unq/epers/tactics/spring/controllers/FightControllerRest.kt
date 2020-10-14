@@ -43,7 +43,7 @@ class FightControllerRest(private val peleaService: PeleaService) {
 //data class CreateFightRequest(val partyId: Long) // TODO: lo teniamos asi antes del PR
 //data class ResolveTurnRequest(val adventurerId: Long, val enemies: List<AventureroDTO>) // TODO: lo teniamos asi antes del PR
 data class CreateFightRequest(val partyId:Long, val partyEnemiga:String)
-data class ResolveTurnRequest(val adventurerId:Long, val enemies:List<Aventurero>)
+data class ResolveTurnRequest(val adventurerId:Long, val enemies:List<AventureroDTO>) // TODO: en el PR del hito 2 era Aventurero (no era DTO)
 data class ReceiveAbilityRequest(val adventurerId:Long, val ability:HabilidadDTO)
 
 data class PeleasPaginadasDTO(val peleas:List<PeleaDTO>, val total:Int){

@@ -4,10 +4,6 @@ import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.AventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
-import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
-import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
-import ar.edu.unq.epers.tactics.service.impl.AventureroServiceImpl
-import ar.edu.unq.epers.tactics.service.impl.PersistentPartyService
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*

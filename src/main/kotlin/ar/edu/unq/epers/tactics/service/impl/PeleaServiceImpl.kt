@@ -13,13 +13,14 @@ import java.lang.RuntimeException
 
 class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO): PeleaService {
 
-    override fun iniciarPelea(idDeLaPelea: Long, partyEnemiga:String): Pelea { // TODO: se agrego partyEnemiga:String
-        runTrx {
+    override fun iniciarPelea(idDeLaParty: Long, partyEnemiga:String): Pelea { // TODO: se agrego partyEnemiga:String
+        return runTrx {
             val party = partyDAO.recuperar(idDeLaParty)
             party.entrarEnPelea()
             partyDAO.actualizar(party)
             peleaDAO.crear(Pelea(party))
         }
+    }
 
     override fun estaEnPelea(partyId: Long) = runTrx { partyDAO.recuperar(partyId).estaEnPelea() }
 

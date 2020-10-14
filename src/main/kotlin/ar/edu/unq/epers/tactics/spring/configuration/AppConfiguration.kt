@@ -9,7 +9,7 @@ import ar.edu.unq.epers.tactics.service.*
 import ar.edu.unq.epers.tactics.service.impl.AventureroLeaderboardServiceImpl
 import ar.edu.unq.epers.tactics.service.impl.AventureroServiceImpl
 import ar.edu.unq.epers.tactics.service.impl.PeleaServiceImpl
-import ar.edu.unq.epers.tactics.service.impl.PersistentPartyService
+import ar.edu.unq.epers.tactics.service.impl.PartyServiceImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -43,7 +43,7 @@ class AppConfiguration {
 
     @Bean
     fun partyService(partyDAO: PartyDAO) : PartyService {
-        return PersistentPartyService(partyDAO)
+        return PartyServiceImpl(partyDAO)
     }
 
     @Bean

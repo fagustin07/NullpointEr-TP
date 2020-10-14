@@ -10,7 +10,7 @@ data class PeleaDTO(var partyId:Long?, var date: LocalDateTime, var peleaId:Long
     companion object {
 
         fun desdeModelo(pelea: Pelea):PeleaDTO{
-            return PeleaDTO(pelea.idDeLaParty(), pelea.fecha(), pelea.id())
+            return PeleaDTO(pelea.idDeLaParty(), pelea.fecha(), pelea.id(), "") // TODO: se hardcodeo "partyEnemiga" (vino con el PR del HITO 2)
         }
     }
 
