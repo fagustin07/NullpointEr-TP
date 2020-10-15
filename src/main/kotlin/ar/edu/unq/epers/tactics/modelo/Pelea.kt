@@ -3,13 +3,13 @@ package ar.edu.unq.epers.tactics.modelo
 import java.lang.RuntimeException
 import java.time.LocalDateTime
 import javax.persistence.*
-import kotlin.jvm.Transient
 
 @Entity
-class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party) {
+class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party, private val nombrePartyEnemiga: String) {
 
     private val fecha = LocalDateTime.now()
     private var estaFinalizada = false
+    private var estaGanada = false
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +21,15 @@ class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party) {
 
     fun idDeLaParty() = party.id()!!
 
+    fun nombrePartyEnemiga() = this.nombrePartyEnemiga
+
     fun finalizar() {
         if (estaFinalizada) throw RuntimeException("La pelea ya ha terminado antes.")
         estaFinalizada = true
+        this.estaGanada = party.algunoEstaVivo()
         party.salirDePelea()
     }
+
+    fun estaGanada() = this.estaGanada
 
 }
