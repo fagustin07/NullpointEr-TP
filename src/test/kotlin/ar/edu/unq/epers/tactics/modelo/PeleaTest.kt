@@ -7,7 +7,7 @@ class PeleaTest {
 
     @Test
     fun `una pelea conoce el nombre de la party contra la que fue creada`(){
-        val party = Party("Malotes", "fotito")
+        val party = Party("Malotes", "foto.jpg")
 
         val pelea = Pelea(party,"Party enemiga")
 
