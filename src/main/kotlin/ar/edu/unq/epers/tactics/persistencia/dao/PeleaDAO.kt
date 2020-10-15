@@ -7,4 +7,5 @@ interface PeleaDAO {
     fun actualizar(pelea: Pelea): Pelea
     fun recuperar(idDeLaPelea: Long): Pelea
     fun recuperarUltimaPeleaDeParty(idDeLaParty: Long) : Pelea
+    fun recuperarOrdenadas(partyId: Long, pagina: Int): List<Pelea>
 }

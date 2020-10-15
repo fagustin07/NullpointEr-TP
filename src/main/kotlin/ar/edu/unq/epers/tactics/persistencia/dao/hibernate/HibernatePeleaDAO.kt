@@ -12,4 +12,13 @@ class HibernatePeleaDAO: HibernateDAO<Pelea>(Pelea::class.java), PeleaDAO {
                 .singleResult
     }
 
+    override fun recuperarOrdenadas(partyId: Long, pagina: Int): List<Pelea> {
+        val primerResultado = 10 * ((pagina - 1) + 1)
+        return createQuery("from Pelea pelea where pelea.party.id = :partyId order by fecha desc")
+                .setParameter("partyId", partyId)
+                .setMaxResults(10)
+                .setFirstResult(primerResultado)
+                .list()
+    }
+
 }

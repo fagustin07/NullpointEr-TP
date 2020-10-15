@@ -14,6 +14,7 @@ import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -277,6 +278,61 @@ internal class PeleaServiceTest {
 
        assertTrue(habilidadGenerada is HabilidadNula)
 
+    }
+
+    @Test
+    fun `al recuperar peleas ordenadas siempre se obtienen de a 10`(){
+        repeat(15) { crearPeleas() }
+        val partyId = party.id()!!
+
+        assertThat(peleaService.recuperarOrdenadas(partyId, 0).total).isEqualTo(10)
+    }
+
+    @Test
+    fun `al recuperar la segunda pagina de las peleas ordenadas las primeras 10 no aparecen`() {
+        repeat(15) { crearPeleas() }
+        val partyId = party.id()!!
+
+        val peleasDeSegundaPagina = peleaService.recuperarOrdenadas(partyId, 1).peleas
+        val peleasDePrimeraPagina = peleaService.recuperarOrdenadas(partyId, 0).peleas
+        assertThat(peleasDeSegundaPagina).allSatisfy { each -> !peleasDePrimeraPagina.contains(each) }
+    }
+
+    @Test
+    fun `no puedo pedir una pagina negativa de peleas ordenadas`(){
+        assertThatThrownBy { peleaService.recuperarOrdenadas(party.id()!!, -1) }
+                .hasMessage("No se puede pedir una pagina negativa")
+    }
+
+    @Test
+    fun `si no se indica el numero de pagina al obtener peleas ordenadas se retorna la primera pagina`() {
+        repeat(15) { crearPeleas() }
+        val partyId = party.id()!!
+
+        val peleasObtenidasSinPagina = peleaService.recuperarOrdenadas(partyId, null)
+        val peleasObtenidasDePrimeraPagina = peleaService.recuperarOrdenadas(partyId, 0)
+
+        assertThat(peleasObtenidasSinPagina.total).isEqualTo(10)
+        assertThat(peleasObtenidasSinPagina.peleas)
+                .usingElementComparatorOnFields("id")
+                .containsAll(peleasObtenidasDePrimeraPagina.peleas)
+    }
+
+    @Test
+    fun `las peleas obtenidas se obtienen ordenadas por fecha en orden descendente`() {
+        repeat(10) { crearPeleas() }
+        val partyId = party.id()!!
+
+        val peleasObtenidas = peleaService.recuperarOrdenadas(partyId, 0)
+
+        assertThat(peleasObtenidas.peleas[0].fecha()).isAfter(peleasObtenidas.peleas[9].fecha())
+    }
+
+    private fun crearPeleas() {
+        val partyEnemiga = Party("Los capos", "URL")
+        partyService.crear(partyEnemiga)
+        val pelea = peleaService.iniciarPelea(party.id()!!, partyEnemiga.nombre())
+        peleaService.terminarPelea(pelea.id()!!)
     }
 
     @Test

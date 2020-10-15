@@ -51,6 +51,15 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
         }
 
     override fun recuperarOrdenadas(partyId: Long, pagina: Int?): PeleasPaginadas {
-        TODO("Not yet implemented")
+
+        val paginaABuscar = pagina ?: 0
+        if (paginaABuscar < 0) { throw RuntimeException("No se puede pedir una pagina negativa") }
+
+            return runTrx {
+                val peleasRecuperadas = peleaDAO.recuperarOrdenadas(partyId, paginaABuscar)
+                PeleasPaginadas(
+                        peleasRecuperadas,
+                        peleasRecuperadas.size)
+            }
     }
 }
