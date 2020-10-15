@@ -10,4 +10,9 @@ class HibernateAventureroDAO: HibernateDAO<Aventurero>(Aventurero::class.java),A
        val session = HibernateTransactionRunner.currentSession
         session.delete(aventurero)
     }
+
+    override fun buda(): Aventurero  =
+        createQuery("FROM Aventurero WHERE cantidadDeVecesQueMedito > 0 ORDER BY cantidadDeVecesQueMedito DESC")
+            .setMaxResults(1)
+            .singleResult
 }

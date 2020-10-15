@@ -44,6 +44,8 @@ class Aventurero(private var nombre: String) {
         }
     private var dañoRecibido = 0.0
 
+    var cantidadDeVecesQueMedito = 0 // TODO: esto es temporal. Quitar cuando tengamos resuelto lo de persistir las Habilidades en la Pelea
+
     @ManyToOne
     var party: Party? = null
 
@@ -126,6 +128,7 @@ class Aventurero(private var nombre: String) {
     }
 
     fun meditar() {
+        cantidadDeVecesQueMedito += 1
         this.mana += this.nivel()
     }
 
