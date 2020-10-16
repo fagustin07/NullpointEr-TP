@@ -50,7 +50,7 @@ class AventureroLeaderboardServiceTest {
     }
 
     @Test
-    fun `no se puede pedir un buda a una party sin aventureros`() {
+    fun `cuando no hay ningun aventurero en ninguna party, no se puede pedir un buda`() {
         val partyId = nuevaPartyPersistida()
         nuevoAventureroConTacticaEn(partyId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_PEPE)
 
@@ -59,7 +59,7 @@ class AventureroLeaderboardServiceTest {
     }
 
     @Test
-    fun `no se puede pedir un buda a una party con aventureros si ninguno medito`() {
+    fun `cuando existen aventureros, pero ninguno medito nunca, no se puede pedir un buda`() {
         val partyId = nuevaPartyPersistida()
         nuevoAventureroConTacticaEn(partyId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_PEPE)
 
@@ -68,7 +68,7 @@ class AventureroLeaderboardServiceTest {
     }
 
     @Test
-    fun `una party con un solo aventurero tiene un buda si este medito alguna vez`() {
+    fun `cuando existe un solo aventurero que medito alguna vez, ese es el buda`() {
         val partyId = nuevaPartyPersistida()
         val aventurero = nuevoAventureroConTacticaEn(partyId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_PEPE)
         val peleaId = comenzarPeleaDe(partyId)
@@ -83,19 +83,23 @@ class AventureroLeaderboardServiceTest {
     }
 
     @Test
-    fun `en una party en la cual varios de sus aventureros meditaron, el buda es aquel que lo haya hecho mas veces`() {
-        val partyId = nuevaPartyPersistida()
-        val pepe = nuevoAventureroConTacticaEn(partyId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_PEPE)
-        val juan = nuevoAventureroConTacticaEn(partyId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_JUAN)
-        val peleaId = comenzarPeleaDe(partyId)
+    fun `cuando existen varios aventureros que meditaron en distintas parties, el buda es aquel que lo haya hecho mas veces`() {
+        val partyDePepeId = nuevaPartyPersistida()
+        val pepe = nuevoAventureroConTacticaEn(partyDePepeId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_PEPE)
+        val peleaPartyDePepeId = comenzarPeleaDe(partyDePepeId)
 
-        val habilidadDeMeditacionDePepe = peleaService.resolverTurno(peleaId, pepe.id()!!, listOf())
-        val habilidadDeMeditacionDeJuan = peleaService.resolverTurno(peleaId, juan.id()!!, listOf())
-
-        peleaService.recibirHabilidad(juan.id()!!, habilidadDeMeditacionDeJuan)
-        peleaService.recibirHabilidad(juan.id()!!, habilidadDeMeditacionDeJuan)
-
+        val habilidadDeMeditacionDePepe = peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf())
         peleaService.recibirHabilidad(pepe.id()!!, habilidadDeMeditacionDePepe)
+
+
+        val partyDeJuanId = nuevaPartyPersistida()
+        val juan = nuevoAventureroConTacticaEn(partyDeJuanId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_JUAN)
+        val peleaPartyDeJuanId = comenzarPeleaDe(partyDeJuanId)
+
+        val habilidadDeMeditacionDeJuan = peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
+        peleaService.recibirHabilidad(juan.id()!!, habilidadDeMeditacionDeJuan)
+        peleaService.recibirHabilidad(juan.id()!!, habilidadDeMeditacionDeJuan)
+
 
         val buda = aventureroLeaderboardService.buda()
 
