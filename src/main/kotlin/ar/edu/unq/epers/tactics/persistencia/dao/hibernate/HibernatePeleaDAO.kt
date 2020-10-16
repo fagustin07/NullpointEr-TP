@@ -2,6 +2,8 @@ package ar.edu.unq.epers.tactics.persistencia.dao.hibernate
 
 import ar.edu.unq.epers.tactics.modelo.Pelea
 import ar.edu.unq.epers.tactics.persistencia.dao.PeleaDAO
+import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
+import org.aspectj.apache.bcel.classfile.JavaClass
 
 class HibernatePeleaDAO: HibernateDAO<Pelea>(Pelea::class.java), PeleaDAO {
 
@@ -19,6 +21,14 @@ class HibernatePeleaDAO: HibernateDAO<Pelea>(Pelea::class.java), PeleaDAO {
                 .setMaxResults(10)
                 .setFirstResult(primerResultado)
                 .list()
+    }
+
+    override fun cantidadDePeleas(): Long {
+        val hql = "select count(*) from Pelea pelea"
+        return HibernateTransactionRunner
+            .currentSession
+            .createQuery(hql, Long::class.javaObjectType)
+            .list()[0]
     }
 
 }

@@ -8,4 +8,5 @@ interface PeleaDAO {
     fun recuperar(idDeLaPelea: Long): Pelea
     fun recuperarUltimaPeleaDeParty(idDeLaParty: Long) : Pelea
     fun recuperarOrdenadas(partyId: Long, pagina: Int): List<Pelea>
+    fun cantidadDePeleas(): Long
 }

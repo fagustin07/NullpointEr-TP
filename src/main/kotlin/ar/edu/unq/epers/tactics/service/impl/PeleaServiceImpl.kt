@@ -57,9 +57,10 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
 
             return runTrx {
                 val peleasRecuperadas = peleaDAO.recuperarOrdenadas(partyId, paginaABuscar)
+                val peleasTotales = peleaDAO.cantidadDePeleas().toInt()
                 PeleasPaginadas(
                         peleasRecuperadas,
-                        peleasRecuperadas.size)
+                        peleasTotales)
             }
     }
 }

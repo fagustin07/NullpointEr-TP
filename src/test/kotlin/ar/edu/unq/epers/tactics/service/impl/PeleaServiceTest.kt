@@ -285,7 +285,7 @@ internal class PeleaServiceTest {
         repeat(15) { crearPeleas() }
         val partyId = party.id()!!
 
-        assertThat(peleaService.recuperarOrdenadas(partyId, 0).total).isEqualTo(10)
+        assertThat(peleaService.recuperarOrdenadas(partyId, 0).peleas.size).isEqualTo(10)
     }
 
     @Test
@@ -312,7 +312,7 @@ internal class PeleaServiceTest {
         val peleasObtenidasSinPagina = peleaService.recuperarOrdenadas(partyId, null)
         val peleasObtenidasDePrimeraPagina = peleaService.recuperarOrdenadas(partyId, 0)
 
-        assertThat(peleasObtenidasSinPagina.total).isEqualTo(10)
+        assertThat(peleasObtenidasSinPagina.peleas.size).isEqualTo(10)
         assertThat(peleasObtenidasSinPagina.peleas)
                 .usingElementComparatorOnFields("id")
                 .containsAll(peleasObtenidasDePrimeraPagina.peleas)
@@ -326,6 +326,22 @@ internal class PeleaServiceTest {
         val peleasObtenidas = peleaService.recuperarOrdenadas(partyId, 0)
 
         assertThat(peleasObtenidas.peleas[0].fecha()).isAfter(peleasObtenidas.peleas[9].fecha())
+    }
+
+    @Test
+    fun `se obtiene la cantidad de peleas persistidas al buscarlas ordenadas`() {
+        repeat(10) { crearPeleas() }
+        val partyId = party.id()!!
+
+        val partyEnemiga = Party("Los capos", "URL")
+        partyService.crear(partyEnemiga)
+        val pelea = peleaService.iniciarPelea(partyEnemiga.id()!!, partyEnemiga.nombre())
+        peleaService.terminarPelea(pelea.id()!!)
+
+        val peleasObtenidas = peleaService.recuperarOrdenadas(partyId, 0)
+
+        assertThat(peleasObtenidas.total).isEqualTo(11)
+
     }
 
     private fun crearPeleas() {
