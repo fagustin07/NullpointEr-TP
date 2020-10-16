@@ -25,11 +25,7 @@ class PartyServiceImpl(val dao: PartyDAO) : PartyService {
         if(paginaSolicitada < 0) throw RuntimeException("No puedes pedir paginas negativas")
 
        return runTrx {
-            val recuperadas = dao.recuperarOrdenadas(orden,direccion,paginaSolicitada)
-            PartyPaginadas(
-                    recuperadas,
-                    recuperadas.size
-            )
+             dao.recuperarOrdenadas(orden,direccion,paginaSolicitada)
         }
     }
 
@@ -41,5 +37,6 @@ class PartyServiceImpl(val dao: PartyDAO) : PartyService {
     }
 
     override fun eliminarTodo() = runTrx { dao.eliminarTodo() }
+
 
 }
