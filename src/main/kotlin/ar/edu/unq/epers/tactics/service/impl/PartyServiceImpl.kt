@@ -21,7 +21,16 @@ class PartyServiceImpl(val dao: PartyDAO) : PartyService {
     override fun recuperarTodas() = runTrx { dao.recuperarTodas() }
 
     override fun recuperarOrdenadas(orden: Orden, direccion: Direccion, pagina: Int?): PartyPaginadas {
-        TODO("Not yet implemented") // TODO: se agrego en el HITO 2
+        val paginaSolicitada = pagina ?: 0
+        if(paginaSolicitada < 0) throw RuntimeException("No puedes pedir paginas negativas")
+
+       return runTrx {
+            val recuperadas = dao.recuperarOrdenadas(orden,direccion,paginaSolicitada)
+            PartyPaginadas(
+                    recuperadas,
+                    recuperadas.size
+            )
+        }
     }
 
     override fun agregarAventureroAParty(idDeLaParty: Long, aventurero: Aventurero): Aventurero {
