@@ -285,8 +285,9 @@ internal class PeleaServiceTest {
         val aventurero = partyService.agregarAventureroAParty(party.id()!!, Aventurero("Cacho"))
         val pelea = peleaService.iniciarPelea(party.id()!!,"La otra party")
         peleaService.recibirHabilidad(
+            pelea.id()!!,
             aventurero.id()!!,
-            AtaqueMagico(123123.0,1,aventurero,DadoSimulado(20))
+            AtaqueMagico(123123.0,1,null,aventurero,DadoSimulado(20))
         )
 
         val peleaFinalizada = peleaService.terminarPelea(pelea.id()!!)
