@@ -43,6 +43,8 @@ class Party(private var nombre: String, private var imagenURL: String) {
         this.id = id
     }
 
+    fun algunoEstaVivo() = this.aventureros.any { it.estaVivo() }
+
     fun aliadosDe(aventurero: Aventurero): List<Aventurero> {
         val aliados = aventureros.toMutableList()
         aliados.remove(aventurero)

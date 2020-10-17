@@ -3,6 +3,7 @@ package ar.edu.unq.epers.tactics.service.impl
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.modelo.Tactica
+import ar.edu.unq.epers.tactics.modelo.dado.DadoSimulado
 import ar.edu.unq.epers.tactics.modelo.enums.Accion
 import ar.edu.unq.epers.tactics.modelo.enums.Criterio
 import ar.edu.unq.epers.tactics.modelo.enums.TipoDeEstadistica
@@ -277,6 +278,30 @@ internal class PeleaServiceTest {
 
        assertTrue(habilidadGenerada is HabilidadNula)
 
+    }
+
+    @Test
+    fun `cuando una pelea termina y todos los aventureros estan muertos, se la marca como perdida`(){
+        val aventurero = partyService.agregarAventureroAParty(party.id()!!, Aventurero("Cacho"))
+        val pelea = peleaService.iniciarPelea(party.id()!!,"La otra party")
+        peleaService.recibirHabilidad(
+            aventurero.id()!!,
+            AtaqueMagico(123123.0,1,aventurero,DadoSimulado(20))
+        )
+
+        val peleaFinalizada = peleaService.terminarPelea(pelea.id()!!)
+
+        assertFalse(peleaFinalizada.estaGanada())
+    }
+
+    @Test
+    fun `cuando una pelea termina y tiene aventureros vivos, se la marca como ganada`(){
+        partyService.agregarAventureroAParty(party.id()!!, Aventurero("Cacho"))
+        val pelea = peleaService.iniciarPelea(party.id()!!,"La otra party")
+
+        val peleaFinalizada = peleaService.terminarPelea(pelea.id()!!)
+
+        assertTrue(peleaFinalizada.estaGanada())
     }
 
     @AfterEach
