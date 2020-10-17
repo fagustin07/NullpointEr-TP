@@ -12,7 +12,7 @@ class PeleaDTOTest {
     fun `Al convertir una Pelea a una PeleaDTO se comparten sus datos`() {
         val partyOriginal = Party("Party", "URL")
         partyOriginal.darleElId(1)
-        val pelea = Pelea(partyOriginal)
+        val pelea = Pelea(partyOriginal,"Party enemiga")
         val peleaDTO = PeleaDTO.desdeModelo(pelea)
 
         Assertions.assertThat(pelea.fecha()).isEqualTo(peleaDTO.date)

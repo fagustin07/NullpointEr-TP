@@ -12,12 +12,12 @@ import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
 
 class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO): PeleaService {
 
-    override fun iniciarPelea(idDeLaParty: Long, partyEnemiga:String): Pelea { // TODO: se agrego partyEnemiga:String
+    override fun iniciarPelea(partyId: Long, nombrePartyEnemiga:String): Pelea {
         return runTrx {
-            val party = partyDAO.recuperar(idDeLaParty)
+            val party = partyDAO.recuperar(partyId)
             party.entrarEnPelea()
             partyDAO.actualizar(party)
-            peleaDAO.crear(Pelea(party))
+            peleaDAO.crear(Pelea(party,nombrePartyEnemiga))
         }
     }
 
