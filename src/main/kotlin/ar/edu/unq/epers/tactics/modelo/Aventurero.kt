@@ -105,10 +105,6 @@ class Aventurero(private var nombre: String) {
         return HabilidadNula.para(this,this)
     }
 
-//    private fun validarSiEstaVivo() {
-//        if (!this.estaVivo()) throw RuntimeException("Un aventurero muerto no puede resolver su turno");
-//    }
-
     fun recibirAtaqueFisicoSiDebe(dañoFisico: Double, precisionFisica: Double) {
         val claseDeArmadura = this.armadura() + (this.velocidad() / 2)
 
@@ -152,45 +148,7 @@ class Aventurero(private var nombre: String) {
         this.party = party
     }
 
-    private fun recibirDaño(dañoAAplicar: Double) {
-        if (this.tieneDefensor()) {
-            defensor!!.recibirDaño(dañoAAplicar / 2)
-            this.consumirTurnoDeDefensa()
-        } else {
-            this.dañoRecibido = min(this.dañoRecibido+dañoAAplicar, vida)
-        }
-    }
-
-    private fun recalcularVidaYMana() {
-        vida = ((nivel() * 5) + (constitucion * 2) + fuerza)
-        mana = nivel() + inteligencia
-    }
-
-    private fun defendidoPor(defensor: Aventurero) {
-        this.defensor = defensor
-        this.turnosDefendido = 3
-    }
-
-    private fun consumirTurnoDeDefensa() {
-        turnosDefendido -= 1
-
-        if (turnosDefendido == 0) {
-            defensor = null
-        }
-    }
-
-    private fun perderDefensor() {
-        this.defensor = null
-    }
-
-    private fun tieneDefensor() = this.defensor != null && this.defensor!!.estaVivo()
-
     fun estaVivo() = this.vidaActual() > 0.0
-
-    private fun validarPuntaje(nuevoPuntaje: Double, nombreDeAtributo: String) {
-        if (nuevoPuntaje > 100) throw  RuntimeException("La $nombreDeAtributo no puede exceder los 100 puntos!")
-        if (nuevoPuntaje < 1) throw  RuntimeException("La $nombreDeAtributo no puede ser menor a 1 punto!")
-    }
 
     fun validacionParaDefenderA(receptor: Aventurero) {
         if (this == receptor) throw  RuntimeException("${this.nombre} no puede defenderse a si mismo!")
@@ -243,5 +201,48 @@ class Aventurero(private var nombre: String) {
     fun actualizarDañoRecibido(nuevoDañoRecibido: Double) {
         this.dañoRecibido = nuevoDañoRecibido
     }
+
+    private fun recibirDaño(dañoAAplicar: Double) {
+        if (this.tieneDefensor()) {
+            defensor!!.recibirDaño(dañoAAplicar / 2)
+            this.consumirTurnoDeDefensa()
+        } else {
+            this.dañoRecibido = min(this.dañoRecibido+dañoAAplicar, vida)
+        }
+    }
+
+    private fun recalcularVidaYMana() {
+        vida = ((nivel() * 5) + (constitucion * 2) + fuerza)
+        mana = nivel() + inteligencia
+    }
+
+    private fun defendidoPor(defensor: Aventurero) {
+        this.defensor = defensor
+        this.turnosDefendido = 3
+    }
+
+    private fun consumirTurnoDeDefensa() {
+        turnosDefendido -= 1
+
+        if (turnosDefendido == 0) {
+            defensor = null
+        }
+    }
+
+    private fun perderDefensor() {
+        this.defensor = null
+    }
+
+    private fun tieneDefensor() = this.defensor != null && this.defensor!!.estaVivo()
+
+    private fun validarPuntaje(nuevoPuntaje: Double, nombreDeAtributo: String) {
+        if (nuevoPuntaje > 100) throw  RuntimeException("La $nombreDeAtributo no puede exceder los 100 puntos!")
+        if (nuevoPuntaje < 1) throw  RuntimeException("La $nombreDeAtributo no puede ser menor a 1 punto!")
+    }
+
+//    private fun validarSiEstaVivo() {
+//        if (!this.estaVivo()) throw RuntimeException("Un aventurero muerto no puede resolver su turno");
+//    }
+
 
 }
