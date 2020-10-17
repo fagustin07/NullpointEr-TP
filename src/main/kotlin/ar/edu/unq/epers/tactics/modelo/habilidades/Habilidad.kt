@@ -6,8 +6,11 @@ import javax.persistence.*
 @Entity
 @Inheritance(strategy= InheritanceType.JOINED)
 abstract class Habilidad(
-    @ManyToOne(fetch = FetchType.LAZY) val aventureroEmisor: Aventurero?,
-    @ManyToOne(fetch = FetchType.LAZY) val aventureroReceptor: Aventurero
+    @OneToOne(fetch=FetchType.EAGER)
+    val aventureroEmisor: Aventurero?,
+
+    @OneToOne(fetch=FetchType.EAGER)
+    val aventureroReceptor: Aventurero
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
