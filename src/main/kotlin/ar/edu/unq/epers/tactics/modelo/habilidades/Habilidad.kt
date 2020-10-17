@@ -16,6 +16,9 @@ abstract class Habilidad(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private var id: Long? = null
 
+    open val esAtaqueMagico = false
+    open val esMeditacion = false
+
     abstract fun resolversePara(receptor: Aventurero)
 
 }

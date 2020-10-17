@@ -26,6 +26,8 @@ class Meditacion(
         }
     }
 
+    override val esMeditacion = true
+
     override fun resolversePara(receptor: Aventurero) {
         receptor.meditar()
     }

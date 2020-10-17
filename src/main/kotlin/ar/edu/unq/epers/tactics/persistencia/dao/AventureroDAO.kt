@@ -8,4 +8,5 @@ interface AventureroDAO {
     fun eliminar(aventurero: Aventurero)
     fun buda(): Aventurero
     fun mejorGuerrero(): Aventurero
+    fun mejorMago(): Aventurero
 }
