@@ -26,9 +26,7 @@ class PartyServiceImpl(val dao: PartyDAO) : PartyService {
 
     override fun agregarAventureroAParty(idDeLaParty: Long, aventurero: Aventurero): Aventurero {
         return runTrx {
-            val party = dao.recuperar(idDeLaParty)
-            party.agregarUnAventurero(aventurero)
-            dao.actualizar(party)
+            dao.ejecutarCon(idDeLaParty) { it.agregarUnAventurero(aventurero) }
             aventurero
         }
     }
