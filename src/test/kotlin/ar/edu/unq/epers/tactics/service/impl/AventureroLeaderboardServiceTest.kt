@@ -116,11 +116,12 @@ class AventureroLeaderboardServiceTest {
         val aventurero = nuevoAventureroConTacticaEn(partyId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_PEPE)
         val peleaId = comenzarPeleaDe(partyId)
 
-        peleaService.resolverTurno(peleaId, aventurero.id()!!, listOf())
+        val habilidad = peleaService.resolverTurno(peleaId, aventurero.id()!!, listOf())
+        val aventureroActualizado = peleaService.recibirHabilidad(peleaId, aventurero.id()!!, habilidad)
 
         val buda = aventureroLeaderboardService.buda()
 
-        assertThat(aventurero).usingRecursiveComparison().ignoringFields("party").isEqualTo(buda)
+        assertThat(aventureroActualizado).usingRecursiveComparison().ignoringFields("party").isEqualTo(buda)
     }
 
     @Test
@@ -129,7 +130,7 @@ class AventureroLeaderboardServiceTest {
         val pepe = nuevoAventureroConTacticaEn(partyDePepeId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_PEPE)
         val peleaPartyDePepeId = comenzarPeleaDe(partyDePepeId)
         val partyDeJuanId = nuevaPartyPersistida()
-        val juan = nuevoAventureroConTacticaEn(partyDeJuanId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_JUAN)
+        var juan = nuevoAventureroConTacticaEn(partyDeJuanId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_JUAN)
         val peleaPartyDeJuanId = comenzarPeleaDe(partyDeJuanId)
 
         peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf())
@@ -140,11 +141,12 @@ class AventureroLeaderboardServiceTest {
             peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
         )
 
-        //habilidadesEmitidasPorJuan.forEach { peleaService.recibirHabilidad(peleaPartyDeJuanId, ) }
+        habilidadesEmitidasPorJuan.forEach { peleaService.recibirHabilidad(peleaPartyDeJuanId, juan.id()!!, it) }
 
         val buda = aventureroLeaderboardService.buda()
 
-        assertThat(juan).usingRecursiveComparison().ignoringFields("party").isEqualTo(buda)
+        val juanActualizado = aventureroService.recuperar(juan.id()!!)
+        assertThat(juanActualizado).usingRecursiveComparison().ignoringFields("party").isEqualTo(buda)
     }
 
     @Test
@@ -162,11 +164,11 @@ class AventureroLeaderboardServiceTest {
 
 
         val meditacionDePepe = peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf())
-        peleaService.recibirHabilidad(peleaPartyDePepeId, pepe.id()!!, meditacionDePepe)
+        val pepeActualizado = peleaService.recibirHabilidad(peleaPartyDePepeId, pepe.id()!!, meditacionDePepe)
 
         val buda = aventureroLeaderboardService.buda()
 
-        assertThat(pepe).usingRecursiveComparison().ignoringFields("party").isEqualTo(buda)
+        assertThat(pepeActualizado).usingRecursiveComparison().ignoringFields("party").isEqualTo(buda)
     }
 
     @Test

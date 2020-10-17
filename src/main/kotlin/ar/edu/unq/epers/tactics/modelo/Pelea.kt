@@ -14,12 +14,12 @@ class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party, private val nom
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     @Column(name="habilidadesEmitidas")
-    @JoinColumn(name = "pelea_id")
+    @JoinColumn(name = "pelea_en_que_fue_emitida_id")
     private var habilidadesEmitidas: MutableList<Habilidad> = mutableListOf()
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     @Column(name="habilidadesRecibidas")
-    @JoinColumn(name = "pelea_id")
+    @JoinColumn(name = "pelea_en_que_fue_recibida_id")
     private var habilidadesRecibidas: MutableList<Habilidad> = mutableListOf()
 
     @Id

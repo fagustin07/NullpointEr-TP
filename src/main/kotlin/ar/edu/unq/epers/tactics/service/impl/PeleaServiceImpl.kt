@@ -43,11 +43,9 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
 
             habilidad.resolversePara(aventurero)
 
-            /*
             val pelea = peleaDAO.recuperar(peleaId)
             pelea.registrarRecepcionDe(habilidad)
             peleaDAO.actualizar(pelea)
-            */
 
             aventureroDAO.actualizar(aventurero)
         }
