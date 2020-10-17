@@ -70,6 +70,7 @@ class Aventurero(private var nombre: String) {
         this.recalcularVidaYMana()
     }
 
+    /** ACCESSING **/
     fun id() = id
     fun nombre() = nombre
     fun imagenURL() = this.imagenURL
@@ -89,6 +90,25 @@ class Aventurero(private var nombre: String) {
     fun precisionFisica() = nivel() + fuerza + destreza
     fun dañoRecibido() = this.dañoRecibido
 
+    fun aliados(): List<Aventurero> {
+        if (party == null) return listOf()
+        return party!!.aliadosDe(this)
+    }
+
+    fun tacticas() = this.tacticas
+
+    /** TESTING **/
+    fun esAliadoDe(otroAventurero: Aventurero) = aliados().contains(otroAventurero)
+
+    fun esEnemigoDe(otroAventurero: Aventurero) = otroAventurero != this && !this.esAliadoDe(otroAventurero)
+
+    fun estaVivo() = this.vidaActual() > 0.0
+
+    fun estaDefendiendo() = this.aventureroDefendido != null
+
+    fun estaSiendoDefendiendo() = this.defensor != null
+
+    /** ACTIONS **/
     fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
 //        validarSiEstaVivo() TODO: si dejamos esto, explota el front. En el FRONT le piden resolver turno a aventureros muertos
 
@@ -135,20 +155,9 @@ class Aventurero(private var nombre: String) {
         receptor.defendidoPor(this)
     }
 
-    fun esAliadoDe(otroAventurero: Aventurero) = aliados().contains(otroAventurero)
-
-    fun esEnemigoDe(otroAventurero: Aventurero) = otroAventurero != this && !this.esAliadoDe(otroAventurero)
-
-    fun aliados(): List<Aventurero> {
-        if (party == null) return listOf()
-        return party!!.aliadosDe(this)
-    }
-
     fun registarseEn(party: Party) {
         this.party = party
     }
-
-    fun estaVivo() = this.vidaActual() > 0.0
 
     fun validacionParaDefenderA(receptor: Aventurero) {
         if (this == receptor) throw  RuntimeException("${this.nombre} no puede defenderse a si mismo!")
@@ -171,8 +180,6 @@ class Aventurero(private var nombre: String) {
         this.id = id
     }
 
-    internal fun tacticas() = this.tacticas
-
     fun agregarTactica(nuevaTactica: Tactica) {
         this.tacticas.add(nuevaTactica)
     }
@@ -185,15 +192,6 @@ class Aventurero(private var nombre: String) {
         this.recalcularVidaYMana()
     }
 
-    fun estaDefendiendo(): Boolean {
-        return this.aventureroDefendido != null
-    }
-
-    fun estaSiendoDefendiendo(): Boolean {
-        return this.defensor != null
-    }
-
-
     fun salirDeLaParty() {
         this.party = null
     }
@@ -202,6 +200,11 @@ class Aventurero(private var nombre: String) {
         this.dañoRecibido = nuevoDañoRecibido
     }
 
+    /*** PRIVATE ***/
+    /** TESTING **/
+    private fun tieneDefensor() = this.defensor != null && this.defensor!!.estaVivo()
+
+    /** ACTIONS **/
     private fun recibirDaño(dañoAAplicar: Double) {
         if (this.tieneDefensor()) {
             defensor!!.recibirDaño(dañoAAplicar / 2)
@@ -232,8 +235,6 @@ class Aventurero(private var nombre: String) {
     private fun perderDefensor() {
         this.defensor = null
     }
-
-    private fun tieneDefensor() = this.defensor != null && this.defensor!!.estaVivo()
 
     private fun validarPuntaje(nuevoPuntaje: Double, nombreDeAtributo: String) {
         if (nuevoPuntaje > 100) throw  RuntimeException("La $nombreDeAtributo no puede exceder los 100 puntos!")
