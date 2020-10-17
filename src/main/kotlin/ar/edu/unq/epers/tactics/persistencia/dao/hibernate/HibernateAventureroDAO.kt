@@ -11,8 +11,15 @@ class HibernateAventureroDAO: HibernateDAO<Aventurero>(Aventurero::class.java),A
         session.delete(aventurero)
     }
 
-    override fun buda(): Aventurero  =
-        createQuery("FROM Aventurero WHERE cantidadDeVecesQueMedito > 0 ORDER BY cantidadDeVecesQueMedito DESC")
+    override fun buda() =
+        createQuery("""
+                select habilidadEmitida.aventureroEmisor
+                from Pelea pelea
+                join pelea.habilidadesEmitidas habilidadEmitida
+                where habilidadEmitida.esMeditacion = true
+                group by habilidadEmitida.aventureroEmisor.id
+                order by count(*) desc
+                """)
             .setMaxResults(1)
             .singleResult
 
@@ -22,9 +29,22 @@ class HibernateAventureroDAO: HibernateDAO<Aventurero>(Aventurero::class.java),A
                 select habilidadEmitida.aventureroEmisor
                 from Pelea pelea
                 join pelea.habilidadesEmitidas habilidadEmitida
-                group by habilidadEmitida.aventureroEmisor, habilidadEmitida.dañoFisico
+                group by habilidadEmitida.aventureroEmisor
                 order by sum(habilidadEmitida.dañoFisico) desc
                 """)
             .setMaxResults(1)
             .singleResult
+
+    override fun mejorMago() =
+        createQuery("""
+                select habilidadEmitida.aventureroEmisor
+                from Pelea pelea
+                join pelea.habilidadesEmitidas habilidadEmitida
+                where habilidadEmitida.esAtaqueMagico = true
+                group by habilidadEmitida.aventureroEmisor.id
+                order by sum(habilidadEmitida.poderMagicoEmisor) desc
+                """)
+            .setMaxResults(1)
+            .singleResult
+
 }

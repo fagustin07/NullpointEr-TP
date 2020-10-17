@@ -33,6 +33,8 @@ class AtaqueMagico(
         }
     }
 
+    override val esAtaqueMagico = true
+
     override fun resolversePara(receptor: Aventurero) {
         val tirada = dado.tirada() + nivelEmisor
         receptor.recibirAtaqueMagicoSiDebe(tirada, poderMagicoEmisor)
