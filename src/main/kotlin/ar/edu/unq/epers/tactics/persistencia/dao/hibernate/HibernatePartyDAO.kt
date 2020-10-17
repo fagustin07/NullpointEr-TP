@@ -1,11 +1,11 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.hibernate
 
+import ar.edu.unq.epers.tactics.modelo.EstadoPartida
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.service.Direccion
 import ar.edu.unq.epers.tactics.service.Orden
 import ar.edu.unq.epers.tactics.service.PartyPaginadas
-import ar.edu.unq.epers.tactics.service.PeleasPaginadas
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 
 class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
@@ -22,12 +22,35 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
 
     override fun recuperarOrdenadas(orden: Orden, direccion: Direccion, pagina: Int):PartyPaginadas {
         val primerResultado = 10 * pagina
-        val partys = createQuery(consulta(orden,direccion))
-            .setMaxResults(10)
-            .setFirstResult(primerResultado)
-            .list()
+        when(orden){
+            Orden.PODER -> return PartyPaginadas(consultaPoder(direccion,primerResultado),totalPartys())
+            else -> return PartyPaginadas(consultaVictoriasODerrotas(orden,direccion,primerResultado), totalPartys())
+        }
+    }
 
-        return PartyPaginadas(partys,totalPartys())
+    private fun consultaPoder(direccion: Direccion,primerResultado: Int) =
+            createQuery("select party " +
+                    "from Party party " +
+                    "join party.aventureros aventurero " +
+                    "group by party.id " +
+                    "order by sum(aventurero.poderTotal) ${setDir(direccion)}")
+                    .setMaxResults(10)
+                    .setFirstResult(primerResultado)
+                    .list()
+
+    private fun consultaVictoriasODerrotas(orden:Orden,direccion: Direccion,primerResultado:Int): List<Party> {
+        val estadoPartida = estadoPartidaSegunCorresponda(orden)
+        return createQuery("select party " +
+                "from Pelea pelea " +
+                "join pelea.party party " +
+                "where pelea.estadoPartida = :orden " +
+                "group by party.id " +
+                "order by count(pelea.estadoPartida) ${setDir(direccion)}")
+                .setParameter("orden", estadoPartida)
+                .setMaxResults(10)
+                .setFirstResult(primerResultado)
+                .list()
+
     }
 
     private fun totalPartys(): Int{
@@ -43,22 +66,20 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
         }
     }
 
-    private fun consulta(orden: Orden, direccion: Direccion):String{
-        when(orden) {
-            Orden.PODER -> return consultaHqlPoder() + setDir(direccion)
-            Orden.VICTORIAS -> return  consultaHqlVictorias() + setDir(direccion)
-            else -> return  ""
+    private fun estadoPartidaSegunCorresponda(orden: Orden): EstadoPartida {
+        when(orden){
+            Orden.VICTORIAS -> return EstadoPartida.GANADA
+            else -> return EstadoPartida.PERDIDA
         }
     }
-    private fun consultaHqlPoder() = "select party " +
-            "from Party party " +
-            "join party.aventureros aventurero " +
-            "group by party.id " +
-            "order by sum(aventurero.poderTotal) "
 
-    private fun consultaHqlVictorias() = "select party " +
-            "from Pelea pelea " +
-            "join pelea.party party " +
-            "group by party.id " +
-            "order by count(pelea.estaGanada) "
+//    fun consulta2(deLaTabla:String,joineadaCon:String,ordenadaPor:String): String{
+//        "select party " +
+//        "from ${deLaTabla} " +
+//        "join ${joineadaCon} " +
+//        "group by party.id " +
+//        "order by ${ordenadaPor} "
+//    }
+
+
 }

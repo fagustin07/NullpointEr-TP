@@ -4,13 +4,14 @@ import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import java.lang.RuntimeException
 import java.time.LocalDateTime
 import javax.persistence.*
+import kotlin.jvm.Transient
 
 @Entity
 class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party, private val nombrePartyEnemiga: String) {
 
     private val fecha = LocalDateTime.now()
     private var estaFinalizada = false
-    private var estaGanada = false
+    private var estadoPartida = EstadoPartida.EN_CURSO
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     @Column(name="habilidadesEmitidas")
@@ -37,9 +38,15 @@ class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party, private val nom
     fun finalizar() {
         if (estaFinalizada) throw RuntimeException("La pelea ya ha terminado antes.")
         estaFinalizada = true
-        this.estaGanada = party.algunoEstaVivo()
+        if(party.algunoEstaVivo()) {
+            estadoPartida = EstadoPartida.GANADA
+        } else {
+            estadoPartida = EstadoPartida.PERDIDA
+        }
         party.salirDePelea()
     }
+
+    fun estadoPartida() = estadoPartida
 
     fun registrarEmisionDe(habilidadEmitida: Habilidad) {
         habilidadesEmitidas.add(habilidadEmitida)
@@ -49,6 +56,8 @@ class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party, private val nom
         habilidadesRecibidas.add(habilidadRecibida)
     }
 
-    fun estaGanada() = this.estaGanada
+}
 
+enum class EstadoPartida(){
+    GANADA,PERDIDA,EN_CURSO
 }
