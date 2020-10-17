@@ -47,4 +47,16 @@ class HibernateAventureroDAO: HibernateDAO<Aventurero>(Aventurero::class.java),A
             .setMaxResults(1)
             .singleResult
 
+    override fun mejorCurandero() =
+        createQuery("""
+                select habilidadRecibida.aventureroEmisor
+                from Pelea pelea
+                join pelea.habilidadesRecibidas habilidadRecibida
+                where habilidadRecibida.esCuracion = true
+                group by habilidadRecibida.aventureroEmisor
+                order by sum(habilidadRecibida.poderMagicoEmisor) desc
+                """)
+            .setMaxResults(1)
+            .singleResult
+
 }

@@ -9,4 +9,5 @@ interface AventureroDAO {
     fun buda(): Aventurero
     fun mejorGuerrero(): Aventurero
     fun mejorMago(): Aventurero
+    fun mejorCurandero(): Aventurero
 }
