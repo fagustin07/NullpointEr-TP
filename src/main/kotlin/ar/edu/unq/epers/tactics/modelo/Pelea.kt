@@ -14,6 +14,7 @@ class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party, private val nom
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     @Column(name="habilidadesEmitidas")
+    @JoinColumn(name = "pelea_id")
     private var habilidadesEmitidas: MutableList<Habilidad> = mutableListOf()
 
     init { habilidadesEmitidas = mutableListOf() }

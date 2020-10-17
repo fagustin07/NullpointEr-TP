@@ -17,6 +17,7 @@ import ar.edu.unq.epers.tactics.service.AventureroLeaderboardService
 import ar.edu.unq.epers.tactics.service.AventureroService
 import ar.edu.unq.epers.tactics.service.PartyService
 import ar.edu.unq.epers.tactics.service.PeleaService
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -115,13 +116,11 @@ class AventureroLeaderboardServiceTest {
         val aventurero = nuevoAventureroConTacticaEn(partyId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_PEPE)
         val peleaId = comenzarPeleaDe(partyId)
 
-        val habilidadDeMeditacion = peleaService.resolverTurno(peleaId, aventurero.id()!!, listOf())
+        peleaService.resolverTurno(peleaId, aventurero.id()!!, listOf())
 
-        peleaService.recibirHabilidad(aventurero.id()!!, habilidadDeMeditacion)
         val buda = aventureroLeaderboardService.buda()
 
-        //assertThat(aventurero).usingRecursiveComparison().isEqualTo(buda)
-        assertEquals(aventurero.nombre(), buda.nombre())
+        assertThat(aventurero).usingRecursiveComparison().ignoringFields("party").isEqualTo(buda)
     }
 
     @Test
@@ -129,32 +128,46 @@ class AventureroLeaderboardServiceTest {
         val partyDePepeId = nuevaPartyPersistida()
         val pepe = nuevoAventureroConTacticaEn(partyDePepeId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_PEPE)
         val peleaPartyDePepeId = comenzarPeleaDe(partyDePepeId)
-
-        val habilidadDeMeditacionDePepe = peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf())
-        peleaService.recibirHabilidad(pepe.id()!!, habilidadDeMeditacionDePepe)
-
-
         val partyDeJuanId = nuevaPartyPersistida()
         val juan = nuevoAventureroConTacticaEn(partyDeJuanId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_JUAN)
         val peleaPartyDeJuanId = comenzarPeleaDe(partyDeJuanId)
 
-        val habilidadDeMeditacionDeJuan = peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
-        peleaService.recibirHabilidad(juan.id()!!, habilidadDeMeditacionDeJuan)
-        peleaService.recibirHabilidad(juan.id()!!, habilidadDeMeditacionDeJuan)
+        peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf())
 
+        peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
+        peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
+        peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
 
         val buda = aventureroLeaderboardService.buda()
 
-        //assertThat(aventurero).usingRecursiveComparison().isEqualTo(buda)
-        assertEquals(juan.nombre(), buda.nombre())
+        assertThat(juan).usingRecursiveComparison().ignoringFields("party").isEqualTo(buda)
     }
 
+    @Test
+    fun `cuando existen varios aventureros que hicieron ataques magicos, el mejorMago es aquel que inflingio mas daño magico`() {
+        val partyDePepeId = nuevaPartyPersistida()
+        val pepe = nuevoAventureroConTacticaEn(partyDePepeId, tacticaDeAtaqueMagico(), NOMBRE_DE_PEPE)
+        val peleaPartyDePepeId = comenzarPeleaDe(partyDePepeId)
+        val partyDeJuanId = nuevaPartyPersistida()
+        val juan = nuevoAventureroConTacticaEn(partyDeJuanId, tacticaDeAtaqueMagico(), NOMBRE_DE_JUAN)
+        val peleaPartyDeJuanId = comenzarPeleaDe(partyDeJuanId)
 
+        peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf(juan))
+
+        peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf(pepe))
+        peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf(pepe))
+        peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf(pepe))
+
+        val mejorMago = aventureroLeaderboardService.mejorMago()
+
+        assertThat(juan).usingRecursiveComparison().ignoringFields("party","mana").isEqualTo(mejorMago)
+    }
 
     private fun comenzarPeleaDe(partyId: Long): Long {
         val peleaId = peleaService.iniciarPelea(partyId, NOMBRE_DE_PARTY_ENEMIGA).id()!!
         return peleaId
     }
+
 
     private fun nuevoAventureroConTacticaEn(partyId: Long, tactica: Tactica, nombreDeAventurero: String): Aventurero {
         val aventurero = Aventurero(nombreDeAventurero)
@@ -170,6 +183,12 @@ class AventureroLeaderboardServiceTest {
         val partyId = partyService.crear(party).id()!!
         return partyId
     }
+
+    private fun tacticaDeCuracionUnoMismo() =
+        Tactica(1, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.CURAR)
+
+    private fun tacticaDeAtaqueMagico() =
+        Tactica(1, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.ATAQUE_MAGICO)
 
     private fun tacticaDeMeditacionSobreUnoMismoVivo() =
         Tactica(1, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.MEDITAR)
