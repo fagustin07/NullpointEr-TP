@@ -1,10 +1,8 @@
 package ar.edu.unq.epers.tactics.spring.controllers
 
-import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.service.*
 import ar.edu.unq.epers.tactics.service.dto.AventureroDTO
 import ar.edu.unq.epers.tactics.service.dto.HabilidadDTO
-import ar.edu.unq.epers.tactics.service.dto.PartyDTO
 import ar.edu.unq.epers.tactics.service.dto.PeleaDTO
 import org.springframework.web.bind.annotation.*
 
@@ -29,7 +27,7 @@ class FightControllerRest(private val peleaService: PeleaService) {
 
     @PostMapping("/{fightId}/receiveAbility")
     fun receiveAbility(@PathVariable fightId: Long, @RequestBody request: ReceiveAbilityRequest): AventureroDTO {
-        val aventurero = peleaService.recibirHabilidad(request.adventurerId, request.ability.aModelo())
+        val aventurero = peleaService.recibirHabilidad(fightId, request.adventurerId, request.ability.aModelo())
         return AventureroDTO.desdeModelo(aventurero)
     }
 

@@ -8,7 +8,7 @@ interface PeleaService {
     fun iniciarPelea(partyId: Long, partyEnemiga:String) : Pelea
     fun estaEnPelea(partyId: Long):Boolean
     fun resolverTurno(peleaId: Long, aventureroId:Long, enemigos:List<Aventurero>): Habilidad
-    fun recibirHabilidad(aventureroId: Long, habilidad: Habilidad): Aventurero // TODO: en el PR decia habilidadId:Habilidad (no tiene sentido... ¿es id o es objeto?)
+    fun recibirHabilidad(peleaId: Long, aventureroId: Long, habilidad: Habilidad): Aventurero // TODO: en el PR decia habilidadId:Habilidad (no tiene sentido... ¿es id o es objeto?)
     fun terminarPelea(idDeLaPelea: Long): Pelea
     fun recuperarOrdenadas(partyId:Long, pagina:Int?):PeleasPaginadas
 }

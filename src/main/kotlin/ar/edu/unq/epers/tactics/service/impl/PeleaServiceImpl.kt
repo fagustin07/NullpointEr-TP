@@ -9,7 +9,6 @@ import ar.edu.unq.epers.tactics.persistencia.dao.PeleaDAO
 import ar.edu.unq.epers.tactics.service.PeleaService
 import ar.edu.unq.epers.tactics.service.PeleasPaginadas
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
-import java.lang.RuntimeException
 
 class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO): PeleaService {
 
@@ -37,11 +36,17 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
             habilidadGenerada
         }
 
-    override fun recibirHabilidad(aventureroId: Long, habilidad: Habilidad) =
+    override fun recibirHabilidad(peleaId: Long, aventureroId: Long, habilidad: Habilidad) =
         runTrx {
             val aventurero = aventureroDAO.recuperar(aventureroId)
 
             habilidad.resolversePara(aventurero)
+
+            /*
+            val pelea = peleaDAO.recuperar(peleaId)
+            pelea.registrarRecepcionDe(habilidad)
+            peleaDAO.actualizar(pelea)
+            */
 
             aventureroDAO.actualizar(aventurero)
         }

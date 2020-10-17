@@ -134,13 +134,39 @@ class AventureroLeaderboardServiceTest {
 
         peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf())
 
-        peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
-        peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
-        peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
+        val habilidadesEmitidasPorJuan = listOf(
+            peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf()),
+            peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf()),
+            peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
+        )
+
+        //habilidadesEmitidasPorJuan.forEach { peleaService.recibirHabilidad(peleaPartyDeJuanId, ) }
 
         val buda = aventureroLeaderboardService.buda()
 
         assertThat(juan).usingRecursiveComparison().ignoringFields("party").isEqualTo(buda)
+    }
+
+    @Test
+    fun `para encontrar al buda solo son tenidas en cuanta las RECEPCIONES de habilidades de meditacion`() {
+        val partyDePepeId = nuevaPartyPersistida()
+        val pepe = nuevoAventureroConTacticaEn(partyDePepeId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_PEPE)
+        val peleaPartyDePepeId = comenzarPeleaDe(partyDePepeId)
+        val partyDeJuanId = nuevaPartyPersistida()
+        val juan = nuevoAventureroConTacticaEn(partyDeJuanId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_JUAN)
+        val peleaPartyDeJuanId = comenzarPeleaDe(partyDeJuanId)
+
+        peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
+        peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
+        peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
+
+
+        val meditacionDePepe = peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf())
+        peleaService.recibirHabilidad(peleaPartyDePepeId, pepe.id()!!, meditacionDePepe)
+
+        val buda = aventureroLeaderboardService.buda()
+
+        assertThat(pepe).usingRecursiveComparison().ignoringFields("party").isEqualTo(buda)
     }
 
     @Test

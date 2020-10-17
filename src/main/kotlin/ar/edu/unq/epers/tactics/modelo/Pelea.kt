@@ -17,7 +17,10 @@ class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party) {
     @JoinColumn(name = "pelea_id")
     private var habilidadesEmitidas: MutableList<Habilidad> = mutableListOf()
 
-    init { habilidadesEmitidas = mutableListOf() }
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
+    @Column(name="habilidadesRecibidas")
+    @JoinColumn(name = "pelea_id")
+    private var habilidadesRecibidas: MutableList<Habilidad> = mutableListOf()
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +40,10 @@ class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party) {
 
     fun registrarEmisionDe(habilidadEmitida: Habilidad) {
         habilidadesEmitidas.add(habilidadEmitida)
+    }
+
+    fun registrarRecepcionDe(habilidadRecibida: Habilidad) {
+        habilidadesRecibidas.add(habilidadRecibida)
     }
 
 }
