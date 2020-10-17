@@ -1,8 +1,18 @@
 package ar.edu.unq.epers.tactics.modelo.habilidades
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
+import javax.persistence.Entity
+import javax.persistence.PrimaryKeyJoinColumn
 
-class Defensa(val aventureroEmisor: Aventurero, aventureroReceptor: Aventurero): Habilidad(aventureroReceptor) {
+@Entity
+@PrimaryKeyJoinColumn(name="id")
+class Defensa(
+    aventureroEmisor: Aventurero?,
+    aventureroReceptor: Aventurero
+): Habilidad(
+    aventureroEmisor,
+    aventureroReceptor
+) {
 
     companion object {
         fun para(aventureroEmisor: Aventurero, aventureroReceptor: Aventurero): Defensa {
@@ -11,6 +21,6 @@ class Defensa(val aventureroEmisor: Aventurero, aventureroReceptor: Aventurero):
         }
     }
 
-    override fun resolversePara(receptor: Aventurero) = aventureroEmisor.defenderA(receptor)
+    override fun resolversePara(receptor: Aventurero) = aventureroEmisor!!.defenderA(receptor)
 
 }

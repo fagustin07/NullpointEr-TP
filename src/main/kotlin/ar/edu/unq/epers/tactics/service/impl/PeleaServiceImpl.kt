@@ -28,6 +28,11 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
             val aventurero = aventureroDAO.recuperar(aventureroId)
             val habilidadGenerada = aventurero.resolverTurno(enemigos)
             aventureroDAO.actualizar(aventurero)
+
+            val pelea = peleaDAO.recuperar(peleaId)
+            pelea.registrarEmisionDe(habilidadGenerada)
+            peleaDAO.actualizar(pelea)
+
             habilidadGenerada
         }
 

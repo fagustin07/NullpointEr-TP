@@ -7,4 +7,5 @@ interface AventureroDAO {
     fun recuperar(idDelAventurero: Long): Aventurero
     fun eliminar(aventurero: Aventurero)
     fun buda(): Aventurero
+    fun mejorGuerrero(): Aventurero
 }
