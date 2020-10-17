@@ -134,13 +134,9 @@ class Aventurero(private var nombre: String) {
     }
 
     fun defenderA(receptor: Aventurero) {
-        if (this.aventureroDefendido == null) {
-            this.aventureroDefendido = receptor
-            aventureroDefendido!!.defendidoPor(this)
-        } else {
-            this.aventureroDefendido!!.perderDefensor()
-            receptor.defendidoPor(this)
-        }
+        aventureroDefendido?.perderDefensor()
+        aventureroDefendido = receptor
+        receptor.defendidoPor(this)
     }
 
     fun esAliadoDe(otroAventurero: Aventurero) = aliados().contains(otroAventurero)
