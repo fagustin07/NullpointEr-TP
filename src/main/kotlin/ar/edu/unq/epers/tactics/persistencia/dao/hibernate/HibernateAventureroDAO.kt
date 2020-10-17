@@ -18,7 +18,12 @@ class HibernateAventureroDAO: HibernateDAO<Aventurero>(Aventurero::class.java),A
 
     override fun mejorGuerrero() =
         createQuery(
-                "select aventurero from Aventurero aventurero where nombre='Juan'")
+            """
+                select habilidadEmitida.aventureroEmisor
+                from Pelea pelea
+                join pelea.habilidadesEmitidas habilidadEmitida
+                where habilidadEmitida.aventureroEmisor.nombre = 'Pepe'
+                """)
             .setMaxResults(1)
             .singleResult
 }
