@@ -49,6 +49,48 @@ class AventureroLeaderboardServiceTest {
         aventureroLeaderboardService = AventureroLeaderboardServiceImpl(aventureroDAO)
     }
 
+    /* MEJOR GUERRERO */
+    @Test
+    fun `cuando existe un solo aventurero que realizo un ataque fisico alguna vez, ese es el mejor guerrero`() {
+        val partyDePepeId = nuevaPartyPersistida()
+        val pepe = nuevoAventureroConTacticaEn(partyDePepeId, tacticaDeAtaqueSobreEnemigoVivo(), NOMBRE_DE_PEPE)
+        val peleaPartyDePepeId = comenzarPeleaDe(partyDePepeId)
+
+        val partyDeJuanId = nuevaPartyPersistida()
+        val juan = nuevoAventureroConTacticaEn(partyDeJuanId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_JUAN)
+        comenzarPeleaDe(partyDeJuanId)
+
+        peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf(juan))
+
+
+        val mejorGuerrero = aventureroLeaderboardService.mejorGuerrero()
+
+        assertEquals(pepe.nombre(), mejorGuerrero.nombre())
+    }
+
+    @Test
+    fun `ataqueeee 2222222`() {
+        val partyDePepeId = nuevaPartyPersistida()
+        val pepe = nuevoAventureroConTacticaEn(partyDePepeId, tacticaDeAtaqueSobreEnemigoVivo(), NOMBRE_DE_PEPE)
+        val peleaPartyDePepeId = comenzarPeleaDe(partyDePepeId)
+
+        val partyDeJuanId = nuevaPartyPersistida()
+        val juan = nuevoAventureroConTacticaEn(partyDeJuanId, tacticaDeAtaqueSobreEnemigoVivo(), NOMBRE_DE_JUAN)
+        val peleaPartyJuanId = comenzarPeleaDe(partyDeJuanId)
+
+        peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf(juan))
+
+        peleaService.resolverTurno(peleaPartyJuanId, juan.id()!!, listOf(pepe))
+        peleaService.resolverTurno(peleaPartyJuanId, juan.id()!!, listOf(pepe))
+
+
+        val mejorGuerrero = aventureroLeaderboardService.mejorGuerrero()
+
+        assertEquals(juan.nombre(), mejorGuerrero.nombre())
+    }
+
+
+    /* BUDA */
     @Test
     fun `cuando no hay ningun aventurero en ninguna party, no se puede pedir un buda`() {
         val partyId = nuevaPartyPersistida()
@@ -131,6 +173,9 @@ class AventureroLeaderboardServiceTest {
 
     private fun tacticaDeMeditacionSobreUnoMismoVivo() =
         Tactica(1, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.MEDITAR)
+
+    private fun tacticaDeAtaqueSobreEnemigoVivo() =
+        Tactica(1, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.ATAQUE_FISICO)
 
     @AfterEach
     fun tearDown() {

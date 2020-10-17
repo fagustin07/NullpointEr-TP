@@ -2,8 +2,18 @@ package ar.edu.unq.epers.tactics.modelo.habilidades
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import java.lang.RuntimeException
+import javax.persistence.Entity
+import javax.persistence.PrimaryKeyJoinColumn
 
-class Meditacion(val aventureroEmisor: Aventurero, aventureroReceptor: Aventurero) : Habilidad(aventureroReceptor) {
+@Entity
+@PrimaryKeyJoinColumn(name="id")
+class Meditacion(
+    aventureroEmisor: Aventurero?,
+    aventureroReceptor: Aventurero
+) : Habilidad(
+    aventureroEmisor,
+    aventureroReceptor
+) {
 
     companion object {
 
@@ -12,7 +22,7 @@ class Meditacion(val aventureroEmisor: Aventurero, aventureroReceptor: Aventurer
         fun para(aventureroEmisor: Aventurero, aventureroReceptor: Aventurero): Meditacion {
             if(!aventureroEmisor.equals(aventureroReceptor)) { throw RuntimeException(this.MENSAJE_AVENTUREROS_DISTINTOS) }
 
-            return Meditacion(aventureroEmisor, aventureroReceptor)
+            return Meditacion(aventureroReceptor, aventureroEmisor)
         }
     }
 

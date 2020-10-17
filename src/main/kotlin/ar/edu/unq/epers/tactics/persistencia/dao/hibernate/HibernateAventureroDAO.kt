@@ -15,4 +15,10 @@ class HibernateAventureroDAO: HibernateDAO<Aventurero>(Aventurero::class.java),A
         createQuery("FROM Aventurero WHERE cantidadDeVecesQueMedito > 0 ORDER BY cantidadDeVecesQueMedito DESC")
             .setMaxResults(1)
             .singleResult
+
+    override fun mejorGuerrero() =
+        createQuery(
+                "select aventurero from Aventurero aventurero where nombre='Juan'")
+            .setMaxResults(1)
+            .singleResult
 }
