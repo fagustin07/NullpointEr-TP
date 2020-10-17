@@ -228,7 +228,7 @@ class Aventurero(private var nombre: String) {
         turnosDefendido -= 1
 
         if (turnosDefendido == 0) {
-            defensor = null
+            perderDefensor()
         }
     }
 
