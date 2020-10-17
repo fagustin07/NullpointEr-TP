@@ -50,6 +50,15 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
             else -> return  ""
         }
     }
-    private fun consultaHqlPoder() = "select party from Party party join party.aventureros aventurero group by party.id order by aventurero.poderTotal "
-    private fun consultaHqlVictorias() = "select party from Pelea pelea join pelea.party party group by party.id order by count(pelea.estaGanada) "
+    private fun consultaHqlPoder() = "select party " +
+            "from Party party " +
+            "join party.aventureros aventurero " +
+            "group by party.id " +
+            "order by sum(aventurero.poderTotal) "
+
+    private fun consultaHqlVictorias() = "select party " +
+            "from Pelea pelea " +
+            "join pelea.party party " +
+            "group by party.id " +
+            "order by count(pelea.estaGanada) "
 }

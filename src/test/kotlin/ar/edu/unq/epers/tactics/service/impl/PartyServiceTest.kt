@@ -192,6 +192,32 @@ class PartyServiceTest {
         assertThat(recuperadasEnNull.parties).allSatisfy { party -> recuperadasPrimeraPagina.parties.contains(party) }
     }
 
+    @Test
+    fun `las parties se pueden ordenar descendentemente por la suma del poder total de sus aventureros`() {
+        val party = partyService.crear(Party("Jamaica","foto-j.jpg"))
+        partyService.agregarAventureroAParty(party.id()!!,
+            Aventurero("FelipePigna","",
+                90.0, 90.0,90.0,90.0))
+
+        val party2 = partyService.crear(Party("Nueva Guinea","foto-ng.jpg"))
+        partyService.agregarAventureroAParty(party2.id()!!,
+            Aventurero("Olmedo","",
+                50.0, 50.0,50.0,50.0))
+
+        partyService.agregarAventureroAParty(party2.id()!!,
+            Aventurero("Olmedo2","",
+                50.0, 50.0,50.0,50.0))
+
+        partyService.agregarAventureroAParty(party2.id()!!,
+            Aventurero("Olmedo3","",
+                50.0, 50.0,50.0,50.0))
+
+        val partiesPaginadas = partyService.recuperarOrdenadas(Orden.PODER,Direccion.DESCENDENTE,0)
+
+        assertThat(partiesPaginadas.parties[0].id()!!).isEqualTo(party2.id()!!)
+        assertThat(partiesPaginadas.parties[1].id()!!).isEqualTo(party.id()!!)
+    }
+
     private fun generarPartyQueHayaPeleado(nombreParty:String, cantidadDePeleas:Int):Long {
         val peleaService = PeleaServiceImpl(HibernatePeleaDAO(),dao,HibernateAventureroDAO())
         val party = Party(nombreParty, "URL")
