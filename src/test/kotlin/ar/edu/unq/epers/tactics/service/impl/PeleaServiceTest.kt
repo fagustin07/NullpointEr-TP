@@ -138,7 +138,7 @@ internal class PeleaServiceTest {
         val peleaId = peleaService.iniciarPelea(party.id()!!, nombreDePartyEnemiga).id()!!
         val habilidadGenerada = peleaService.resolverTurno(peleaId, curador.id()!!, listOf())
 
-        peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada)
+        peleaService.recibirHabilidad(peleaId, aliado.id()!!, habilidadGenerada)
 
         val dañoRecibidoEsperado = dañoRecibidoAntesDeCuracion - curador.poderMagico()
         val aliadoRecuperado = aventureroService.recuperar(aliado.id()!!)
@@ -180,7 +180,7 @@ internal class PeleaServiceTest {
 
         val peleaId = peleaService.iniciarPelea(party.id()!!, nombreDePartyEnemiga).id()!!
         val habilidadGenerada = peleaService.resolverTurno(peleaId, curador.id()!!, listOf())
-        peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada)
+        peleaService.recibirHabilidad(peleaId, aliado.id()!!, habilidadGenerada)
 
         peleaService.terminarPelea(peleaId)
         runTrx {
@@ -274,7 +274,7 @@ internal class PeleaServiceTest {
 
         val pelea = peleaService.iniciarPelea(partyEnemigo.id()!!, nombreDePartyEnemiga)
         var habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, otroAventurero.id()!!, listOf(aventurero))
-        val aventureroDañado = peleaService.recibirHabilidad(aventurero.id()!!, habilidadGenerada)
+        val aventureroDañado = peleaService.recibirHabilidad(pelea.id()!!, aventurero.id()!!, habilidadGenerada)
         habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, otroAventurero.id()!!, listOf(aventureroDañado))
 
        assertTrue(habilidadGenerada is HabilidadNula)

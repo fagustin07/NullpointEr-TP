@@ -36,12 +36,18 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
             habilidadGenerada
         }
 
-    override fun recibirHabilidad(aventureroId: Long, habilidad: Habilidad) =
+    override fun recibirHabilidad(peleaId: Long, aventureroId: Long, habilidad: Habilidad) =
         runTrx {
             //TODO: agregar el peleaID.
             val aventurero = aventureroDAO.recuperar(aventureroId)
 
             habilidad.resolversePara(aventurero)
+
+            /*
+            val pelea = peleaDAO.recuperar(peleaId)
+            pelea.registrarRecepcionDe(habilidad)
+            peleaDAO.actualizar(pelea)
+            */
 
             aventureroDAO.actualizar(aventurero)
         }
