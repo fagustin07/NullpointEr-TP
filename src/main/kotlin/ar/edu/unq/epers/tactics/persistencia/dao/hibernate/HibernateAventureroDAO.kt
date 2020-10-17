@@ -13,11 +13,11 @@ class HibernateAventureroDAO: HibernateDAO<Aventurero>(Aventurero::class.java),A
 
     override fun buda() =
         createQuery("""
-                select habilidadEmitida.aventureroEmisor
+                select habilidadRecibida.aventureroReceptor
                 from Pelea pelea
-                join pelea.habilidadesEmitidas habilidadEmitida
-                where habilidadEmitida.esMeditacion = true
-                group by habilidadEmitida.aventureroEmisor.id
+                join pelea.habilidadesRecibidas habilidadRecibida
+                where habilidadRecibida.esMeditacion = true
+                group by habilidadRecibida.aventureroReceptor
                 order by count(*) desc
                 """)
             .setMaxResults(1)
