@@ -22,7 +22,8 @@ class HibernateAventureroDAO: HibernateDAO<Aventurero>(Aventurero::class.java),A
                 select habilidadEmitida.aventureroEmisor
                 from Pelea pelea
                 join pelea.habilidadesEmitidas habilidadEmitida
-                where habilidadEmitida.aventureroEmisor.nombre = 'Pepe'
+                group by habilidadEmitida.aventureroEmisor, habilidadEmitida.dañoFisico
+                order by sum(habilidadEmitida.dañoFisico) desc
                 """)
             .setMaxResults(1)
             .singleResult
