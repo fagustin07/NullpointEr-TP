@@ -233,15 +233,16 @@ internal class PeleaServiceTest {
     @Test
     fun `un aventurero resuelve su turno y ejecuta su segunda tactica porque la primera no cumple el criterio`() {
         val emisor = Aventurero("Fede", "", 10.0, 10.0, 10.0, 10.0)
-        val enemigo = Aventurero("Pepe","URL",10.0,10.0,10.0,10.0)
-
-        val partyEnemigo = Party("Los Capos", "URL")
-        partyService.crear(partyEnemigo)
 
         emisor.agregarTactica(Tactica(1, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 200.0, Accion.ATAQUE_FISICO))
         emisor.agregarTactica(Tactica(2, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.ATAQUE_MAGICO))
-
         partyService.agregarAventureroAParty(party.id()!!, emisor)
+
+        val enemigo = Aventurero("Pepe","URL",10.0,10.0,10.0,10.0)
+        val partyEnemigo = Party("Los Capos", "URL")
+        partyService.crear(partyEnemigo)
+        partyService.agregarAventureroAParty(partyEnemigo.id()!!, enemigo)
+
 
         val pelea = peleaService.iniciarPelea(party.id()!!, nombreDePartyEnemiga)
         val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, emisor.id()!!,listOf(enemigo))
