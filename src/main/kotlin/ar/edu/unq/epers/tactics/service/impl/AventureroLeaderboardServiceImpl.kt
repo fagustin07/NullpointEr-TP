@@ -11,9 +11,7 @@ class AventureroLeaderboardServiceImpl(val aventureroDAO: AventureroDAO) : Avent
 
     override fun mejorMago() = runTrx { aventureroDAO.mejorMago() }
 
-    override fun mejorCurandero(): Aventurero {
-        TODO("Not yet implemented")
-    }
+    override fun mejorCurandero() = runTrx { aventureroDAO.mejorCurandero() }
 
     override fun buda() = runTrx { aventureroDAO.buda() }
 

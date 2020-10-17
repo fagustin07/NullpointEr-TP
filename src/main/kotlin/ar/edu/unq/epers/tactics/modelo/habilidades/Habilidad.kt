@@ -18,6 +18,7 @@ abstract class Habilidad(
 
     open val esAtaqueMagico = false
     open val esMeditacion = false
+    open val esCuracion = false
 
     abstract fun resolversePara(receptor: Aventurero)
 

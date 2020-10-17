@@ -141,12 +141,14 @@ class AventureroLeaderboardServiceTest {
             peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
         )
 
-        habilidadesEmitidasPorJuan.forEach { peleaService.recibirHabilidad(peleaPartyDeJuanId, juan.id()!!, it) }
+        habilidadesEmitidasPorJuan.forEach {juan = peleaService.recibirHabilidad(peleaPartyDeJuanId, juan.id()!!, it) }
 
         val buda = aventureroLeaderboardService.buda()
 
-        val juanActualizado = aventureroService.recuperar(juan.id()!!)
-        assertThat(juanActualizado).usingRecursiveComparison().ignoringFields("party").isEqualTo(buda)
+        assertThat(juan)
+            .usingRecursiveComparison()
+            .ignoringFields("party")
+            .isEqualTo(buda)
     }
 
     @Test
@@ -172,7 +174,7 @@ class AventureroLeaderboardServiceTest {
     }
 
     @Test
-    fun `cuando existen varios aventureros que hicieron ataques magicos, el mejorMago es aquel que inflingio mas daño magico`() {
+    fun `cuando existen varios aventureros que emitieron ataques magicos, el mejorMago es aquel que emitió mas daño magico`() {
         val partyDePepeId = nuevaPartyPersistida()
         val pepe = nuevoAventureroConTacticaEn(partyDePepeId, tacticaDeAtaqueMagico(), NOMBRE_DE_PEPE)
         val peleaPartyDePepeId = comenzarPeleaDe(partyDePepeId)
@@ -189,6 +191,40 @@ class AventureroLeaderboardServiceTest {
         val mejorMago = aventureroLeaderboardService.mejorMago()
 
         assertThat(juan).usingRecursiveComparison().ignoringFields("party","mana").isEqualTo(mejorMago)
+    }
+
+    @Test
+    fun `cuando existen varios aventureros que hicieron curaciones, el mejorCurandero es aquel que realizó mas puntos de curacion`() {
+        val partyDePepeId = nuevaPartyPersistida()
+        val pepeModelo = Aventurero(NOMBRE_DE_PEPE,"",80.0,80.0,80.0,80.0)
+        var pepe = aventureroEn(partyDePepeId, tacticaDeCuracionUnoMismo(), pepeModelo)
+        val peleaPartyDePepeId = comenzarPeleaDe(partyDePepeId)
+
+        val partyDeJuanId = nuevaPartyPersistida()
+        val juan = nuevoAventureroConTacticaEn(partyDeJuanId, tacticaDeCuracionUnoMismo(), NOMBRE_DE_JUAN)
+        val peleaPartyDeJuanId = comenzarPeleaDe(partyDeJuanId)
+        val curacion = peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf())
+
+        val habilidadesEmitidasPorJuan = listOf(
+            peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf()),
+            peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf()),
+            peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
+        )
+        habilidadesEmitidasPorJuan.forEach { peleaService.recibirHabilidad(peleaPartyDeJuanId, juan.id()!!, it) }
+        pepe = peleaService.recibirHabilidad(peleaPartyDePepeId, pepe.id()!!, curacion)
+
+        val mejorCurandero = aventureroLeaderboardService.mejorCurandero()
+        assertThat(pepe)
+            .usingRecursiveComparison()
+            .ignoringFields("party")
+            .isEqualTo(mejorCurandero)
+    }
+
+    private fun aventureroEn(partyId: Long, tactica: Tactica, aventurero: Aventurero): Aventurero {
+        aventurero.agregarTactica(tactica)
+        partyService.agregarAventureroAParty(partyId, aventurero)
+
+        return aventurero
     }
 
     private fun comenzarPeleaDe(partyId: Long): Long {
