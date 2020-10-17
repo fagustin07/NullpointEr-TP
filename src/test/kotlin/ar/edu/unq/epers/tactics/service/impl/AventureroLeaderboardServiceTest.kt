@@ -1,22 +1,11 @@
 package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
-import ar.edu.unq.epers.tactics.modelo.Party
-import ar.edu.unq.epers.tactics.modelo.Tactica
-import ar.edu.unq.epers.tactics.modelo.enums.Accion
-import ar.edu.unq.epers.tactics.modelo.enums.Criterio
-import ar.edu.unq.epers.tactics.modelo.enums.TipoDeEstadistica
-import ar.edu.unq.epers.tactics.modelo.enums.TipoDeReceptor
-import ar.edu.unq.epers.tactics.persistencia.dao.AventureroDAO
-import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
-import ar.edu.unq.epers.tactics.persistencia.dao.PeleaDAO
-import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
-import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
-import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
 import ar.edu.unq.epers.tactics.service.AventureroLeaderboardService
 import ar.edu.unq.epers.tactics.service.AventureroService
 import ar.edu.unq.epers.tactics.service.PartyService
 import ar.edu.unq.epers.tactics.service.PeleaService
+import helpers.FactoryAventureroLeaderboardService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -25,44 +14,32 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class AventureroLeaderboardServiceTest {
-    val NOMBRE_DE_PARTY_ENEMIGA = "Nombre de party enemiga"
-    val NOMBRE_DE_PEPE = "Pepe"
-    val NOMBRE_DE_JUAN = "Juan"
-
-    private lateinit var partyDAO: PartyDAO
-    private lateinit var aventureroDAO: AventureroDAO
-    private lateinit var peleaDAO: PeleaDAO
-
-    private lateinit var aventureroService: AventureroService
-    private lateinit var partyService: PartyService
-    private lateinit var peleaService: PeleaService
-    private lateinit var aventureroLeaderboardService: AventureroLeaderboardService
+    lateinit var factory: FactoryAventureroLeaderboardService
+    lateinit var aventureroLeaderboardService: AventureroLeaderboardService
+    lateinit var partyService: PartyService
+    lateinit var peleaService: PeleaService
+    lateinit var aventureroService: AventureroService
 
     @BeforeEach
     fun setUp() {
-        aventureroDAO = HibernateAventureroDAO()
-        partyDAO = HibernatePartyDAO()
-        peleaDAO = HibernatePeleaDAO()
-
-        partyService = PartyServiceImpl(partyDAO)
-        aventureroService = AventureroServiceImpl(aventureroDAO, partyDAO)
-        peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO)
-        aventureroLeaderboardService = AventureroLeaderboardServiceImpl(aventureroDAO)
+        factory = FactoryAventureroLeaderboardService()
+        aventureroLeaderboardService = factory.aventureroLeaderboardService()
+        partyService = factory.partyService()
+        peleaService = factory.peleaService()
+        aventureroService = factory.aventureroService()
     }
 
     /* MEJOR GUERRERO */
     @Test
     fun `cuando existe un solo aventurero que realizo un ataque fisico alguna vez, ese es el mejor guerrero`() {
-        val partyDePepeId = nuevaPartyPersistida()
-        val pepe = nuevoAventureroConTacticaEn(partyDePepeId, tacticaDeAtaqueSobreEnemigoVivo(), NOMBRE_DE_PEPE)
-        val peleaPartyDePepeId = comenzarPeleaDe(partyDePepeId)
+        val partyDePepeId = factory.nuevaPartyPersistida()
+        val pepe = factory.nuevoGuerreroEn(partyDePepeId)
+        val peleaPartyDePepeId = factory.comenzarPeleaDe(partyDePepeId)
 
-        val partyDeJuanId = nuevaPartyPersistida()
-        val juan = nuevoAventureroConTacticaEn(partyDeJuanId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_JUAN)
-        comenzarPeleaDe(partyDeJuanId)
+        val partyDeJuanId = factory.nuevaPartyPersistida()
+        val juan = factory.nuevoMeditadorEn(partyDeJuanId)
 
         peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf(juan))
-
 
         val mejorGuerrero = aventureroLeaderboardService.mejorGuerrero()
 
@@ -70,14 +47,14 @@ class AventureroLeaderboardServiceTest {
     }
 
     @Test
-    fun `ataqueeee 2222222`() {
-        val partyDePepeId = nuevaPartyPersistida()
-        val pepe = nuevoAventureroConTacticaEn(partyDePepeId, tacticaDeAtaqueSobreEnemigoVivo(), NOMBRE_DE_PEPE)
-        val peleaPartyDePepeId = comenzarPeleaDe(partyDePepeId)
+    fun `cuando existen varios aventureros que emitieron ataques fisicos, el mejorGuerrero es aquel que emitió mas daño fisico`() {
+        val partyDePepeId = factory.nuevaPartyPersistida()
+        val pepe = factory.nuevoGuerreroEn(partyDePepeId)
+        val peleaPartyDePepeId = factory.comenzarPeleaDe(partyDePepeId)
 
-        val partyDeJuanId = nuevaPartyPersistida()
-        val juan = nuevoAventureroConTacticaEn(partyDeJuanId, tacticaDeAtaqueSobreEnemigoVivo(), NOMBRE_DE_JUAN)
-        val peleaPartyJuanId = comenzarPeleaDe(partyDeJuanId)
+        val partyDeJuanId = factory.nuevaPartyPersistida()
+        val juan = factory.nuevoGuerreroEn(partyDeJuanId)
+        val peleaPartyJuanId = factory.comenzarPeleaDe(partyDeJuanId)
 
         peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf(juan))
 
@@ -87,15 +64,18 @@ class AventureroLeaderboardServiceTest {
 
         val mejorGuerrero = aventureroLeaderboardService.mejorGuerrero()
 
-        assertEquals(juan.nombre(), mejorGuerrero.nombre())
+        assertThat(juan)
+            .usingRecursiveComparison()
+            .ignoringFields("party")
+            .isEqualTo(mejorGuerrero)
     }
 
 
     /* BUDA */
     @Test
     fun `cuando no hay ningun aventurero en ninguna party, no se puede pedir un buda`() {
-        val partyId = nuevaPartyPersistida()
-        nuevoAventureroConTacticaEn(partyId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_PEPE)
+        val partyId = factory.nuevaPartyPersistida()
+        factory.nuevoCuranderoEgoistaEn(partyId)
 
         val exception = assertThrows<RuntimeException> { aventureroLeaderboardService.buda() }
         assertEquals("No entity found for query", exception.message)
@@ -103,8 +83,8 @@ class AventureroLeaderboardServiceTest {
 
     @Test
     fun `cuando existen aventureros, pero ninguno medito nunca, no se puede pedir un buda`() {
-        val partyId = nuevaPartyPersistida()
-        nuevoAventureroConTacticaEn(partyId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_PEPE)
+        val partyId = factory.nuevaPartyPersistida()
+        factory.nuevoMeditadorEn(partyId)
 
         val exception = assertThrows<RuntimeException> { aventureroLeaderboardService.buda() }
         assertEquals("No entity found for query", exception.message)
@@ -112,26 +92,29 @@ class AventureroLeaderboardServiceTest {
 
     @Test
     fun `cuando existe un solo aventurero que medito alguna vez, ese es el buda`() {
-        val partyId = nuevaPartyPersistida()
-        val aventurero = nuevoAventureroConTacticaEn(partyId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_PEPE)
-        val peleaId = comenzarPeleaDe(partyId)
+        val partyId = factory.nuevaPartyPersistida()
+        val aventurero = factory.nuevoMeditadorEn(partyId)
+        val peleaId = factory.comenzarPeleaDe(partyId)
 
         val habilidad = peleaService.resolverTurno(peleaId, aventurero.id()!!, listOf())
         val aventureroActualizado = peleaService.recibirHabilidad(peleaId, aventurero.id()!!, habilidad)
 
         val buda = aventureroLeaderboardService.buda()
 
-        assertThat(aventureroActualizado).usingRecursiveComparison().ignoringFields("party").isEqualTo(buda)
+        assertThat(aventureroActualizado)
+            .usingRecursiveComparison()
+            .ignoringFields("party")
+            .isEqualTo(buda)
     }
 
     @Test
     fun `cuando existen varios aventureros que meditaron en distintas parties, el buda es aquel que lo haya hecho mas veces`() {
-        val partyDePepeId = nuevaPartyPersistida()
-        val pepe = nuevoAventureroConTacticaEn(partyDePepeId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_PEPE)
-        val peleaPartyDePepeId = comenzarPeleaDe(partyDePepeId)
-        val partyDeJuanId = nuevaPartyPersistida()
-        var juan = nuevoAventureroConTacticaEn(partyDeJuanId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_JUAN)
-        val peleaPartyDeJuanId = comenzarPeleaDe(partyDeJuanId)
+        val partyDePepeId = factory.nuevaPartyPersistida()
+        val pepe = factory.nuevoMeditadorEn(partyDePepeId)
+        val peleaPartyDePepeId = factory.comenzarPeleaDe(partyDePepeId)
+        val partyDeJuanId = factory.nuevaPartyPersistida()
+        var juan = factory.nuevoMeditadorEn(partyDeJuanId)
+        val peleaPartyDeJuanId = factory.comenzarPeleaDe(partyDeJuanId)
 
         peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf())
 
@@ -141,7 +124,7 @@ class AventureroLeaderboardServiceTest {
             peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
         )
 
-        habilidadesEmitidasPorJuan.forEach {juan = peleaService.recibirHabilidad(peleaPartyDeJuanId, juan.id()!!, it) }
+        habilidadesEmitidasPorJuan.forEach { juan = peleaService.recibirHabilidad(peleaPartyDeJuanId, juan.id()!!, it) }
 
         val buda = aventureroLeaderboardService.buda()
 
@@ -153,12 +136,12 @@ class AventureroLeaderboardServiceTest {
 
     @Test
     fun `para encontrar al buda solo son tenidas en cuanta las RECEPCIONES de habilidades de meditacion`() {
-        val partyDePepeId = nuevaPartyPersistida()
-        val pepe = nuevoAventureroConTacticaEn(partyDePepeId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_PEPE)
-        val peleaPartyDePepeId = comenzarPeleaDe(partyDePepeId)
-        val partyDeJuanId = nuevaPartyPersistida()
-        val juan = nuevoAventureroConTacticaEn(partyDeJuanId, tacticaDeMeditacionSobreUnoMismoVivo(), NOMBRE_DE_JUAN)
-        val peleaPartyDeJuanId = comenzarPeleaDe(partyDeJuanId)
+        val partyDePepeId = factory.nuevaPartyPersistida()
+        val pepe = factory.nuevoMeditadorEn(partyDePepeId)
+        val peleaPartyDePepeId = factory.comenzarPeleaDe(partyDePepeId)
+        val partyDeJuanId = factory.nuevaPartyPersistida()
+        val juan = factory.nuevoMeditadorEn(partyDeJuanId)
+        val peleaPartyDeJuanId = factory.comenzarPeleaDe(partyDeJuanId)
 
         peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
         peleaService.resolverTurno(peleaPartyDeJuanId, juan.id()!!, listOf())
@@ -170,17 +153,21 @@ class AventureroLeaderboardServiceTest {
 
         val buda = aventureroLeaderboardService.buda()
 
-        assertThat(pepeActualizado).usingRecursiveComparison().ignoringFields("party").isEqualTo(buda)
+        assertThat(pepeActualizado)
+            .usingRecursiveComparison()
+            .ignoringFields("party")
+            .isEqualTo(buda)
     }
 
+    /* MEJOR MAGO */
     @Test
     fun `cuando existen varios aventureros que emitieron ataques magicos, el mejorMago es aquel que emitió mas daño magico`() {
-        val partyDePepeId = nuevaPartyPersistida()
-        val pepe = nuevoAventureroConTacticaEn(partyDePepeId, tacticaDeAtaqueMagico(), NOMBRE_DE_PEPE)
-        val peleaPartyDePepeId = comenzarPeleaDe(partyDePepeId)
-        val partyDeJuanId = nuevaPartyPersistida()
-        val juan = nuevoAventureroConTacticaEn(partyDeJuanId, tacticaDeAtaqueMagico(), NOMBRE_DE_JUAN)
-        val peleaPartyDeJuanId = comenzarPeleaDe(partyDeJuanId)
+        val partyDePepeId = factory.nuevaPartyPersistida()
+        val pepe = factory.nuevoMagoEn(partyDePepeId)
+        val peleaPartyDePepeId = factory.comenzarPeleaDe(partyDePepeId)
+        val partyDeJuanId = factory.nuevaPartyPersistida()
+        val juan = factory.nuevoMagoEn(partyDeJuanId)
+        val peleaPartyDeJuanId = factory.comenzarPeleaDe(partyDeJuanId)
 
         peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf(juan))
 
@@ -190,19 +177,24 @@ class AventureroLeaderboardServiceTest {
 
         val mejorMago = aventureroLeaderboardService.mejorMago()
 
-        assertThat(juan).usingRecursiveComparison().ignoringFields("party","mana").isEqualTo(mejorMago)
+        val juanActualizado = aventureroService.recuperar(juan.id()!!)
+        assertThat(juanActualizado)
+            .usingRecursiveComparison()
+            .ignoringFields("party")
+            .isEqualTo(mejorMago)
     }
 
+    /* CURANDERO */
     @Test
     fun `cuando existen varios aventureros que hicieron curaciones, el mejorCurandero es aquel que realizó mas puntos de curacion`() {
-        val partyDePepeId = nuevaPartyPersistida()
-        val pepeModelo = Aventurero(NOMBRE_DE_PEPE,"",80.0,80.0,80.0,80.0)
-        var pepe = aventureroEn(partyDePepeId, tacticaDeCuracionUnoMismo(), pepeModelo)
-        val peleaPartyDePepeId = comenzarPeleaDe(partyDePepeId)
+        val partyDePepeId = factory.nuevaPartyPersistida()
+        val pepeModelo = Aventurero("Poderoso", "", 80.0, 80.0, 80.0, 80.0)
+        var pepe = factory.aventureroEn(partyDePepeId, factory.tacticaDeCuracionUnoMismo(), pepeModelo)
+        val peleaPartyDePepeId = factory.comenzarPeleaDe(partyDePepeId)
 
-        val partyDeJuanId = nuevaPartyPersistida()
-        val juan = nuevoAventureroConTacticaEn(partyDeJuanId, tacticaDeCuracionUnoMismo(), NOMBRE_DE_JUAN)
-        val peleaPartyDeJuanId = comenzarPeleaDe(partyDeJuanId)
+        val partyDeJuanId = factory.nuevaPartyPersistida()
+        val juan = factory.nuevoCuranderoEgoistaEn(partyDeJuanId)
+        val peleaPartyDeJuanId = factory.comenzarPeleaDe(partyDeJuanId)
         val curacion = peleaService.resolverTurno(peleaPartyDePepeId, pepe.id()!!, listOf())
 
         val habilidadesEmitidasPorJuan = listOf(
@@ -214,51 +206,12 @@ class AventureroLeaderboardServiceTest {
         pepe = peleaService.recibirHabilidad(peleaPartyDePepeId, pepe.id()!!, curacion)
 
         val mejorCurandero = aventureroLeaderboardService.mejorCurandero()
+
         assertThat(pepe)
             .usingRecursiveComparison()
             .ignoringFields("party")
             .isEqualTo(mejorCurandero)
     }
-
-    private fun aventureroEn(partyId: Long, tactica: Tactica, aventurero: Aventurero): Aventurero {
-        aventurero.agregarTactica(tactica)
-        partyService.agregarAventureroAParty(partyId, aventurero)
-
-        return aventurero
-    }
-
-    private fun comenzarPeleaDe(partyId: Long): Long {
-        val peleaId = peleaService.iniciarPelea(partyId, NOMBRE_DE_PARTY_ENEMIGA).id()!!
-        return peleaId
-    }
-
-
-    private fun nuevoAventureroConTacticaEn(partyId: Long, tactica: Tactica, nombreDeAventurero: String): Aventurero {
-        val aventurero = Aventurero(nombreDeAventurero)
-
-        aventurero.agregarTactica(tactica)
-        partyService.agregarAventureroAParty(partyId, aventurero)
-
-        return aventurero
-    }
-
-    private fun nuevaPartyPersistida(): Long {
-        val party = Party("Nombre de party", "/party.jpg")
-        val partyId = partyService.crear(party).id()!!
-        return partyId
-    }
-
-    private fun tacticaDeCuracionUnoMismo() =
-        Tactica(1, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.CURAR)
-
-    private fun tacticaDeAtaqueMagico() =
-        Tactica(1, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.ATAQUE_MAGICO)
-
-    private fun tacticaDeMeditacionSobreUnoMismoVivo() =
-        Tactica(1, TipoDeReceptor.UNO_MISMO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.MEDITAR)
-
-    private fun tacticaDeAtaqueSobreEnemigoVivo() =
-        Tactica(1, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.ATAQUE_FISICO)
 
     @AfterEach
     fun tearDown() {
