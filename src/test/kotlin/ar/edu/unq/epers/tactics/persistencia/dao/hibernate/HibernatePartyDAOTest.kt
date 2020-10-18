@@ -3,6 +3,7 @@ package ar.edu.unq.epers.tactics.persistencia.dao.hibernate
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -69,6 +70,19 @@ class HibernatePartyDAOTest {
         }
     }
 
+    @Test
+    fun `se puede recuperar el total de partys en un sistema con 3 partys`() {
+        val party1 = Party("Big team","URL")
+        val party2 = Party("los capos","URL")
+        val party3 = Party("Lakers","URL")
+        HibernateTransactionRunner.runTrx {
+            partyDAO.crear(party1)
+            partyDAO.crear(party2)
+            partyDAO.crear(party3)
+
+            assertThat(partyDAO.cantidadDePartys().toInt()).isEqualTo(3)
+        }
+    }
 
     @AfterEach
     fun eliminarDatos() { partyDAO.eliminarTodo() }

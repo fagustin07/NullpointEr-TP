@@ -25,7 +25,11 @@ class PartyServiceImpl(val dao: PartyDAO) : PartyService {
         if(paginaSolicitada < 0) throw RuntimeException("No puedes pedir paginas negativas")
 
        return runTrx {
-             dao.recuperarOrdenadas(orden,direccion,paginaSolicitada)
+             val recuperadas = dao.recuperarOrdenadas(orden,direccion,paginaSolicitada)
+             PartyPaginadas(
+                     recuperadas,
+                     dao.cantidadDePartys().toInt()
+             )
         }
     }
 

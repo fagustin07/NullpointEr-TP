@@ -20,11 +20,11 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
         return party
     }
 
-    override fun recuperarOrdenadas(orden: Orden, direccion: Direccion, pagina: Int):PartyPaginadas {
+    override fun recuperarOrdenadas(orden: Orden, direccion: Direccion, pagina: Int):List<Party> {
         val primerResultado = 10 * pagina
         when(orden){
-            Orden.PODER -> return PartyPaginadas(consultaPoder(direccion,primerResultado),totalPartys())
-            else -> return PartyPaginadas(consultaVictoriasODerrotas(orden,direccion,primerResultado), totalPartys())
+            Orden.PODER -> return consultaPoder(direccion,primerResultado)
+            else -> return consultaVictoriasODerrotas(orden,direccion,primerResultado)
         }
     }
 
@@ -45,7 +45,7 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
                 "join pelea.party party " +
                 "where pelea.estadoPartida = :orden " +
                 "group by party.id " +
-                "order by count(pelea.estadoPartida) ${setDir(direccion)}")
+                "order by count(*) ${setDir(direccion)}")
                 .setParameter("orden", estadoPartida)
                 .setMaxResults(10)
                 .setFirstResult(primerResultado)
@@ -53,9 +53,12 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
 
     }
 
-    private fun totalPartys(): Int{
-        return createQuery("select party from Party party"
-        ).list().size
+    override fun cantidadDePartys(): Long {
+        val hql = "select count(*) from Party party"
+        return  HibernateTransactionRunner
+                .currentSession
+                .createQuery(hql, Long::class.javaObjectType)
+                .list()[0]
 
     }
 

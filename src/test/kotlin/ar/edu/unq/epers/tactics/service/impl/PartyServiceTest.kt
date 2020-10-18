@@ -94,7 +94,7 @@ class PartyServiceTest {
 
     @Test
     fun `al recuperar partys ordenadas se reciben de a 10`() {
-        factoryDePartysConUnAventurero(15)
+        factoryDePartysConUnAventurero(20)
 
         assertThat(partyService.recuperarOrdenadas(Orden.PODER,Direccion.ASCENDENTE,0).parties.size).isEqualTo(10)
     }
@@ -178,7 +178,8 @@ class PartyServiceTest {
         val recuperadasPrimeraPagina = partyService.recuperarOrdenadas(Orden.PODER,Direccion.DESCENDENTE,0)
         val recuperadasSegundaPagina = partyService.recuperarOrdenadas(Orden.PODER,Direccion.DESCENDENTE,1)
 
-        assertThat(recuperadasPrimeraPagina.parties).allSatisfy { party -> !recuperadasSegundaPagina.parties.contains(party) }
+        assertThat(recuperadasPrimeraPagina.parties)
+                .allSatisfy { party1 -> !recuperadasSegundaPagina.parties.any { party2 -> party2.id()!! == party1.id()!!}}
 
     }
 
@@ -189,7 +190,7 @@ class PartyServiceTest {
         val recuperadasEnNull = partyService.recuperarOrdenadas(Orden.PODER,Direccion.DESCENDENTE,null)
         val recuperadasPrimeraPagina = partyService.recuperarOrdenadas(Orden.PODER,Direccion.DESCENDENTE,0)
 
-        assertThat(recuperadasEnNull.parties).allSatisfy { party -> recuperadasPrimeraPagina.parties.contains(party) }
+        assertThat(recuperadasEnNull.parties).usingElementComparatorOnFields("id").containsAll(recuperadasPrimeraPagina.parties)
     }
 
     @Test
@@ -270,9 +271,6 @@ class PartyServiceTest {
         assertThat(recuperadas[0].id()).isEqualTo(partyPerdedora2Id)
     }
 
-
-
-
     private fun generarPartyQueHayaPeleado(nombreParty:String, cantidadDePeleas:Int):Long {
         val peleaService = PeleaServiceImpl(HibernatePeleaDAO(),dao,HibernateAventureroDAO())
         val party = Party(nombreParty, "URL")
@@ -287,9 +285,10 @@ class PartyServiceTest {
         return partyId
     }
 
-    private fun factoryDePartysConUnAventurero(cantidadDePartys: Int){
+    private fun factoryDePartysConUnAventurero(cantidadDePartys: Int): MutableList<Party>{
         var partyNumero = 1
         var aventureroNumero = 1
+        var partys = mutableListOf<Party>()
         repeat(cantidadDePartys){
             val party = Party(("Party " + partyNumero), "URL")
             val partyId = partyService.crear(party).id()!!
@@ -297,7 +296,10 @@ class PartyServiceTest {
             partyService.agregarAventureroAParty(partyId,aventurero)
             partyNumero++
             aventureroNumero++
+            partys.add(party)
+
         }
+        return partys
     }
 
     @AfterEach
