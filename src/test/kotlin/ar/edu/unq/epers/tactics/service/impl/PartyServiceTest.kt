@@ -101,19 +101,7 @@ class PartyServiceTest {
 
     @Test
     fun `se pueden recuperar partys ordenadas por poder y de forma descendente`() {
-        val party = Party("Los capos", "URL")
-        val party2 = Party("Los semi capos","URL")
-        val party3 = Party("Los medio medio", "URL")
-
-        val partyPolentaId = partyService.crear(party).id()!!
-        val partySemiPolentaId = partyService.crear(party2).id()!!
-        val partyMedioMedioId = partyService.crear(party3).id()!!
-
-        val aventureroPolenta = Aventurero("Fede","URL",80.0,80.0,80.0,80.0)
-        val aventureroSemiPolenta = Aventurero("Nacho","URL",50.0,50.0,50.0,50.0)
-
-        partyService.agregarAventureroAParty(partyPolentaId,aventureroPolenta)
-        partyService.agregarAventureroAParty(partySemiPolentaId,aventureroSemiPolenta)
+        val (partyPolentaId, partySemiPolentaId, partyMedioMedioId) = generarParties()
         val partysPaginadas = partyService.recuperarOrdenadas(Orden.PODER,Direccion.DESCENDENTE,0).parties
 
         assertThat(partysPaginadas[0]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyPolentaId))
@@ -123,25 +111,30 @@ class PartyServiceTest {
     }
     @Test
     fun `se pueden recuperar partys ordenadas por poder de forma ascendente`() {
-        val party = Party("Los capos", "URL")
-        val party2 = Party("Los semi capos","URL")
-        val party3 = Party("Los medio medio", "URL")
-
-        val partyPolentaId = partyService.crear(party).id()!!
-        val partySemiPolentaId = partyService.crear(party2).id()!!
-        val partyMedioMedioId = partyService.crear(party3).id()!!
-
-        val aventureroPolenta = Aventurero("Fede","URL",80.0,80.0,80.0,80.0)
-        val aventureroSemiPolenta = Aventurero("Nacho","URL",50.0,50.0,50.0,50.0)
-
-        partyService.agregarAventureroAParty(partyPolentaId,aventureroPolenta)
-        partyService.agregarAventureroAParty(partySemiPolentaId,aventureroSemiPolenta)
+        val (partyPolentaId, partySemiPolentaId, partyMedioMedioId) = generarParties()
         val partysPaginadas = partyService.recuperarOrdenadas(Orden.PODER,Direccion.ASCENDENTE,0).parties
 
         assertThat(partysPaginadas[0]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyMedioMedioId))
         assertThat(partysPaginadas[1]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partySemiPolentaId))
         assertThat(partysPaginadas[2]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyPolentaId))
 
+    }
+
+    private fun generarParties(): Triple<Long, Long, Long> {
+        val party = Party("Los capos", "URL")
+        val party2 = Party("Los semi capos", "URL")
+        val party3 = Party("Los medio medio", "URL")
+
+        val partyPolentaId = partyService.crear(party).id()!!
+        val partySemiPolentaId = partyService.crear(party2).id()!!
+        val partyMedioMedioId = partyService.crear(party3).id()!!
+
+        val aventureroPolenta = Aventurero("Fede", "URL", 80.0, 80.0, 80.0, 80.0)
+        val aventureroSemiPolenta = Aventurero("Nacho", "URL", 50.0, 50.0, 50.0, 50.0)
+
+        partyService.agregarAventureroAParty(partyPolentaId, aventureroPolenta)
+        partyService.agregarAventureroAParty(partySemiPolentaId, aventureroSemiPolenta)
+        return Triple(partyPolentaId, partySemiPolentaId, partyMedioMedioId)
     }
 
     @Test
