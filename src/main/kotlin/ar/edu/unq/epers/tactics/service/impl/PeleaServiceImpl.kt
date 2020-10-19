@@ -9,14 +9,13 @@ import ar.edu.unq.epers.tactics.persistencia.dao.PeleaDAO
 import ar.edu.unq.epers.tactics.service.PeleaService
 import ar.edu.unq.epers.tactics.service.PeleasPaginadas
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
+import java.util.*
 
 class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO): PeleaService {
 
     override fun iniciarPelea(partyId: Long, nombrePartyEnemiga:String): Pelea {
         return runTrx {
-            val party = partyDAO.recuperar(partyId)
-            party.entrarEnPelea()
-            partyDAO.actualizar(party)
+            val party = partyDAO.ejecutarCon(partyId) { it.entrarEnPelea() }
             peleaDAO.crear(Pelea(party,nombrePartyEnemiga))
         }
     }
@@ -25,38 +24,20 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
 
     override fun resolverTurno(peleaId: Long, aventureroId: Long, enemigos: List<Aventurero>) =
         runTrx {
-            val aventurero = aventureroDAO.recuperar(aventureroId)
-            val habilidadGenerada = aventurero.resolverTurno(enemigos)
-            aventureroDAO.actualizar(aventurero)
-
-            val pelea = peleaDAO.recuperar(peleaId)
-            pelea.registrarEmisionDe(habilidadGenerada)
-            peleaDAO.actualizar(pelea)
-
+            val habilidadGenerada = (aventureroDAO.resultadoDeEjecutarCon(aventureroId) { it.resolverTurno(enemigos) }) as Habilidad
+            peleaDAO.ejecutarCon(peleaId) { it.registrarEmisionDe(habilidadGenerada) }
             habilidadGenerada
         }
 
     override fun recibirHabilidad(peleaId: Long, aventureroId: Long, habilidad: Habilidad) =
         runTrx {
-            val aventurero = aventureroDAO.recuperar(aventureroId)
-
-            habilidad.resolversePara(aventurero)
-
-            val pelea = peleaDAO.recuperar(peleaId)
-            pelea.registrarRecepcionDe(habilidad)
-            peleaDAO.actualizar(pelea)
-
-            aventureroDAO.actualizar(aventurero)
+            val aventureroActualizado = aventureroDAO.ejecutarCon(aventureroId) { habilidad.resolversePara(it) }
+            peleaDAO.ejecutarCon(peleaId) { it.registrarRecepcionDe(habilidad) }
+            aventureroActualizado
         }
 
     override fun terminarPelea(idDeLaPelea: Long) =
-        runTrx {
-            val pelea = peleaDAO.recuperar(idDeLaPelea)
-            pelea.finalizar()
-            peleaDAO.actualizar(pelea)
-
-            pelea
-        }
+        runTrx { peleaDAO.ejecutarCon(idDeLaPelea) { it.finalizar() } }
 
     override fun recuperarOrdenadas(partyId: Long, pagina: Int?): PeleasPaginadas {
         TODO("Not yet implemented")
