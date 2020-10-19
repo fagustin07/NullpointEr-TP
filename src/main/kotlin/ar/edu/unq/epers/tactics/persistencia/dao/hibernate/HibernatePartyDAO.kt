@@ -31,7 +31,7 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
     private fun consultaPoder(direccion: Direccion,primerResultado: Int) =
             createQuery("select party " +
                     "from Party party " +
-                    "join party.aventureros aventurero " +
+                    "left join party.aventureros aventurero " +
                     "group by party.id " +
                     "order by sum(aventurero.poderTotal) ${setDir(direccion)}")
                     .setMaxResults(10)

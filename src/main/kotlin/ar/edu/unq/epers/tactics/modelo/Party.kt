@@ -91,4 +91,12 @@ class Party(private var nombre: String, private var imagenURL: String) {
         if (!this.puedeAgregarAventureros()) throw RuntimeException("La party $nombre está completa.")
     }
 
+    fun poderTotal():Double{
+        var poderTotal = 0.0
+        for(aventurero in aventureros){
+            poderTotal += aventurero.poderTotal()
+        }
+        return poderTotal
+    }
+
 }

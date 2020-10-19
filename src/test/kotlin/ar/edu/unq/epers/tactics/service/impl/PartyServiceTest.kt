@@ -94,19 +94,20 @@ class PartyServiceTest {
 
     @Test
     fun `al recuperar partys ordenadas se reciben de a 10`() {
-        factoryDePartysConUnAventurero(20)
+        crearSetDePartysConUnAventurero(20)
 
         assertThat(partyService.recuperarOrdenadas(Orden.PODER,Direccion.ASCENDENTE,0).parties.size).isEqualTo(10)
     }
 
     @Test
     fun `se pueden recuperar partys ordenadas por poder y de forma descendente`() {
-        factoryDePartysConUnAventurero(5)
         val party = Party("Los capos", "URL")
         val party2 = Party("Los semi capos","URL")
+        val party3 = Party("Los medio medio", "URL")
 
         val partyPolentaId = partyService.crear(party).id()!!
         val partySemiPolentaId = partyService.crear(party2).id()!!
+        val partyMedioMedioId = partyService.crear(party3).id()!!
 
         val aventureroPolenta = Aventurero("Fede","URL",80.0,80.0,80.0,80.0)
         val aventureroSemiPolenta = Aventurero("Nacho","URL",50.0,50.0,50.0,50.0)
@@ -115,18 +116,20 @@ class PartyServiceTest {
         partyService.agregarAventureroAParty(partySemiPolentaId,aventureroSemiPolenta)
         val partysPaginadas = partyService.recuperarOrdenadas(Orden.PODER,Direccion.DESCENDENTE,0).parties
 
+        assertThat(partysPaginadas[0]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyPolentaId))
+        assertThat(partysPaginadas[1]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partySemiPolentaId))
+        assertThat(partysPaginadas[2]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyMedioMedioId))
 
-        assertThat(partysPaginadas[0].id()!!).isEqualTo(partyPolentaId)
-        assertThat(partysPaginadas[1].id()!!).isEqualTo(partySemiPolentaId)
     }
-
     @Test
     fun `se pueden recuperar partys ordenadas por poder de forma ascendente`() {
         val party = Party("Los capos", "URL")
         val party2 = Party("Los semi capos","URL")
+        val party3 = Party("Los medio medio", "URL")
 
         val partyPolentaId = partyService.crear(party).id()!!
         val partySemiPolentaId = partyService.crear(party2).id()!!
+        val partyMedioMedioId = partyService.crear(party3).id()!!
 
         val aventureroPolenta = Aventurero("Fede","URL",80.0,80.0,80.0,80.0)
         val aventureroSemiPolenta = Aventurero("Nacho","URL",50.0,50.0,50.0,50.0)
@@ -135,57 +138,59 @@ class PartyServiceTest {
         partyService.agregarAventureroAParty(partySemiPolentaId,aventureroSemiPolenta)
         val partysPaginadas = partyService.recuperarOrdenadas(Orden.PODER,Direccion.ASCENDENTE,0).parties
 
+        assertThat(partysPaginadas[0]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyMedioMedioId))
+        assertThat(partysPaginadas[1]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partySemiPolentaId))
+        assertThat(partysPaginadas[2]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyPolentaId))
 
-        assertThat(partysPaginadas[0].id()!!).isEqualTo(partySemiPolentaId)
-        assertThat(partysPaginadas[1].id()!!).isEqualTo(partyPolentaId)
     }
 
     @Test
     fun `se puede recuperar partys ordenadas por victorias de forma descendente`() {
-        val partyIdGanadora = generarPartyQueHayaPeleado("Mi party",5)
-        val otraPartyId = generarPartyQueHayaPeleado("Party",3)
+        val partyIdGanadora = generarPartyQueHayaPeleado("Mi party",5,true)
+        val otraPartyId = generarPartyQueHayaPeleado("Party",3,true)
+        val partyPocoGanadoraId = generarPartyQueHayaPeleado("Party poco ganadora",1,true)
 
-        val recuperadas = partyService.recuperarOrdenadas(Orden.VICTORIAS,Direccion.DESCENDENTE,0)
+        val recuperadas = partyService.recuperarOrdenadas(Orden.VICTORIAS,Direccion.DESCENDENTE,0).parties
 
-        assertThat(recuperadas.parties[0].id()!!).isEqualTo(partyIdGanadora)
-        assertThat(recuperadas.parties[1].id()!!).isEqualTo(otraPartyId)
+        assertThat(recuperadas[0]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyIdGanadora))
+        assertThat(recuperadas[1]).usingRecursiveComparison().isEqualTo(partyService.recuperar(otraPartyId))
+        assertThat(recuperadas[2]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyPocoGanadoraId))
     }
 
     @Test
     fun `se puede recuperar partys ordenadas por victorias de forma ascendente`() {
-        val partyIdGanadora = generarPartyQueHayaPeleado("Mi party",5)
-        val otraPartyId = generarPartyQueHayaPeleado("Party",3)
+        val partyIdGanadora = generarPartyQueHayaPeleado("Mi party",5,true)
+        val otraPartyId = generarPartyQueHayaPeleado("Party",3,true)
+        val partyPocoGanadoraId = generarPartyQueHayaPeleado("Party poco ganadora",1,true)
 
-        val recuperadas = partyService.recuperarOrdenadas(Orden.VICTORIAS,Direccion.ASCENDENTE,0)
+        val recuperadas = partyService.recuperarOrdenadas(Orden.VICTORIAS,Direccion.ASCENDENTE,0).parties
 
-        assertThat(recuperadas.parties[0].id()!!).isEqualTo(otraPartyId)
-        assertThat(recuperadas.parties[1].id()!!).isEqualTo(partyIdGanadora)
-
+        assertThat(recuperadas[0]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyPocoGanadoraId))
+        assertThat(recuperadas[1]).usingRecursiveComparison().isEqualTo(partyService.recuperar(otraPartyId))
+        assertThat(recuperadas[2]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyIdGanadora))
     }
 
     @Test
     fun `no se puede pedir paginas negativas`() {
-        factoryDePartysConUnAventurero(10)
-
         val exception = assertThrows<RuntimeException> { partyService.recuperarOrdenadas(Orden.PODER,Direccion.DESCENDENTE, -1)}
         assertEquals("No puedes pedir paginas negativas", exception.message)
     }
 
     @Test
     fun `al recuperar las partys ordenadas de la segunda pagina las de la primera no aparecen`() {
-        factoryDePartysConUnAventurero(20)
+        crearSetDePartysConUnAventurero(20)
 
         val recuperadasPrimeraPagina = partyService.recuperarOrdenadas(Orden.PODER,Direccion.DESCENDENTE,0)
         val recuperadasSegundaPagina = partyService.recuperarOrdenadas(Orden.PODER,Direccion.DESCENDENTE,1)
 
         assertThat(recuperadasPrimeraPagina.parties)
-                .allSatisfy { party1 -> !recuperadasSegundaPagina.parties.any { party2 -> party2.id()!! == party1.id()!!}}
+                .allSatisfy { party1 -> recuperadasSegundaPagina.parties.none { party2 -> party2.id()!! == party1.id()!!}}
 
     }
 
     @Test
     fun `si no se escribe la pagina a buscar se devuelve la primera por defecto`() {
-        factoryDePartysConUnAventurero(10)
+        crearSetDePartysConUnAventurero(10)
 
         val recuperadasEnNull = partyService.recuperarOrdenadas(Orden.PODER,Direccion.DESCENDENTE,null)
         val recuperadasPrimeraPagina = partyService.recuperarOrdenadas(Orden.PODER,Direccion.DESCENDENTE,0)
@@ -221,71 +226,33 @@ class PartyServiceTest {
 
     @Test
     fun `se puede recuperar partys ordenadas por derrotas de manera descendente`() {
-        val peleaService = PeleaServiceImpl(HibernatePeleaDAO(),dao,HibernateAventureroDAO())
-        val partyPerdedora1 = Party("Party perdedora 1", "URL")
-        val partyPerdedora1Id = partyService.crear(partyPerdedora1).id()!!
-        val pelea1Id = peleaService.iniciarPelea(partyPerdedora1Id,"Otra party").id()!!
-        peleaService.terminarPelea(pelea1Id)
-
-        val partyPerdedora2 = Party("Party perdedora 2", "URL")
-        val partyPerdedora2Id = partyService.crear(partyPerdedora2).id()!!
-        val pelea2Id = peleaService.iniciarPelea(partyPerdedora2Id,"Otra party").id()!!
-        peleaService.terminarPelea(pelea2Id)
-
-        val pelea3Id = peleaService.iniciarPelea(partyPerdedora1Id,"Otra Party").id()!!
-        peleaService.terminarPelea(pelea3Id)
-
-        val pelea4Id = peleaService.iniciarPelea(partyPerdedora1Id,"Otra Party").id()!!
-        peleaService.terminarPelea(pelea4Id)
+        val partyPerdedora1Id = generarPartyQueHayaPeleado("Party perdedora 1",4,false)
+        val partyPerdedora2Id =generarPartyQueHayaPeleado("Party perdedora 2",2,false)
+        val partyPerdedora3Id = generarPartyQueHayaPeleado("Party perdedora 3",1,false)
 
         val recuperadas = partyService.recuperarOrdenadas(Orden.DERROTAS,Direccion.DESCENDENTE,0).parties
 
-        assertThat(recuperadas[0].id()).isEqualTo(partyPerdedora1Id)
-        assertThat(recuperadas[1].id()).isEqualTo(partyPerdedora2Id)
-
+        assertThat(recuperadas[0]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyPerdedora1Id))
+        assertThat(recuperadas[1]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyPerdedora2Id))
+        assertThat(recuperadas[2]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyPerdedora3Id))
 
     }
 
     @Test
     fun `se puede recuperar partys ordenadas por derrotas de manera ascendente`() {
-        val peleaService = PeleaServiceImpl(HibernatePeleaDAO(),dao,HibernateAventureroDAO())
-        val partyPerdedora1 = Party("Party perdedora 1", "URL")
-        val partyPerdedora1Id = partyService.crear(partyPerdedora1).id()!!
-        val pelea1Id = peleaService.iniciarPelea(partyPerdedora1Id,"Otra party").id()!!
-        peleaService.terminarPelea(pelea1Id)
-
-        val partyPerdedora2 = Party("Party perdedora 2", "URL")
-        val partyPerdedora2Id = partyService.crear(partyPerdedora2).id()!!
-        val pelea2Id = peleaService.iniciarPelea(partyPerdedora2Id,"Otra party").id()!!
-        peleaService.terminarPelea(pelea2Id)
-
-        val pelea3Id = peleaService.iniciarPelea(partyPerdedora1Id,"Otra Party").id()!!
-        peleaService.terminarPelea(pelea3Id)
-
-        val pelea4Id = peleaService.iniciarPelea(partyPerdedora1Id,"Otra Party").id()!!
-        peleaService.terminarPelea(pelea4Id)
+        val partyPerdedora1Id = generarPartyQueHayaPeleado("Party perdedora 1",4,false)
+        val partyPerdedora2Id =generarPartyQueHayaPeleado("Party perdedora 2",2,false)
+        val partyPerdedora3Id = generarPartyQueHayaPeleado("Party perdedora 3",1,false)
 
         val recuperadas = partyService.recuperarOrdenadas(Orden.DERROTAS,Direccion.ASCENDENTE,0).parties
 
-        assertThat(recuperadas[1].id()).isEqualTo(partyPerdedora1Id)
-        assertThat(recuperadas[0].id()).isEqualTo(partyPerdedora2Id)
+        assertThat(recuperadas[0]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyPerdedora3Id))
+        assertThat(recuperadas[1]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyPerdedora2Id))
+        assertThat(recuperadas[2]).usingRecursiveComparison().isEqualTo(partyService.recuperar(partyPerdedora1Id))
+
     }
 
-    private fun generarPartyQueHayaPeleado(nombreParty:String, cantidadDePeleas:Int):Long {
-        val peleaService = PeleaServiceImpl(HibernatePeleaDAO(),dao,HibernateAventureroDAO())
-        val party = Party(nombreParty, "URL")
-        val partyId = partyService.crear(party).id()!!
-        val aventurero = Aventurero("Aventurero", "URL", 10.0, 10.0, 10.0, 10.0)
-        partyService.agregarAventureroAParty(partyId,aventurero)
-        repeat(cantidadDePeleas) {
-            val peleaId = peleaService.iniciarPelea(partyId, "Otra party").id()!!
-            peleaService.terminarPelea(peleaId)
-        }
-
-        return partyId
-    }
-
-    private fun factoryDePartysConUnAventurero(cantidadDePartys: Int): MutableList<Party>{
+    private fun crearSetDePartysConUnAventurero(cantidadDePartys: Int): MutableList<Party>{
         var partyNumero = 1
         var aventureroNumero = 1
         var partys = mutableListOf<Party>()
@@ -302,6 +269,22 @@ class PartyServiceTest {
         return partys
     }
 
+    private fun generarPartyQueHayaPeleado(nombreParty: String,cantidadDePeleas: Int, tieneAventureros:Boolean):Long{
+        val peleaService = PeleaServiceImpl(HibernatePeleaDAO(),dao,HibernateAventureroDAO())
+        val party = Party(nombreParty, "URL")
+        val partyId = partyService.crear(party).id()!!
+        if(tieneAventureros){
+            val aventurero = Aventurero("Aventurero", "URL", 10.0, 10.0, 10.0, 10.0)
+            partyService.agregarAventureroAParty(partyId,aventurero)
+        }
+        repeat(cantidadDePeleas) {
+            val peleaId = peleaService.iniciarPelea(partyId, "Otra party").id()!!
+            peleaService.terminarPelea(peleaId)
+        }
+
+        return partyId
+    }
+
     @AfterEach
     fun tearDown() {
         DataServiceHelper(partyService).eliminarTodo()
@@ -311,7 +294,5 @@ class PartyServiceTest {
         assertEquals(expectedParty.nombre(), obtainedParty.nombre())
         assertEquals(expectedParty.numeroDeAventureros(), obtainedParty.numeroDeAventureros())
     }
-
-
 
 }

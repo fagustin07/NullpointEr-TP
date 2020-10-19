@@ -80,10 +80,12 @@ class HibernatePartyDAOTest {
             partyDAO.crear(party2)
             partyDAO.crear(party3)
 
+
+        }
+        HibernateTransactionRunner.runTrx {
             assertThat(partyDAO.cantidadDePartys().toInt()).isEqualTo(3)
         }
     }
-
     @AfterEach
     fun eliminarDatos() { partyDAO.eliminarTodo() }
 }
