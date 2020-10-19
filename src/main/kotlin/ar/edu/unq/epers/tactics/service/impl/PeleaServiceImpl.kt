@@ -31,35 +31,23 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
 
     override fun recibirHabilidad(peleaId: Long, aventureroId: Long, habilidad: Habilidad) =
         runTrx {
-            //TODO: agregar el peleaID.
-            val aventurero = aventureroDAO.recuperar(aventureroId)
-
-            habilidad.resolversePara(aventurero)
-
-            val pelea = peleaDAO.recuperar(peleaId)
-            pelea.registrarRecepcionDe(habilidad)
-            peleaDAO.actualizar(pelea)
-
-            aventureroDAO.actualizar(aventurero)
             val aventureroActualizado = aventureroDAO.ejecutarCon(aventureroId) { habilidad.resolversePara(it) }
             peleaDAO.ejecutarCon(peleaId) { it.registrarRecepcionDe(habilidad) }
             aventureroActualizado
+
         }
 
     override fun terminarPelea(idDeLaPelea: Long) =
         runTrx { peleaDAO.ejecutarCon(idDeLaPelea) { it.finalizar() } }
 
     override fun recuperarOrdenadas(partyId: Long, pagina: Int?): PeleasPaginadas {
-
         val paginaABuscar = pagina ?: 0
         if (paginaABuscar < 0) { throw RuntimeException("No se puede pedir una pagina negativa") }
 
-            return runTrx {
-                val peleasRecuperadas = peleaDAO.recuperarOrdenadas(partyId, paginaABuscar)
-                val peleasTotales = peleaDAO.cantidadDePeleas().toInt()
-                PeleasPaginadas(
-                        peleasRecuperadas,
-                        peleasTotales)
-            }
+        return runTrx {
+            val peleasRecuperadas = peleaDAO.recuperarOrdenadas(partyId, paginaABuscar)
+            val peleasTotales = peleaDAO.cantidadDePeleas().toInt()
+            PeleasPaginadas(peleasRecuperadas, peleasTotales)
+        }
     }
 }
