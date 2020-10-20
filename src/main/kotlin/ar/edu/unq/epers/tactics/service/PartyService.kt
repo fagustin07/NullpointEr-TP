@@ -22,6 +22,8 @@ enum class Orden {
 }
 
 enum class Direccion {
-    ASCENDENTE,
-    DESCENDENTE
+    ASCENDENTE { override fun keywordHql(): String {return "asc"}},
+    DESCENDENTE {override fun keywordHql():String {return "desc"}};
+
+    abstract fun keywordHql(): String
 }

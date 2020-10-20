@@ -1,6 +1,7 @@
 package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
+import ar.edu.unq.epers.tactics.modelo.EstadoPartida
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.modelo.Tactica
 import ar.edu.unq.epers.tactics.modelo.dado.DadoSimulado
@@ -364,7 +365,8 @@ internal class PeleaServiceTest {
 
         val peleaFinalizada = peleaService.terminarPelea(pelea.id()!!)
 
-        assertFalse(peleaFinalizada.estaGanada())
+
+        assertEquals(peleaFinalizada.estadoPartida(), EstadoPartida.PERDIDA)
     }
 
     @Test
@@ -374,7 +376,16 @@ internal class PeleaServiceTest {
 
         val peleaFinalizada = peleaService.terminarPelea(pelea.id()!!)
 
-        assertTrue(peleaFinalizada.estaGanada())
+        assertEquals(peleaFinalizada.estadoPartida(),EstadoPartida.GANADA)
+    }
+
+    @Test
+    fun `una pelea que no termino esta en curso`() {
+        partyService.agregarAventureroAParty(party.id()!!, Aventurero("Cacho"))
+        val pelea = peleaService.iniciarPelea(party.id()!!,"La otra party")
+
+        assertEquals(pelea.estadoPartida(),EstadoPartida.EN_CURSO)
+
     }
 
     @AfterEach

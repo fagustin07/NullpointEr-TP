@@ -173,4 +173,14 @@ class AventureroTest {
 
         assertThat(aventurero.dañoRecibido()).isEqualTo(vidaAntesDeAtaque)
     }
+
+    @Test
+    fun `un aventurero sabe calcular su poder total`() {
+        val aventurero = Aventurero("Pepe","URL",10.0,10.0,10.0,10.0)
+
+        val poderTotalDeAventureroEsperado = aventurero.dañoFisico() +
+                                            aventurero.precisionFisica() +
+                                            aventurero.poderMagico()
+        assertThat(aventurero.poderTotal()).isEqualTo(poderTotalDeAventureroEsperado)
+    }
 }

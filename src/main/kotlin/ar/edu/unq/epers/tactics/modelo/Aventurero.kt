@@ -20,6 +20,7 @@ class Aventurero(private var nombre: String) {
 
     private var vida: Double = 0.0
     private var mana: Double = 0.0
+    private  var poderTotal: Double = 0.0
     private var fuerza: Double = 1.0
         set(nuevoPuntaje) {
             this.validarPuntaje(nuevoPuntaje, "fuerza")
@@ -57,6 +58,7 @@ class Aventurero(private var nombre: String) {
         this.constitucion = constitucion
         this.fuerza = fuerza
         this.recalcularVidaYMana()
+        this.recalcularPoderTotal()
     }
 
     @OneToOne(fetch = FetchType.EAGER)
@@ -68,6 +70,11 @@ class Aventurero(private var nombre: String) {
 
     init {
         this.recalcularVidaYMana()
+        this.recalcularPoderTotal()
+    }
+
+    private fun recalcularPoderTotal() {
+        this.poderTotal = dañoFisico() + precisionFisica() + poderMagico()
     }
 
     /** ACCESSING **/
@@ -75,6 +82,7 @@ class Aventurero(private var nombre: String) {
     fun nombre() = nombre
     fun imagenURL() = this.imagenURL
     fun nivel() = 1
+    fun poderTotal() = poderTotal
 
     fun fuerza() = fuerza
     fun destreza() = destreza
