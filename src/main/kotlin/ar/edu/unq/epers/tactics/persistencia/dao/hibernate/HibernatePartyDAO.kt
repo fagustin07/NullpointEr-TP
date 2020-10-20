@@ -33,7 +33,7 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
                     "from Party party " +
                     "left join party.aventureros aventurero " +
                     "group by party.id " +
-                    "order by sum(aventurero.poderTotal) ${setDir(direccion)}")
+                    "order by sum(aventurero.poderTotal) ${direccion.keywordHql()}")
                     .setMaxResults(10)
                     .setFirstResult(primerResultado)
                     .list()
@@ -45,7 +45,7 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
                 "join pelea.party party " +
                 "where pelea.estadoPartida = :orden " +
                 "group by party.id " +
-                "order by count(*) ${setDir(direccion)}")
+                "order by count(*) ${direccion.keywordHql()}")
                 .setParameter("orden", estadoPartida)
                 .setMaxResults(10)
                 .setFirstResult(primerResultado)
@@ -62,27 +62,11 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
 
     }
 
-    private fun setDir(direccion: Direccion):String{
-        when(direccion){
-            Direccion.ASCENDENTE -> return "asc"
-            Direccion.DESCENDENTE -> return  "desc"
-        }
-    }
-
     private fun estadoPartidaSegunCorresponda(orden: Orden): EstadoPartida {
         when(orden){
             Orden.VICTORIAS -> return EstadoPartida.GANADA
             else -> return EstadoPartida.PERDIDA
         }
     }
-
-//    fun consulta2(deLaTabla:String,joineadaCon:String,ordenadaPor:String): String{
-//        "select party " +
-//        "from ${deLaTabla} " +
-//        "join ${joineadaCon} " +
-//        "group by party.id " +
-//        "order by ${ordenadaPor} "
-//    }
-
 
 }
