@@ -16,6 +16,13 @@
         <mapping class="ar.edu.unq.epers.tactics.modelo.Aventurero" />
         <mapping class="ar.edu.unq.epers.tactics.modelo.Pelea" />
         <mapping class="ar.edu.unq.epers.tactics.modelo.Tactica" />
+        <mapping class="ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad" />
+        <mapping class="ar.edu.unq.epers.tactics.modelo.habilidades.Ataque" />
+        <mapping class="ar.edu.unq.epers.tactics.modelo.habilidades.AtaqueMagico" />
+        <mapping class="ar.edu.unq.epers.tactics.modelo.habilidades.Defensa" />
+        <mapping class="ar.edu.unq.epers.tactics.modelo.habilidades.Curacion" />
+        <mapping class="ar.edu.unq.epers.tactics.modelo.habilidades.Meditacion" />
+        <mapping class="ar.edu.unq.epers.tactics.modelo.habilidades.HabilidadNula" />
 
     </session-factory>
 </hibernate-configuration>

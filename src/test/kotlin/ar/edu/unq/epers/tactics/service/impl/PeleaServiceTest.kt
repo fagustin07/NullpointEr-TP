@@ -138,7 +138,7 @@ internal class PeleaServiceTest {
         val peleaId = peleaService.iniciarPelea(party.id()!!, nombreDePartyEnemiga).id()!!
         val habilidadGenerada = peleaService.resolverTurno(peleaId, curador.id()!!, listOf())
 
-        peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada)
+        peleaService.recibirHabilidad(peleaId, aliado.id()!!, habilidadGenerada)
 
         val dañoRecibidoEsperado = dañoRecibidoAntesDeCuracion - curador.poderMagico()
         val aliadoRecuperado = aventureroService.recuperar(aliado.id()!!)
@@ -180,7 +180,7 @@ internal class PeleaServiceTest {
 
         val peleaId = peleaService.iniciarPelea(party.id()!!, nombreDePartyEnemiga).id()!!
         val habilidadGenerada = peleaService.resolverTurno(peleaId, curador.id()!!, listOf())
-        peleaService.recibirHabilidad(aliado.id()!!, habilidadGenerada)
+        peleaService.recibirHabilidad(peleaId, aliado.id()!!, habilidadGenerada)
 
         peleaService.terminarPelea(peleaId)
         runTrx {
@@ -235,15 +235,16 @@ internal class PeleaServiceTest {
     @Test
     fun `un aventurero resuelve su turno y ejecuta su segunda tactica porque la primera no cumple el criterio`() {
         val emisor = Aventurero("Fede", "", 10.0, 10.0, 10.0, 10.0)
-        val enemigo = Aventurero("Pepe","URL",10.0,10.0,10.0,10.0)
-
-        val partyEnemigo = Party("Los Capos", "URL")
-        partyService.crear(partyEnemigo)
 
         emisor.agregarTactica(Tactica(1, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 200.0, Accion.ATAQUE_FISICO))
         emisor.agregarTactica(Tactica(2, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.ATAQUE_MAGICO))
-
         partyService.agregarAventureroAParty(party.id()!!, emisor)
+
+        val enemigo = Aventurero("Pepe","URL",10.0,10.0,10.0,10.0)
+        val partyEnemigo = Party("Los Capos", "URL")
+        partyService.crear(partyEnemigo)
+        partyService.agregarAventureroAParty(partyEnemigo.id()!!, enemigo)
+
 
         val pelea = peleaService.iniciarPelea(party.id()!!, nombreDePartyEnemiga)
         val habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, emisor.id()!!,listOf(enemigo))
@@ -273,7 +274,7 @@ internal class PeleaServiceTest {
 
         val pelea = peleaService.iniciarPelea(partyEnemigo.id()!!, nombreDePartyEnemiga)
         var habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, otroAventurero.id()!!, listOf(aventurero))
-        val aventureroDañado = peleaService.recibirHabilidad(aventurero.id()!!, habilidadGenerada)
+        val aventureroDañado = peleaService.recibirHabilidad(pelea.id()!!, aventurero.id()!!, habilidadGenerada)
         habilidadGenerada = peleaService.resolverTurno(pelea.id()!!, otroAventurero.id()!!, listOf(aventureroDañado))
 
        assertTrue(habilidadGenerada is HabilidadNula)
@@ -356,8 +357,9 @@ internal class PeleaServiceTest {
         val aventurero = partyService.agregarAventureroAParty(party.id()!!, Aventurero("Cacho"))
         val pelea = peleaService.iniciarPelea(party.id()!!,"La otra party")
         peleaService.recibirHabilidad(
+            pelea.id()!!,
             aventurero.id()!!,
-            AtaqueMagico(123123.0,1,aventurero,DadoSimulado(20))
+            AtaqueMagico(123123.0,1,null,aventurero,DadoSimulado(20))
         )
 
         val peleaFinalizada = peleaService.terminarPelea(pelea.id()!!)

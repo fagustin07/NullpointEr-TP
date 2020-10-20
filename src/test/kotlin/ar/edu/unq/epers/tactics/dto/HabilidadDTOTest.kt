@@ -1,6 +1,7 @@
 package ar.edu.unq.epers.tactics.dto
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
+import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.modelo.dado.DadoDe20
 import ar.edu.unq.epers.tactics.modelo.habilidades.*
 import ar.edu.unq.epers.tactics.service.dto.HabilidadDTO
@@ -12,7 +13,7 @@ internal class HabilidadDTOTest {
     @Test
     fun `Al convertir un Ataque a un AtaqueDTO y de nuevo a un Ataque se obtienen objetos similares`() {
         val aventurero = Aventurero("Raul")
-        val ataqueOriginal = Ataque(10.0, 8.0, aventurero, DadoDe20())
+        val ataqueOriginal = Ataque(10.0, 8.0, null, aventurero, DadoDe20())
 
         val ataqueDTO = HabilidadDTO.desdeModelo(ataqueOriginal)
         val ataqueObtenido = ataqueDTO.aModelo()
@@ -24,18 +25,19 @@ internal class HabilidadDTOTest {
     fun `Al convertir una Defensa a una DefensaDTO y de nuevo a una Defensa se obtienen objetos similares`() {
         val aventureroEmisor = Aventurero("Raul")
         val aventureroReceptor = Aventurero("Jorge")
+
         val defensaOriginal = Defensa(aventureroEmisor, aventureroReceptor)
 
         val defensaDTO = HabilidadDTO.desdeModelo(defensaOriginal)
         val defensaObtenida = defensaDTO.aModelo()
 
-        assertThat(defensaObtenida).usingRecursiveComparison().isEqualTo(defensaOriginal)
+        assertThat(defensaObtenida).usingRecursiveComparison().ignoringFields("aventureroEmisor").isEqualTo(defensaOriginal)
     }
 
     @Test
     fun `Al convertir un Curacion a un CurarDTO y de nuevo a un Curacion se obtienen objetos similares`() {
         val aventurero = Aventurero("Raul")
-        val curarOriginal = Curacion(aventurero.poderMagico(), aventurero)
+        val curarOriginal = Curacion(aventurero.poderMagico(), null, aventurero)
 
         val curarDTO = HabilidadDTO.desdeModelo(curarOriginal)
         val curarObtenido = curarDTO.aModelo()
@@ -47,7 +49,13 @@ internal class HabilidadDTOTest {
     fun `Al convertir un AtaqueMagico a un AtaqueMagicoDTO y de nuevo a un AtaqueMagico se obtienen objetos similares`() {
         val aventurero = Aventurero("Raul")
         val aventureroAtacado = Aventurero("Sancho Panza")
-        val ataqueMagicoOriginal = AtaqueMagico(aventurero.poderMagico(), aventurero.nivel(), aventureroAtacado, DadoDe20())
+        val ataqueMagicoOriginal = AtaqueMagico(
+            aventurero.poderMagico(),
+            aventurero.nivel(),
+            null,
+            aventureroAtacado,
+            DadoDe20()
+        )
 
         val ataqueMagicoDTO = HabilidadDTO.desdeModelo(ataqueMagicoOriginal)
         val ataqueMagicoObtenido = ataqueMagicoDTO.aModelo()
