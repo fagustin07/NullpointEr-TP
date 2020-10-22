@@ -5,7 +5,6 @@ import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.service.Direccion
 import ar.edu.unq.epers.tactics.service.Orden
-import ar.edu.unq.epers.tactics.service.PartyPaginadas
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 
 class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
@@ -23,12 +22,15 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
     override fun recuperarOrdenadas(orden: Orden, direccion: Direccion, pagina: Int):List<Party> {
         val primerResultado = 10 * pagina
         when(orden){
-            Orden.PODER -> return consultaPoder(direccion,primerResultado)
-            else -> return consultaVictoriasODerrotas(orden,direccion,primerResultado)
+            Orden.PODER -> return recuperarPorPoder(direccion,primerResultado)
+            else -> {
+                val estadoPartida = estadoPartidaSegunCorresponda(orden)
+                return recuperarSegunEstadoPartida(estadoPartida,direccion,primerResultado)
+            }
         }
     }
 
-    private fun consultaPoder(direccion: Direccion,primerResultado: Int) =
+    private fun recuperarPorPoder(direccion: Direccion, primerResultado: Int) =
             createQuery("select party " +
                     "from Party party " +
                     "left join party.aventureros aventurero " +
@@ -38,9 +40,8 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
                     .setFirstResult(primerResultado)
                     .list()
 
-    private fun consultaVictoriasODerrotas(orden:Orden,direccion: Direccion,primerResultado:Int): List<Party> {
-        val estadoPartida = estadoPartidaSegunCorresponda(orden)
-        return createQuery("select party " +
+    private fun recuperarSegunEstadoPartida(estadoPartida: EstadoPartida, direccion: Direccion, primerResultado:Int): List<Party> =
+            createQuery("select party " +
                 "from Pelea pelea " +
                 "join pelea.party party " +
                 "where pelea.estadoPartida = :orden " +
@@ -50,8 +51,6 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
                 .setMaxResults(10)
                 .setFirstResult(primerResultado)
                 .list()
-
-    }
 
     override fun cantidadDePartys(): Long {
         val hql = "select count(*) from Party party"

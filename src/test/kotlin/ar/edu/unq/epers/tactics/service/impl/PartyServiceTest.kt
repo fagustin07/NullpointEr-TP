@@ -93,10 +93,12 @@ class PartyServiceTest {
     }
 
     @Test
-    fun `al recuperar partys ordenadas se reciben de a 10`() {
-        crearSetDePartysConUnAventurero(20)
+    fun `al recuperar partys ordenadas de un total de 20 partys se reciben de a 10`() {
+        val setDePartys = crearSetDePartysConUnAventurero(20)
+        val paginadas = partyService.recuperarOrdenadas(Orden.PODER,Direccion.ASCENDENTE,0)
 
-        assertThat(partyService.recuperarOrdenadas(Orden.PODER,Direccion.ASCENDENTE,0).parties.size).isEqualTo(10)
+        assertThat(paginadas.total).isEqualTo(setDePartys.size)
+        assertThat(paginadas.parties.size).isEqualTo(10)
     }
 
     @Test
