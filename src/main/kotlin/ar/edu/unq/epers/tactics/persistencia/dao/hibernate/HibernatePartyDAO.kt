@@ -52,14 +52,7 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
                 .setFirstResult(primerResultado)
                 .list()
 
-    override fun cantidadDePartys(): Long {
-        val hql = "select count(*) from Party party"
-        return  HibernateTransactionRunner
-                .currentSession
-                .createQuery(hql, Long::class.javaObjectType)
-                .list()[0]
-
-    }
+    override fun cantidadDePartys() = cantidadDeEntidades()
 
     private fun estadoPartidaSegunCorresponda(orden: Orden): EstadoPartida {
         when(orden){

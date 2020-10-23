@@ -34,6 +34,13 @@ open class HibernateDAO<T>(val entityType: Class<T>) {
         }
     }
 
+    fun cantidadDeEntidades() =
+        HibernateTransactionRunner
+            .currentSession
+            .createQuery("select count(*) from ${entityType.simpleName}", Long::class.javaObjectType)
+            .setMaxResults(1)
+            .singleResult
+
     protected fun queryMany(hql: String) =
         createQuery(hql).resultList
 

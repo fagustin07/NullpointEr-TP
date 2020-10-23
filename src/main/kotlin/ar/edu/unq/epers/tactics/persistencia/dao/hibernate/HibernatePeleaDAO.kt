@@ -23,13 +23,6 @@ class HibernatePeleaDAO: HibernateDAO<Pelea>(Pelea::class.java), PeleaDAO {
                 .list()
     }
 
-    override fun cantidadDePeleas(): Long {
-        val hql = "select count(*) from Pelea pelea"
-        return HibernateTransactionRunner
-            .currentSession
-            .createQuery(hql, Long::class.javaObjectType)
-            .setMaxResults(1)
-            .singleResult
-    }
+    override fun cantidadDePeleas() = cantidadDeEntidades()
 
 }
