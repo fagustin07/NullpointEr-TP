@@ -12,51 +12,27 @@ class HibernateAventureroDAO: HibernateDAO<Aventurero>(Aventurero::class.java),A
     }
 
     override fun buda() =
-        createQuery("""
-                select habilidadRecibida.aventureroReceptor
-                from Pelea pelea
-                join pelea.habilidadesRecibidas habilidadRecibida
-                where habilidadRecibida.esMeditacion = true
-                group by habilidadRecibida.aventureroReceptor
-                order by count(*) desc
-                """)
-            .setMaxResults(1)
-            .singleResult
+        buscarAventureroSegun("Receptor", "where habilidad.esMeditacion = true", "count(*)")
 
     override fun mejorGuerrero() =
-        createQuery(
-            """
-                select habilidadEmitida.aventureroEmisor
-                from Pelea pelea
-                join pelea.habilidadesEmitidas habilidadEmitida
-                group by habilidadEmitida.aventureroEmisor
-                order by sum(habilidadEmitida.dañoFisico) desc
-                """)
-            .setMaxResults(1)
-            .singleResult
+        buscarAventureroSegun("Emisor", "", "sum(habilidad.dañoFisico)")
 
     override fun mejorMago() =
-        createQuery("""
-                select habilidadEmitida.aventureroEmisor
-                from Pelea pelea
-                join pelea.habilidadesEmitidas habilidadEmitida
-                where habilidadEmitida.esAtaqueMagico = true
-                group by habilidadEmitida.aventureroEmisor.id
-                order by sum(habilidadEmitida.poderMagicoEmisor) desc
-                """)
-            .setMaxResults(1)
-            .singleResult
+        buscarAventureroSegun("Emisor", "where habilidad.esAtaqueMagico = true", "sum(habilidad.poderMagicoEmisor)")
 
     override fun mejorCurandero() =
-        createQuery("""
-                select habilidadRecibida.aventureroEmisor
+        buscarAventureroSegun("Emisor", "where habilidad.esCuracion = true", "sum(habilidad.poderMagicoEmisor)")
+
+    private fun buscarAventureroSegun(rolDelAventurero: String, criterioDeSeleccionSobreHabilidad: String, criterioDeOrdenacion: String) =
+        createQuery(
+            """
+                select habilidad.aventurero${rolDelAventurero}
                 from Pelea pelea
-                join pelea.habilidadesRecibidas habilidadRecibida
-                where habilidadRecibida.esCuracion = true
-                group by habilidadRecibida.aventureroEmisor
-                order by sum(habilidadRecibida.poderMagicoEmisor) desc
+                join pelea.habilidades${if (rolDelAventurero == "Emisor") "Emitidas" else "Recibidas"} habilidad
+                ${criterioDeSeleccionSobreHabilidad}
+                group by habilidad.aventurero${rolDelAventurero}
+                order by ${criterioDeOrdenacion} desc
                 """)
             .setMaxResults(1)
             .singleResult
-
 }
