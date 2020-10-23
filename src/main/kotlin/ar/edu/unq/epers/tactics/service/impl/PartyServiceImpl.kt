@@ -26,10 +26,7 @@ class PartyServiceImpl(val dao: PartyDAO) : PartyService {
 
        return runTrx {
              val recuperadas = dao.recuperarOrdenadas(orden,direccion,paginaSolicitada)
-             PartyPaginadas(
-                     recuperadas,
-                     dao.cantidadDePartys().toInt()
-             )
+             PartyPaginadas(recuperadas, dao.cantidadDePartys().toInt())
         }
     }
 
@@ -41,6 +38,5 @@ class PartyServiceImpl(val dao: PartyDAO) : PartyService {
     }
 
     override fun eliminarTodo() = runTrx { dao.eliminarTodo() }
-
 
 }

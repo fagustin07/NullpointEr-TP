@@ -9,7 +9,6 @@ import ar.edu.unq.epers.tactics.persistencia.dao.PeleaDAO
 import ar.edu.unq.epers.tactics.service.PeleaService
 import ar.edu.unq.epers.tactics.service.PeleasPaginadas
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
-import java.util.*
 
 class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO): PeleaService {
 

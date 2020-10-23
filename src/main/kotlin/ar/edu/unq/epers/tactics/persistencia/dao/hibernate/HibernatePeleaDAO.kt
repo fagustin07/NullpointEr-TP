@@ -28,7 +28,8 @@ class HibernatePeleaDAO: HibernateDAO<Pelea>(Pelea::class.java), PeleaDAO {
         return HibernateTransactionRunner
             .currentSession
             .createQuery(hql, Long::class.javaObjectType)
-            .list()[0]
+            .setMaxResults(1)
+            .singleResult
     }
 
 }

@@ -43,10 +43,19 @@ class Aventurero(private var nombre: String) {
             this.validarPuntaje(nuevoPuntaje, "constitucion")
             field = nuevoPuntaje
         }
+
     private var dañoRecibido = 0.0
+
+    @OneToOne(fetch = FetchType.EAGER)
+    private var defensor: Aventurero? = null
+
+    @OneToOne(fetch = FetchType.EAGER)
+    private var aventureroDefendido: Aventurero? = null
+    private var turnosDefendido = 0
 
     @ManyToOne
     var party: Party? = null
+
 
     constructor(
         nombre: String, imagenURL: String = "", fuerza: Double = 1.0,
@@ -60,13 +69,6 @@ class Aventurero(private var nombre: String) {
         this.recalcularVidaYMana()
         this.recalcularPoderTotal()
     }
-
-    @OneToOne(fetch = FetchType.EAGER)
-    private var defensor: Aventurero? = null
-
-    @OneToOne(fetch = FetchType.EAGER)
-    private var aventureroDefendido: Aventurero? = null
-    private var turnosDefendido = 0
 
     init {
         this.recalcularVidaYMana()
