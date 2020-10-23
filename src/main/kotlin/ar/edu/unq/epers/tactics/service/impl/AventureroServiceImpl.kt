@@ -12,9 +12,5 @@ class AventureroServiceImpl(val aventureroDAO: AventureroDAO, val partyDAO: Part
 
     override fun recuperar(idDelAventurero: Long) = runTrx { aventureroDAO.recuperar(idDelAventurero) }
 
-    override fun eliminar(aventurero: Aventurero) {
-        runTrx {
-            aventureroDAO.eliminar(aventurero)
-        }
-    }
+    override fun eliminar(aventurero: Aventurero) { runTrx { aventureroDAO.eliminar(aventurero) } }
 }

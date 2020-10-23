@@ -5,9 +5,12 @@ import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import ar.edu.unq.epers.tactics.modelo.Pelea
 
 interface PeleaService {
-    fun iniciarPelea(idDeLaParty: Long) : Pelea
+    fun iniciarPelea(partyId: Long, nombrePartyEnemiga:String) : Pelea
     fun estaEnPelea(partyId: Long):Boolean
     fun resolverTurno(peleaId: Long, aventureroId:Long, enemigos:List<Aventurero>): Habilidad
-    fun recibirHabilidad(aventureroId: Long, habilidad: Habilidad): Aventurero
+    fun recibirHabilidad(peleaId: Long, aventureroId: Long, habilidad: Habilidad): Aventurero // TODO: en el PR decia habilidadId:Habilidad (no tiene sentido... ¿es id o es objeto?)
     fun terminarPelea(idDeLaPelea: Long): Pelea
+    fun recuperarOrdenadas(partyId:Long, pagina:Int?):PeleasPaginadas
 }
+
+class PeleasPaginadas(var peleas:List<Pelea>, var total:Int)

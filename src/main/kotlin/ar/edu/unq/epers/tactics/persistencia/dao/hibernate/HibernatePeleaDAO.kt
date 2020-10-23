@@ -5,11 +5,24 @@ import ar.edu.unq.epers.tactics.persistencia.dao.PeleaDAO
 
 class HibernatePeleaDAO: HibernateDAO<Pelea>(Pelea::class.java), PeleaDAO {
 
-    override fun recuperarUltimaPeleaDeParty(idDeLaParty: Long): Pelea {
-        return createQuery("from Pelea pelea where pelea.party.id = :idDeLaParty order by fecha desc")
-                .setParameter("idDeLaParty", idDeLaParty)
-                .setMaxResults(1)
-                .singleResult
-    }
+    override fun recuperarUltimaPeleaDeParty(partyId: Long) =
+        queryDePeleasDeParty(partyId)
+            .setMaxResults(1)
+            .singleResult
+
+    override fun recuperarOrdenadas(partyId: Long, pagina: Int) =
+        queryDePeleasDeParty(partyId)
+            .setMaxResults(10)
+            .setFirstResult(10 * pagina)
+            .list()
+
+    fun queryDePeleasDeParty(partyId: Long) =
+        createQuery("""
+            from Pelea pelea
+            where pelea.party.id = :partyId
+            order by fecha desc""")
+            .setParameter("partyId", partyId)
+
+    override fun cantidadDePeleas() = cantidadDeEntidades()
 
 }
