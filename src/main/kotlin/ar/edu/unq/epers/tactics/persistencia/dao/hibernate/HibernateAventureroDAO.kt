@@ -28,7 +28,7 @@ class HibernateAventureroDAO: HibernateDAO<Aventurero>(Aventurero::class.java),A
             """
                 select habilidad.aventurero${rolDelAventurero}
                 from Pelea pelea
-                join pelea.habilidades${if (rolDelAventurero == "Emisor") "Emitida" else "Recibida"}s habilidad
+                join pelea.habilidades${if (rolDelAventurero == "Emisor") "Emitidas" else "Recibidas"} habilidad
                 ${criterioDeSeleccionSobreHabilidad}
                 group by habilidad.aventurero${rolDelAventurero}
                 order by ${criterioDeOrdenacion} desc
