@@ -105,7 +105,7 @@ Se deberá implementar un nuevo servicio `ClaseService` que implemente los sigui
 - `crearClase(nombreDeClase:String)` - Crea una nueva clase
 - `crearMejora(nombreDeClase:String, nombreDeClase:String, atributos:List<Atributo>, cantidadDeAtributos:Integer)` - Crea la relación de habilitar de una clase a otra, junto con la lista de atributos que un aventurero ganaría y cuánto a cada atributo de ganar proficiencia por este medio. 
 - `requerir(nombreDeClase:String, nombreDeClase:String)` - crea la relación de requerimiento de una clase a otra. Esta relación no puede ser bi-direccional.
-- `puedeMejorar(aventurero:Aventurero, mejora:Mejora): Bool` - Devuelve true si el aventurero puede realizar la obtención de una nueva proficiencia desde una clase a otra.
+- `puedeMejorar(aventureroId:long, mejora:Mejora): Bool` - Devuelve true si el aventurero puede realizar la obtención de una nueva proficiencia desde una clase a otra.
 - `ganarProficiencia(aventureroId:Long, nombreDeClase: String, nombreDeClase: String): Aventurero` - El aventurero gana la proficiencia desde la clase indicada. Nota: Debe lanzarse una excepción si el aventurero no debería poder ganar
 - `posiblesMejoras(aventureroId:Long): Set<Mejora>` - Dado un aventurero, devuelve un set con todas las posibles mejoras.
 - `caminoMasRentable(puntosDeExperiencia:Integer, aventureroId: Long, atributo:Atributo ): List<Mejora>` - Devuelve la lista de mejoras en las cuales el aventurero debería invertir para maximizar la ganancia en el atributo dado
