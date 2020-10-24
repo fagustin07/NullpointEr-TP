@@ -83,7 +83,7 @@ Por ser `Fisico`, ahora puede elegir avanzar como `Guerrero` o como `Clérigo`. 
 
 
 <p align="center">
-  <img src="grafo-fuerza2.jpg" />
+  <img src="grafo-fuerza2.png" />
 </p>
 
 Luego de un nivel, Midas decide hacerse proficiente en la clase `Clérigo`
@@ -91,7 +91,7 @@ Luego de un nivel, Midas decide hacerse proficiente en la clase `Clérigo`
 Pero ahora, él desea ser proficiente en ser un `Paladín`, el inconveniente es que si bien, ser clérigo habilita a `Paladin`, `Paladin` requiere que Midas no sólo sea proficiente como `Clérigo`, sino también como `Guerrero`.
 
 <p align="center">
-  <img src="grafo2.png" />
+  <img src="grafo-requiere.png" />
 </p>
 
 ## Servicios
