@@ -116,6 +116,6 @@ Se deberá implementar un nuevo servicio `ClaseService` que implemente los sigui
 - Creen test unitarios para cada unidad de código entregada que prueben todas las funcionalidades pedidas, con casos favorables y desfavorables.
 
 ### Recuerden que:
--La relación de requerimiento de una clase a otra no son bidireccionales. 
+- La relación de requerimiento de una clase a otra no son bidireccionales. 
 - Encapsulen el acceso a la base de datos detrás de un DAO.
 
