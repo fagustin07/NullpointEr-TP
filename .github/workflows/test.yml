@@ -32,6 +32,9 @@ jobs:
           SQL_URL: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
           HIBERNATE_DIALECT: org.hibernate.dialect.H2Dialect
           SQL_DRIVER: org:h2:Driver
+          NEO_USER: ${{ secrets.NEO_USER }}
+          NEO_PASSWORD: ${{ secrets.NEO_PASSWORD }}
+          NEO_URL: ${{ secrets.NEO_URL }}
 
       - name: Success notification
         if: success()
