@@ -2,6 +2,7 @@ package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.persistencia.dao.ClaseDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.neo4j.Neo4JClaseDAO
 import ar.edu.unq.epers.tactics.service.ClaseService
 
 class ClaseServiceImpl(private val claseDAO: ClaseDAO) : ClaseService {

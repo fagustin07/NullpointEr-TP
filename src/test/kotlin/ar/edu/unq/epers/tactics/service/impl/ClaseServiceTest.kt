@@ -1,12 +1,12 @@
 package ar.edu.unq.epers.tactics.service.impl
 
-import ar.edu.unq.epers.tactics.persistencia.dao.ClaseDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.neo4j.Neo4JClaseDAO
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class ClaseServiceTest{
 
-    private val claseService: ClaseServiceImpl = ClaseServiceImpl(ClaseDAO())
+    private val claseService: ClaseServiceImpl = ClaseServiceImpl(Neo4JClaseDAO())
 
     @Test
     fun `cuando se crea una clase inicia con nombre`() {
