@@ -33,6 +33,8 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.17.2")
 
     runtimeOnly("mysql:mysql-connector-java")
+
+    compile("org.neo4j.driver:neo4j-java-driver:4.0.1")
 }
 
 tasks.withType<Test> {
