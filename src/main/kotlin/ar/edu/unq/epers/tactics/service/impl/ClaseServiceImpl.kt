@@ -1,0 +1,20 @@
+package ar.edu.unq.epers.tactics.service.impl
+
+import ar.edu.unq.epers.tactics.modelo.Clase
+import ar.edu.unq.epers.tactics.persistencia.dao.ClaseDAO
+import ar.edu.unq.epers.tactics.service.ClaseService
+
+class ClaseServiceImpl(private val claseDAO: ClaseDAO) : ClaseService {
+
+    private val clases: MutableList<Clase> = mutableListOf()
+
+    override fun crearClase(nombreDeLaClase: String): Clase {
+        val clase = Clase(nombreDeLaClase)
+        this.clases.add(clase)
+        return clase
+    }
+
+    override fun recuperarTodas(): List<Clase> {
+        return clases
+    }
+}
