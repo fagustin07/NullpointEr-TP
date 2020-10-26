@@ -166,7 +166,8 @@ internal class PeleaServiceTest {
         assertThat(exception).hasMessage("La pelea ya ha terminado antes.")
         assertFalse(peleaService.estaEnPelea(party.id()!!))
     }
-
+    // TODO: este test se vuelve falso con la nueva modificacion de la parte 3 del tp,
+    //  dado que su vida y mana no vuelve a ser la misma si ganan la pelea
     @Test
     fun `luego de una pelea, los aventureros vuelven a tener su vida y mana como antes de comenzar a pelear`() {
         val curador = Aventurero("Fede", "", 10.0, 10.0, 10.0, 10.0)
@@ -391,12 +392,14 @@ internal class PeleaServiceTest {
     @Test
     fun `cuando una pelea termina el aventurero de la party victoriosa sube de nivel y obtiene un punto de experiencia`() {
         val partyEnemiga = Party("Los capos", "URL")
+        val party = Party("Los fenomenos", "URL")
         partyService.crear(partyEnemiga)
+        val miPartyId = partyService.crear(party).id()!!
         val miAventurero = Aventurero("Pepe","URL",10.0,10.0,10.0,10.0)
 
-        partyService.agregarAventureroAParty(party.id()!!,miAventurero)
+        partyService.agregarAventureroAParty(miPartyId,miAventurero)
 
-        val pelea = peleaService.iniciarPelea(party.id()!!, partyEnemiga.nombre())
+        val pelea = peleaService.iniciarPelea(miPartyId, partyEnemiga.nombre())
         val peleaTerminada = peleaService.terminarPelea(pelea.id()!!)
         val partyVictoriosa = peleaTerminada.party
 
