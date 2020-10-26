@@ -11,11 +11,10 @@ class ClaseServiceImpl(private val claseDAO: ClaseDAO) : ClaseService {
 
     override fun crearClase(nombreDeLaClase: String): Clase {
         val clase = Clase(nombreDeLaClase)
-        this.clases.add(clase)
-        return clase
+        return claseDAO.crear(clase)
     }
 
     override fun recuperarTodas(): List<Clase> {
-        return clases
+        return claseDAO.recuperarTodas()
     }
 }
