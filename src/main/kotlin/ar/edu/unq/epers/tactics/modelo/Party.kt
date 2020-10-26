@@ -91,4 +91,10 @@ class Party(private var nombre: String, private var imagenURL: String) {
         if (!this.puedeAgregarAventureros()) throw RuntimeException("La party $nombre está completa.")
     }
 
+    fun subirNivelyGanarUnPuntoDeExperienciaAventureros() {
+        for(aventurero in aventureros){
+            aventurero.subirDeNivelYGanarPuntoDeExperiencia()
+        }
+    }
+
 }

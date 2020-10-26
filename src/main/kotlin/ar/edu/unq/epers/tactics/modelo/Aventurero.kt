@@ -20,7 +20,9 @@ class Aventurero(private var nombre: String) {
 
     private var vida: Double = 0.0
     private var mana: Double = 0.0
-    private  var poderTotal: Double = 0.0
+    private var poderTotal: Double = 0.0
+    private var nivel: Int = 1
+    private var experiencia: Int = 0
     private var fuerza: Double = 1.0
         set(nuevoPuntaje) {
             this.validarPuntaje(nuevoPuntaje, "fuerza")
@@ -45,6 +47,7 @@ class Aventurero(private var nombre: String) {
         }
 
     private var dañoRecibido = 0.0
+    fun experiencia() = this.experiencia
 
     @OneToOne(fetch = FetchType.EAGER)
     private var defensor: Aventurero? = null
@@ -83,7 +86,7 @@ class Aventurero(private var nombre: String) {
     fun id() = id
     fun nombre() = nombre
     fun imagenURL() = this.imagenURL
-    fun nivel() = 1
+    fun nivel() = nivel
     fun poderTotal() = poderTotal
 
     fun fuerza() = fuerza
@@ -249,6 +252,16 @@ class Aventurero(private var nombre: String) {
     private fun validarPuntaje(nuevoPuntaje: Double, nombreDeAtributo: String) {
         if (nuevoPuntaje > 100) throw  RuntimeException("La $nombreDeAtributo no puede exceder los 100 puntos!")
         if (nuevoPuntaje < 1) throw  RuntimeException("La $nombreDeAtributo no puede ser menor a 1 punto!")
+    }
+
+    private fun subirDeNivel() {
+        nivel += 1
+    }
+    private fun ganarPuntoDeExperiencia() { experiencia += 1 }
+
+    fun subirDeNivelYGanarPuntoDeExperiencia() {
+        subirDeNivel()
+        ganarPuntoDeExperiencia()
     }
 
 //    private fun validarSiEstaVivo() {

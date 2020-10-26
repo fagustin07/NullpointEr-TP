@@ -388,6 +388,32 @@ internal class PeleaServiceTest {
 
     }
 
+    @Test
+    fun `cuando una pelea termina el aventurero de la party victoriosa sube de nivel y obtiene un punto de experiencia`() {
+        val partyEnemiga = Party("Los capos", "URL")
+        partyService.crear(partyEnemiga)
+        val miAventurero = Aventurero("Pepe","URL",10.0,10.0,10.0,10.0)
+
+        partyService.agregarAventureroAParty(party.id()!!,miAventurero)
+
+        val pelea = peleaService.iniciarPelea(party.id()!!, partyEnemiga.nombre())
+        val peleaTerminada = peleaService.terminarPelea(pelea.id()!!)
+        val partyVictoriosa = peleaTerminada.party
+
+        val miAventureroDespuesDePelea = partyVictoriosa.aventureros().first{ it.id() == miAventurero.id()}
+
+
+        assertThat(peleaTerminada.estadoPartida()).isEqualTo(EstadoPartida.GANADA)
+
+        assertThat(partyVictoriosa.aventureros()).allSatisfy { it.nivel() > 1}
+
+        assertThat(miAventurero.nivel()).isLessThan(miAventureroDespuesDePelea.nivel())
+        assertThat(miAventurero.experiencia()).isLessThan(miAventureroDespuesDePelea.experiencia())
+
+
+
+    }
+
     @AfterEach
     fun tearDown() {
         partyDAO.eliminarTodo()
