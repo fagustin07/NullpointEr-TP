@@ -3,9 +3,7 @@ package ar.edu.unq.epers.tactics.persistencia.dao.neo4j
 import ar.edu.unq.epers.tactics.modelo.Clase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import org.springframework.util.comparator.Comparators
 
 class Neo4JClaseDAOTest {
 
