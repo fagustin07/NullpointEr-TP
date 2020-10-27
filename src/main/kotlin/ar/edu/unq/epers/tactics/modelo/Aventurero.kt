@@ -213,6 +213,16 @@ class Aventurero(private var nombre: String) {
         this.dañoRecibido = nuevoDañoRecibido
     }
 
+    private fun subirDeNivel() {
+        nivel += 1
+    }
+    private fun ganarPuntoDeExperiencia() { experiencia += 1 }
+
+    fun ganoPelea(){
+        subirDeNivel()
+        ganarPuntoDeExperiencia()
+    }
+
     /*** PRIVATE ***/
     /** TESTING **/
     private fun tieneDefensor() = this.defensor != null && this.defensor!!.estaVivo()
@@ -252,16 +262,6 @@ class Aventurero(private var nombre: String) {
     private fun validarPuntaje(nuevoPuntaje: Double, nombreDeAtributo: String) {
         if (nuevoPuntaje > 100) throw  RuntimeException("La $nombreDeAtributo no puede exceder los 100 puntos!")
         if (nuevoPuntaje < 1) throw  RuntimeException("La $nombreDeAtributo no puede ser menor a 1 punto!")
-    }
-
-    private fun subirDeNivel() {
-        nivel += 1
-    }
-    private fun ganarPuntoDeExperiencia() { experiencia += 1 }
-
-    fun subirDeNivelYGanarPuntoDeExperiencia() {
-        subirDeNivel()
-        ganarPuntoDeExperiencia()
     }
 
 //    private fun validarSiEstaVivo() {

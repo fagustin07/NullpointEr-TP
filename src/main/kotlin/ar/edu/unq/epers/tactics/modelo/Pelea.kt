@@ -4,7 +4,6 @@ import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import java.lang.RuntimeException
 import java.time.LocalDateTime
 import javax.persistence.*
-import kotlin.jvm.Transient
 
 @Entity
 class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party, private val nombrePartyEnemiga: String) {
@@ -40,7 +39,7 @@ class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party, private val nom
         estaFinalizada = true
         if(party.algunoEstaVivo()) {
             estadoPartida = EstadoPartida.GANADA
-            party.subirNivelyGanarUnPuntoDeExperienciaAventureros()
+            party.ganoPelea()
         } else {
             estadoPartida = EstadoPartida.PERDIDA
         }

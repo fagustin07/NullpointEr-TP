@@ -78,6 +78,14 @@ class Party(private var nombre: String, private var imagenURL: String) {
         this.estaEnPelea = false
     }
 
+    private fun subirDeNivelAventureros() {
+        aventureros.forEach { it.ganoPelea() }
+    }
+
+    fun ganoPelea(){
+        subirDeNivelAventureros()
+    }
+
     /* Assertions */
     private fun validarQueNoPertenzcaAOtraParty(aventurero: Aventurero) {
         if (aventurero.party != null && !this.esLaParty(aventurero.party!!)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
@@ -91,10 +99,5 @@ class Party(private var nombre: String, private var imagenURL: String) {
         if (!this.puedeAgregarAventureros()) throw RuntimeException("La party $nombre está completa.")
     }
 
-    fun subirNivelyGanarUnPuntoDeExperienciaAventureros() {
-        for(aventurero in aventureros){
-            aventurero.subirDeNivelYGanarPuntoDeExperiencia()
-        }
-    }
 
 }
