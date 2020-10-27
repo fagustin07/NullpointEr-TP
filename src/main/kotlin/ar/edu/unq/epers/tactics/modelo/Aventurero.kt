@@ -218,7 +218,7 @@ class Aventurero(private var nombre: String) {
     }
     private fun ganarPuntoDeExperiencia() { experiencia += 1 }
 
-    fun ganoPelea(){
+    fun ganarPelea(){
         subirDeNivel()
         ganarPuntoDeExperiencia()
     }

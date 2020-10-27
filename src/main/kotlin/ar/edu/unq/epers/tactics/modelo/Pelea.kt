@@ -39,7 +39,7 @@ class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party, private val nom
         estaFinalizada = true
         if(party.algunoEstaVivo()) {
             estadoPartida = EstadoPartida.GANADA
-            party.ganoPelea()
+            party.ganarPelea()
         } else {
             estadoPartida = EstadoPartida.PERDIDA
         }

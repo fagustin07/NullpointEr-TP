@@ -167,8 +167,7 @@ internal class PeleaServiceTest {
         assertThat(exception).hasMessage("La pelea ya ha terminado antes.")
         assertFalse(peleaService.estaEnPelea(party.id()!!))
     }
-    // TODO: este test se vuelve falso con la nueva modificacion de la parte 3 del tp,
-    //  dado que su vida y mana no vuelve a ser la misma si ganan la pelea
+
     @Test
     fun `luego de una pelea, los aventureros de la party perdedora vuelven a tener su vida y mana como antes de comenzar a pelear`() {
         val aliado = Aventurero("Jorge", "", 10.0, 10.0, 10.0, 10.0)

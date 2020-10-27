@@ -79,10 +79,10 @@ class Party(private var nombre: String, private var imagenURL: String) {
     }
 
     private fun subirDeNivelAventureros() {
-        aventureros.forEach { it.ganoPelea() }
+        aventureros.forEach { it.ganarPelea() }
     }
 
-    fun ganoPelea(){
+    fun ganarPelea(){
         subirDeNivelAventureros()
     }
 
