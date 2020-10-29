@@ -1,6 +1,7 @@
 package ar.edu.unq.epers.tactics.persistencia.dao
 
 import ar.edu.unq.epers.tactics.modelo.Clase
+import ar.edu.unq.epers.tactics.modelo.Mejora
 
 interface ClaseDAO : DAO<Clase> {
     override fun crear(entity: Clase): Clase
@@ -14,4 +15,6 @@ interface ClaseDAO : DAO<Clase> {
     fun requeridasDe(claseSucesora: Clase): List<Clase>
 
     fun requiereEnAlgunNivelDe(claseSucesora: Clase, claseAntecesora: Clase): Boolean
+
+    fun crearMejora(nombreClaseInicio:String,nombreClaseAMejorar:String,atributos:List<String>,valorAAumentar:Int): Mejora
 }

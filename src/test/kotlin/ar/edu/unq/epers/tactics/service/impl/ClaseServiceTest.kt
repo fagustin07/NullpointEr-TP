@@ -1,5 +1,6 @@
 package ar.edu.unq.epers.tactics.service.impl
 
+import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.persistencia.dao.neo4j.Neo4JClaseDAO
 import org.assertj.core.api.Assertions.assertThat
@@ -62,6 +63,16 @@ class ClaseServiceTest {
 
     private fun asertarQueNoSeCreoLaRelacionRequerirEntre(claseRequerida: Clase, claseHabilitada: Clase) {
         assertThat(claseDAO.requiereEnAlgunNivelDe(claseRequerida, claseHabilitada))
+    }
+
+    @Test
+    fun `cuando se crea una relacion que habilita pasar de clase aventurero a fisico se recupera una mejora`() {
+        claseService.crearClase("Aventurero")
+        claseService.crearClase("Fisico")
+        val mejoraEsperada = Mejora("Aventurero","Fisico", listOf("Fuerza"),3)
+        val mejoraRecuperada = claseService.crearMejora("Aventurero","Fisico", listOf<String>("Fuerza"),3)
+
+        assertThat(mejoraEsperada).usingRecursiveComparison().isEqualTo(mejoraRecuperada)
     }
 
     @AfterEach
