@@ -4,6 +4,7 @@ import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.EstadoPartida
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.modelo.Tactica
+import ar.edu.unq.epers.tactics.modelo.dado.DadoDe20
 import ar.edu.unq.epers.tactics.modelo.dado.DadoSimulado
 import ar.edu.unq.epers.tactics.modelo.enums.Accion
 import ar.edu.unq.epers.tactics.modelo.enums.Criterio
@@ -168,25 +169,37 @@ internal class PeleaServiceTest {
     }
 
     @Test
-    fun `luego de una pelea, los aventureros vuelven a tener su vida y mana como antes de comenzar a pelear`() {
-        val curador = Aventurero("Fede", "", 10.0, 10.0, 10.0, 10.0)
+    fun `luego de una pelea, los aventureros de la party perdedora vuelven a tener su vida y mana como antes de comenzar a pelear`() {
         val aliado = Aventurero("Jorge", "", 10.0, 10.0, 10.0, 10.0)
-        val vidaAntesDeCuracion = aliado.vidaActual()
-        val manaAntesDeCuracion = curador.mana()
+        val vidaAntesDePelea = aliado.vidaActual()
+        val manaAntesDePelea = aliado.mana()
+        val enemigo = Aventurero("Francisco","URL",90.0,90.0,90.0,90.0)
+        val partyEnemiga = Party("Los malos","URL")
+        val partyEnemigaId = partyService.crear(partyEnemiga).id()!!
 
-        curador.agregarTactica(Tactica(1, TipoDeReceptor.ALIADO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.CURAR))
+        partyService.agregarAventureroAParty(partyEnemigaId,enemigo)
 
-        partyService.agregarAventureroAParty(party.id()!!, curador)
+        aliado.agregarTactica(Tactica(1, TipoDeReceptor.ENEMIGO, TipoDeEstadistica.VIDA, Criterio.MAYOR_QUE, 0.0, Accion.ATAQUE_MAGICO))
         partyService.agregarAventureroAParty(party.id()!!, aliado)
 
         val peleaId = peleaService.iniciarPelea(party.id()!!, nombreDePartyEnemiga).id()!!
-        val habilidadGenerada = peleaService.resolverTurno(peleaId, curador.id()!!, listOf())
-        peleaService.recibirHabilidad(peleaId, aliado.id()!!, habilidadGenerada)
 
-        peleaService.terminarPelea(peleaId)
+        val habilidadGeneradaAliado = peleaService.resolverTurno(peleaId,aliado.id()!!, listOf(enemigo))
+        val ataqueMagicoEnemigo = AtaqueMagico(enemigo.poderMagico(),enemigo.nivel(),enemigo,aliado,DadoSimulado(1))
+        peleaService.recibirHabilidad(peleaId,enemigo.id()!!,habilidadGeneradaAliado)
+
+        peleaService.recibirHabilidad(peleaId, aliado.id()!!, ataqueMagicoEnemigo)
+
+        val ataqueFisicoEnemigo = Ataque(enemigo.dañoFisico(),enemigo.precisionFisica(),enemigo,aliado,DadoSimulado(1))
+
+        peleaService.recibirHabilidad(peleaId, aliado.id()!!, ataqueFisicoEnemigo)
+
+        val pelea = peleaService.terminarPelea(peleaId)
+
+        assertThat(pelea.estadoPartida()).isEqualTo(EstadoPartida.PERDIDA)
         runTrx {
-            assertThat(this.aventureroDAO.recuperar(curador.id()!!).mana()).isEqualTo(manaAntesDeCuracion)
-            assertThat(this.aventureroDAO.recuperar(aliado.id()!!).vidaActual()).isEqualTo(vidaAntesDeCuracion)
+            assertThat(this.aventureroDAO.recuperar(aliado.id()!!).mana()).isEqualTo(manaAntesDePelea)
+            assertThat(this.aventureroDAO.recuperar(aliado.id()!!).vidaActual()).isEqualTo(vidaAntesDePelea)
         }
 
     }
@@ -385,6 +398,32 @@ internal class PeleaServiceTest {
         val pelea = peleaService.iniciarPelea(party.id()!!,"La otra party")
 
         assertEquals(pelea.estadoPartida(),EstadoPartida.EN_CURSO)
+
+    }
+
+    @Test
+    fun `cuando una pelea termina el aventurero de la party victoriosa sube de nivel y obtiene un punto de experiencia`() {
+        val party = Party("Los fenomenos", "URL")
+        val miPartyId = partyService.crear(party).id()!!
+        val aventureroAntesDePelea = Aventurero("Pepe","URL",10.0,10.0,10.0,10.0)
+
+        partyService.agregarAventureroAParty(miPartyId,aventureroAntesDePelea)
+
+        val pelea = peleaService.iniciarPelea(miPartyId, "Party enemiga")
+        val peleaTerminada = peleaService.terminarPelea(pelea.id()!!)
+        val partyVictoriosa = peleaTerminada.party
+
+        val aventureroDespuesDePelea = partyVictoriosa.aventureros().first{ it.id() == aventureroAntesDePelea.id()}
+
+
+        assertThat(peleaTerminada.estadoPartida()).isEqualTo(EstadoPartida.GANADA)
+
+        assertThat(partyVictoriosa.aventureros()).allSatisfy { it.nivel() > 1}
+
+        assertThat(aventureroAntesDePelea.nivel()).isLessThan(aventureroDespuesDePelea.nivel())
+        assertThat(aventureroAntesDePelea.experiencia()).isLessThan(aventureroDespuesDePelea.experiencia())
+
+
 
     }
 

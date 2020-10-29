@@ -183,4 +183,11 @@ class AventureroTest {
                                             aventurero.poderMagico()
         assertThat(aventurero.poderTotal()).isEqualTo(poderTotalDeAventureroEsperado)
     }
+
+    @Test
+    fun `un aventurero inicialmente tiene cero puntos de experiencia`() {
+        val aventurero = Aventurero("Marcos","URL",10.0,10.0,10.0,10.0)
+
+        assertThat(aventurero.experiencia()).isEqualTo(0)
+    }
 }
