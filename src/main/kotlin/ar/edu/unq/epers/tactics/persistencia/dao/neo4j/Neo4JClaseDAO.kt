@@ -48,7 +48,7 @@ class Neo4JClaseDAO : ClaseDAO {
                     "atributos", atributos
                 )
             )
-            result.list { record: Record ->
+            val record = result.single()
                 val claseInicio = record[0]
                 val claseAMejorar = record[1]
                 val mejora = record[2]
@@ -57,7 +57,6 @@ class Neo4JClaseDAO : ClaseDAO {
                 val atributos: List<String> = mejora["atributos"].asList{ it.asString() }
                 val puntos: Int = mejora["puntos"].asInt()
                 Mejora(nombreClaseInicio,nombreClaseAMejorar,atributos,puntos)
-            }[0]
         }
     }
 
