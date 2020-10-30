@@ -46,7 +46,7 @@ class Neo4JClaseDAO: ClaseDAO {
                     "atributos", atributos
                 )
             )
-            result.list { record: Record ->
+            val record = result.single()
                 val claseInicio = record[0]
                 val claseAMejorar = record[1]
                 val mejora = record[2]
@@ -55,15 +55,14 @@ class Neo4JClaseDAO: ClaseDAO {
                 val atributos: List<String> = mejora["atributos"].asList{ it.asString() }
                 val puntos: Int = mejora["puntos"].asInt()
                 Mejora(nombreClaseInicio,nombreClaseAMejorar,atributos,puntos)
-            }[0]
         }
     }
 
     override fun recuperarTodas(): List<Clase> {
         return Neo4JTransactionRunner().runTrx{ session ->
-            val result = session.run("MATCH (n:Clase) RETURN n")
+            val result = session.run("MATCH (c) RETURN c.nombre")
             result.list{ record ->
-                Clase(record[0]["nombre"].asString())
+                Clase(record[0].asString())
             }
         }
     }
