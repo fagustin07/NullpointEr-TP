@@ -13,4 +13,6 @@ interface ClaseDAO : DAO<Clase> {
     fun recuperarTodas(): List<Clase>
 
     fun crearMejora(nombreClaseInicio:String,nombreClaseAMejorar:String,atributos:List<String>,valorAAumentar:Int): Mejora
+
+    fun verificarBidireccionalidad(nombreClaseInicio: String,nombreClaseAMejorar: String)
 }
