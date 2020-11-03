@@ -61,8 +61,6 @@ class Neo4JClaseDAO : ClaseDAO {
         }
     }
 
-    /*override fun recuperarTodas(): List<Clase> {
-
 
     override fun requerir(nombreClaseHabilitada: String, nombreClaseRequerida: String) {
         Neo4JTransactionRunner().runTrx { session ->
