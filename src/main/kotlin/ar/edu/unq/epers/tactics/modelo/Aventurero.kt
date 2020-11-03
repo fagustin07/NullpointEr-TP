@@ -3,6 +3,7 @@ package ar.edu.unq.epers.tactics.modelo
 import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import ar.edu.unq.epers.tactics.modelo.habilidades.HabilidadNula
 import javax.persistence.*
+import kotlin.String
 import kotlin.math.max
 import kotlin.math.min
 

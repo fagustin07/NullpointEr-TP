@@ -3,6 +3,7 @@ package ar.edu.unq.epers.tactics.service.impl
 import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.persistencia.dao.ClaseDAO
 import ar.edu.unq.epers.tactics.service.ClaseService
+import java.lang.RuntimeException
 
 class ClaseServiceImpl(private val claseDAO: ClaseDAO) : ClaseService {
 
@@ -11,7 +12,18 @@ class ClaseServiceImpl(private val claseDAO: ClaseDAO) : ClaseService {
         return claseDAO.crear(clase)
     }
 
-    override fun recuperarTodas(): List<Clase> {
-        return claseDAO.recuperarTodas()
+    override fun requerir(clasePredecesora: Clase, claseSucesora: Clase) {
+        verificarBidireccionalidad(clasePredecesora, claseSucesora)
+        claseDAO.requerir(clasePredecesora.nombre(), claseSucesora.nombre())
+    }
+
+    private fun verificarBidireccionalidad(clasePredecesora: Clase, claseSucesora: Clase) {
+        if (esRequeridaPor(clasePredecesora, claseSucesora)) {
+            throw RuntimeException("No se puede establecer una relacion bidireccional entre ${clasePredecesora.nombre()} y ${claseSucesora.nombre()}")
+        }
+    }
+
+    private fun esRequeridaPor(claseSucesora: Clase, claseAntecesora: Clase): Boolean {
+        return claseDAO.requiereEnAlgunNivelDe(claseSucesora, claseAntecesora)
     }
 }

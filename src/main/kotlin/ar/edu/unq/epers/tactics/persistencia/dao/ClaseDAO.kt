@@ -9,5 +9,9 @@ interface ClaseDAO : DAO<Clase> {
 
     override fun recuperar(id: Long): Clase
 
-    fun recuperarTodas(): List<Clase>
+    fun requerir(nombreClaseHabilitada: String, nombreClaseRequerida: String)
+
+    fun requeridasDe(claseSucesora: Clase): List<Clase>
+
+    fun requiereEnAlgunNivelDe(claseSucesora: Clase, claseAntecesora: Clase): Boolean
 }

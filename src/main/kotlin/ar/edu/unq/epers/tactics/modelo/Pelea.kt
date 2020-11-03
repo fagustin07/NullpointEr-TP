@@ -1,7 +1,6 @@
 package ar.edu.unq.epers.tactics.modelo
 
 import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
-import java.lang.RuntimeException
 import java.time.LocalDateTime
 import javax.persistence.*
 

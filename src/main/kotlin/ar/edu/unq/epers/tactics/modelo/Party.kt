@@ -1,6 +1,7 @@
 package ar.edu.unq.epers.tactics.modelo
 
 import javax.persistence.*
+import kotlin.String
 
 @Entity
 class Party(private var nombre: String, private var imagenURL: String) {
