@@ -17,4 +17,6 @@ interface ClaseDAO : DAO<Clase> {
     fun requiereEnAlgunNivelDe(claseSucesora: Clase, claseAntecesora: Clase): Boolean
 
     fun crearMejora(nombreClaseInicio:String,nombreClaseAMejorar:String,atributos:List<String>,valorAAumentar:Int): Mejora
+
+    fun verificarBidireccionalidad(nombreClaseInicio: String,nombreClaseAMejorar: String)
 }

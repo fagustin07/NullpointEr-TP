@@ -5,6 +5,7 @@ import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.persistencia.dao.ClaseDAO
 import ar.edu.unq.epers.tactics.service.runner.Neo4JTransactionRunner
 import org.neo4j.driver.*
+import java.lang.RuntimeException
 
 class Neo4JClaseDAO : ClaseDAO {
 
@@ -112,6 +113,28 @@ class Neo4JClaseDAO : ClaseDAO {
                 )
             )
             result.single()[0].asBoolean()
+        }
+    }
+
+    override fun verificarBidireccionalidad(nombreClaseInicio: String, nombreClaseAMejorar: String){
+        return Neo4JTransactionRunner().runTrx { session ->
+            val query = """
+                        MATCH (c:Clase {nombre: ${'$'}nombreClase }) 
+                        MATCH (habilitante)-[:habilita]->(habilitado)
+                        RETURN habilitado
+                    """
+            val result = session.run(
+                    query,Values.parameters(
+                    "nombreClase",nombreClaseAMejorar
+                )
+            )
+            result.list { record ->
+                val clase = record[0]
+                val nombreClaseHabilitadaPorClaseAMejorar: String = clase["nombre"].asString()
+                if(nombreClaseHabilitadaPorClaseAMejorar == nombreClaseInicio){
+                    throw RuntimeException("La mejora que estas queriendo crear no es posible")
+                }
+            }
         }
     }
 
