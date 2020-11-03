@@ -78,7 +78,6 @@ class Neo4JClaseDAO : ClaseDAO {
             )
         }
     }
-    */
 
     override fun requeridasDe(clase: Clase): MutableList<Clase> {
         return Neo4JTransactionRunner().runTrx { session ->

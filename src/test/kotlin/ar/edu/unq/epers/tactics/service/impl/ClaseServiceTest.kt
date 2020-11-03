@@ -1,10 +1,8 @@
 package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Mejora
-import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.persistencia.dao.neo4j.Neo4JClaseDAO
-import ar.edu.unq.epers.tactics.service.runner.Neo4JTransactionRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.AfterEach

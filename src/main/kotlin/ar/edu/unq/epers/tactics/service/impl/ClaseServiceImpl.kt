@@ -23,16 +23,6 @@ class ClaseServiceImpl(private val claseDAO: ClaseDAO) : ClaseService {
         return claseDAO.crearMejora(nombreClaseInicio,nombreClaseAMejorar,atributos,valorAAumentar)
     }
 
-//    private fun verificarBidireccionalidad(nombreClaseInicio: String,nombreClaseAMejorar: String){
-//        val clases = claseDAO.verificarBidireccionalidad(nombreClaseInicio,nombreClaseAMejorar)
-//        val condicion = clases.any { it.nombreDeLaClase == nombreClaseInicio }
-//        if(condicion){
-//            throw RuntimeException("La mejora que estas queriendo crear no es posible")
-//        }
-//    }
-
-    override fun recuperarTodas(): List<Clase> {
-        return claseDAO.recuperarTodas()
     override fun requerir(clasePredecesora: Clase, claseSucesora: Clase) {
         verificarBidireccionalidad(clasePredecesora, claseSucesora)
         claseDAO.requerir(clasePredecesora.nombre(), claseSucesora.nombre())
