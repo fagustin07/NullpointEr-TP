@@ -40,6 +40,10 @@ class FactoryAventureroLeaderboardService {
         return peleaId
     }
 
+    private fun terminarPeleaDe(partyID: Long) {
+        peleaService.terminarPelea(partyID)
+    }
+
     fun nuevoGuerreroEn(partyId: Long): Aventurero {
         val aventurero = Aventurero("Guerrero " + random() * 999)
         val ataqueFisico = this.tacticaDeAtaqueFisicoSobreEnemigo()
@@ -98,4 +102,16 @@ class FactoryAventureroLeaderboardService {
     fun partyService() = this.partyService
     fun peleaService() = this.peleaService
     fun aventureroService() = this.aventureroService
+
+    fun crearAventureroConExperiencia(puntosDeExperiencia: Int): Aventurero {
+        val partyID =  nuevaPartyPersistida()
+        val aventurero = nuevoGuerreroEn(partyID)
+
+        repeat(puntosDeExperiencia) {
+            val peleaID = comenzarPeleaDe(partyID)
+            terminarPeleaDe(peleaID)
+        }
+
+        return aventurero
+    }
 }

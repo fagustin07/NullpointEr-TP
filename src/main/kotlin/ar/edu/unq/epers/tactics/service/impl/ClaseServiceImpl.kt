@@ -2,11 +2,13 @@ package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.modelo.Mejora
+import ar.edu.unq.epers.tactics.persistencia.dao.AventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.ClaseDAO
 import ar.edu.unq.epers.tactics.service.ClaseService
+import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import java.lang.RuntimeException
 
-class ClaseServiceImpl(private val claseDAO: ClaseDAO) : ClaseService {
+class ClaseServiceImpl(private val claseDAO: ClaseDAO, val aventureroDAO: AventureroDAO) : ClaseService {
 
     override fun crearClase(nombreDeLaClase: String): Clase {
         val clase = Clase(nombreDeLaClase)
@@ -26,6 +28,24 @@ class ClaseServiceImpl(private val claseDAO: ClaseDAO) : ClaseService {
     override fun requerir(clasePredecesora: Clase, claseSucesora: Clase) {
         verificarBidireccionalidad(clasePredecesora, claseSucesora)
         claseDAO.requerir(clasePredecesora.nombre(), claseSucesora.nombre())
+    }
+
+    override fun puedeMejorar(aventureroID: Long, mejora: Mejora): Boolean =
+            HibernateTransactionRunner.runTrx {
+                aventureroDAO.resultadoDeEjecutarCon(aventureroID) {
+                    it.tieneExperiencia() &&  claseDAO.puedeMejorarseTeniendo(it.clases(), mejora)
+                }
+            }
+
+    override fun posiblesMejoras(aventureroID: Long): Set<Mejora> {
+        return HibernateTransactionRunner.runTrx {
+            val aventurero = aventureroDAO.recuperar(aventureroID)
+
+            if (!aventurero.tieneExperiencia())
+                emptySet()
+            else
+                claseDAO.posiblesMejorasTeniendo(aventurero.clases())
+        }
     }
 
     private fun verificarBidireccionalidad(clasePredecesora: Clase, claseSucesora: Clase) {
