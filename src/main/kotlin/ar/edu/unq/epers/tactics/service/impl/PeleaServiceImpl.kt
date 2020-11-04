@@ -24,7 +24,7 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
 
     override fun resolverTurno(peleaId: Long, aventureroId: Long, enemigos: List<Aventurero>) =
         runTrx {
-            val habilidadGenerada = (aventureroDAO.resultadoDeEjecutarCon(aventureroId) { it.resolverTurno(enemigos) }) as Habilidad
+            val habilidadGenerada = (aventureroDAO.resultadoDeEjecutarCon(aventureroId) { it.resolverTurno(enemigos) })
             peleaDAO.ejecutarCon(peleaId) { it.registrarEmisionDe(habilidadGenerada) }
             habilidadGenerada
         }

@@ -189,5 +189,6 @@ class AventureroTest {
         val aventurero = Aventurero("Marcos","URL",10.0,10.0,10.0,10.0)
 
         assertThat(aventurero.experiencia()).isEqualTo(0)
+        assertFalse(aventurero.tieneExperiencia())
     }
 }

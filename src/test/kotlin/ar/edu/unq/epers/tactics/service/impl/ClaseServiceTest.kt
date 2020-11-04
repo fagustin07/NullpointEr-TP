@@ -2,18 +2,26 @@ package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.modelo.Clase
+import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.neo4j.Neo4JClaseDAO
+import helpers.FactoryAventureroLeaderboardService
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.lang.RuntimeException
 
 class ClaseServiceTest {
+    val factory = FactoryAventureroLeaderboardService()
 
-    val claseDAO = Neo4JClaseDAO()
-    private val claseService: ClaseServiceImpl = ClaseServiceImpl(claseDAO)
+    private val NOMBRE_DE_CLASE_AVENTURERO = "Aventurero"
+    private val NOMBRE_DE_CLASE_MAGO = "Mago"
+    private val NOMBRE_DE_CLASE_FISICO = "Fisico"
+
+    private val claseDAO = Neo4JClaseDAO()
+    private val claseService: ClaseServiceImpl = ClaseServiceImpl(claseDAO, HibernateAventureroDAO())
 
     @Test
     fun `cuando se crea una clase inicia con nombre`() {
@@ -87,7 +95,142 @@ class ClaseServiceTest {
             claseService.crearMejora("Fisico","Aventurero", listOf<String>("Fuerza"),3)
         }
         assertThat(exception.message).isEqualTo("La mejora que estas queriendo crear no es posible")
+    }
 
+    // PUEDE MEJORAR
+    @Test
+    fun `un aventurero sin experiencia no puede mejorar`() {
+        val aventureroSinExperiencia = factory.crearAventureroConExperiencia(0)
+        val claseDelAventurero = aventureroSinExperiencia.clases().first()
+
+        claseService.crearClase(claseDelAventurero)
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
+        val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(""), 0)
+
+        assertFalse(claseService.puedeMejorar(aventureroSinExperiencia.id()!!, mejora))
+    }
+
+    @Test
+    fun `un aventurero con experiencia puede mejorar cuando es proficiente en la clase de la cual parte la mejora y la clase a mejorar no tiene ningun requerimiento`() {
+        val aventureroConExperiencia = factory.crearAventureroConExperiencia(1)
+        val claseDelAventurero = aventureroConExperiencia.clases().first()
+
+        claseService.crearClase(claseDelAventurero)
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
+        val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(""), 0)
+
+        assertTrue(claseService.puedeMejorar(aventureroConExperiencia.id()!!, mejora))
+    }
+
+    @Test
+    fun `un aventurero con experiencia no puede mejorar cuando no es proficiente en la clase de la cual parte la mejora`() {
+        val aventureroConExperiencia = factory.crearAventureroConExperiencia(1)
+        val claseDelAventurero = aventureroConExperiencia.clases().first()
+
+        claseService.crearClase(claseDelAventurero)
+
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
+        claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
+        val mejora = claseService.crearMejora(NOMBRE_DE_CLASE_FISICO, NOMBRE_DE_CLASE_MAGO, listOf(""), 0)
+
+        assertFalse(claseService.puedeMejorar(aventureroConExperiencia.id()!!, mejora))
+    }
+
+    @Test
+    fun `no se puede preguntar si un aventurero puede mejorar cuando la mejora no existe`() {
+        val aventureroConExperiencia = factory.crearAventureroConExperiencia(1)
+        val claseDelAventurero = aventureroConExperiencia.clases().first()
+
+        claseService.crearClase(claseDelAventurero)
+        claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
+        val mejoraExistente = claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf("Fuerza"), 1)
+
+        val mejoraConInicioInvalido = Mejora("Inicio invalido", mejoraExistente.nombreDeLaClaseAMejorar(), mejoraExistente.atributos(), mejoraExistente.puntosAMejorar())
+        val mejoraConClaseAMejorarInvalida = Mejora(mejoraExistente.nombreDeLaClaseInicio(), "A mejorar invalido", mejoraExistente.atributos(), mejoraExistente.puntosAMejorar())
+        val mejoraConAtributosInvalidos = Mejora(mejoraExistente.nombreDeLaClaseInicio(), mejoraExistente.nombreDeLaClaseAMejorar(), listOf(), mejoraExistente.puntosAMejorar())
+        val mejoraConAtributosPuntosAMejorarInvalidos = Mejora(mejoraExistente.nombreDeLaClaseInicio(), mejoraExistente.nombreDeLaClaseAMejorar(), mejoraExistente.atributos(), 9999)
+
+        assertThatThrownBy { claseService.puedeMejorar(aventureroConExperiencia.id()!!, mejoraConInicioInvalido) }.hasMessageContaining("No existe la mejora")
+        assertThatThrownBy { claseService.puedeMejorar(aventureroConExperiencia.id()!!, mejoraConClaseAMejorarInvalida) }.hasMessageContaining("No existe la mejora")
+        assertThatThrownBy { claseService.puedeMejorar(aventureroConExperiencia.id()!!, mejoraConAtributosInvalidos) }.hasMessageContaining("No existe la mejora")
+        assertThatThrownBy { claseService.puedeMejorar(aventureroConExperiencia.id()!!, mejoraConAtributosPuntosAMejorarInvalidos) }.hasMessageContaining("No existe la mejora")
+    }
+
+    @Test
+    fun `un aventurero no puede mejorar cuando no es proficiente en una clase requerida por la clase a mejorar`() {
+        val aventureroConExperiencia = factory.crearAventureroConExperiencia(1)
+        val claseDelAventurero = aventureroConExperiencia.clases().first()
+
+        claseService.crearClase(claseDelAventurero)
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
+        val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(""), 0)
+
+        claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
+        claseService.requerir(Clase(mejora.nombreDeLaClaseAMejorar()), Clase(NOMBRE_DE_CLASE_MAGO))
+
+        assertFalse(claseService.puedeMejorar(aventureroConExperiencia.id()!!, mejora))
+    }
+
+    @Test
+    fun `un aventurero puede mejorar cuando es proficiente en la clase que habilita una mejorar y en todas las clases requeridas por la clase a mejorar`() {
+        val aventureroConExperiencia = factory.crearAventureroConExperiencia(1)
+        val claseDelAventurero = aventureroConExperiencia.clases().first()
+
+        claseService.crearClase(claseDelAventurero)
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
+        val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(""), 0)
+
+        claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
+        claseService.requerir(Clase(claseDelAventurero), Clase(mejora.nombreDeLaClaseAMejorar()))
+
+        assertTrue(claseService.puedeMejorar(aventureroConExperiencia.id()!!, mejora))
+    }
+
+    // POSIBLES MEJORAS
+    @Test
+    fun `cuando un aventurero es proficiente en una clase que habilita una mejora, pero no tiene experiencia, no existen posibles mejoras para el`() {
+        val aventureroSinExperiencia = factory.crearAventureroConExperiencia(0)
+        val claseDelAventurero = aventureroSinExperiencia.clases().first()
+
+        claseService.crearClase(claseDelAventurero)
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
+        claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(""), 0)
+
+        val posiblesMejoras = claseService.posiblesMejoras(aventureroSinExperiencia.id()!!)
+
+        assertTrue(posiblesMejoras.isEmpty())
+    }
+
+    @Test
+    fun `cuando un aventurero con experiencia es proficiente en una clase que habilita una mejora sin requisitos, existen posibles mejoras para el`() {
+        val aventureroConExperiencia = factory.crearAventureroConExperiencia(1)
+        val claseDelAventurero = aventureroConExperiencia.clases().first()
+
+        claseService.crearClase(claseDelAventurero)
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
+        val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(""), 0)
+
+        val posiblesMejoras = claseService.posiblesMejoras(aventureroConExperiencia.id()!!)
+
+        assertEquals(1, posiblesMejoras.size)
+        assertThat(posiblesMejoras.first()).usingRecursiveComparison().isEqualTo(mejora)
+    }
+
+    @Test
+    fun `cuando un aventurero con experiencia es proficiente en una clase que habilita una mejora, pero no cumple con algun requisito, dicha mejora no esta disponible para el`() {
+        val aventureroConExperiencia = factory.crearAventureroConExperiencia(1)
+        val claseDelAventurero = aventureroConExperiencia.clases().first()
+
+        claseService.crearClase(claseDelAventurero)
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
+        claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(""), 0)
+
+        claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
+        claseService.requerir(Clase(NOMBRE_DE_CLASE_FISICO), Clase(NOMBRE_DE_CLASE_MAGO))
+
+        val posiblesMejoras = claseService.posiblesMejoras(aventureroConExperiencia.id()!!)
+
+        assertTrue(posiblesMejoras.isEmpty())
     }
 
     @AfterEach

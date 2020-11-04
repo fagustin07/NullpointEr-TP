@@ -19,6 +19,10 @@ class Aventurero(private var nombre: String) {
     @JoinColumn(name = "aventurero_id")
     private var tacticas: MutableList<Tactica> = mutableListOf()
 
+    @ElementCollection(fetch=FetchType.EAGER)
+    @CollectionTable(name="clases")
+    private var clases: MutableSet<String> = mutableSetOf("Aventurero")
+
     private var vida: Double = 0.0
     private var mana: Double = 0.0
     private var poderTotal: Double = 0.0
@@ -75,6 +79,7 @@ class Aventurero(private var nombre: String) {
     }
 
     init {
+        //this.clases = mutableListOf("Aventurero")
         this.recalcularVidaYMana()
         this.recalcularPoderTotal()
     }
@@ -111,6 +116,8 @@ class Aventurero(private var nombre: String) {
 
     fun tacticas() = this.tacticas
 
+    fun clases() = clases//mutableListOf("Aventurero")//clases
+
     /** TESTING **/
     fun esAliadoDe(otroAventurero: Aventurero) = aliados().contains(otroAventurero)
 
@@ -121,6 +128,8 @@ class Aventurero(private var nombre: String) {
     fun estaDefendiendo() = this.aventureroDefendido != null
 
     fun estaSiendoDefendiendo() = this.defensor != null
+
+    fun tieneExperiencia() = experiencia > 0
 
     /** ACTIONS **/
     fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
@@ -214,11 +223,6 @@ class Aventurero(private var nombre: String) {
         this.dañoRecibido = nuevoDañoRecibido
     }
 
-    private fun subirDeNivel() {
-        nivel += 1
-    }
-    private fun ganarPuntoDeExperiencia() { experiencia += 1 }
-
     fun ganarPelea(){
         subirDeNivel()
         ganarPuntoDeExperiencia()
@@ -259,6 +263,12 @@ class Aventurero(private var nombre: String) {
     private fun perderDefensor() {
         this.defensor = null
     }
+
+    private fun subirDeNivel() {
+        nivel += 1
+    }
+
+    private fun ganarPuntoDeExperiencia() { experiencia += 1 }
 
     private fun validarPuntaje(nuevoPuntaje: Double, nombreDeAtributo: String) {
         if (nuevoPuntaje > 100) throw  RuntimeException("La $nombreDeAtributo no puede exceder los 100 puntos!")

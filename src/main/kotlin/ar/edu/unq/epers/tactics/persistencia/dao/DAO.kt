@@ -11,7 +11,7 @@ interface DAO<T> {
         return actualizar(entity)
     }
 
-    fun resultadoDeEjecutarCon(entityID: Long, block: (T) -> Any): Any {
+    fun <U> resultadoDeEjecutarCon(entityID: Long, block: (T) -> U): U {
         val entity = recuperar(entityID)
         val resultado = block(entity)
         actualizar(entity)
