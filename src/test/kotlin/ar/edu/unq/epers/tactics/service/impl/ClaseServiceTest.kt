@@ -1,5 +1,6 @@
 package ar.edu.unq.epers.tactics.service.impl
 
+import ar.edu.unq.epers.tactics.modelo.Atributo
 import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
@@ -79,8 +80,8 @@ class ClaseServiceTest {
     fun `cuando se crea una relacion que habilita pasar de clase aventurero a fisico se recupera una mejora`() {
         claseService.crearClase("Aventurero")
         claseService.crearClase("Fisico")
-        val mejoraEsperada = Mejora("Aventurero","Fisico", listOf("Fuerza"),3)
-        val mejoraRecuperada = claseService.crearMejora("Aventurero","Fisico", listOf<String>("Fuerza"),3)
+        val mejoraEsperada = Mejora("Aventurero","Fisico", listOf(Atributo.FUERZA),3)
+        val mejoraRecuperada = claseService.crearMejora("Aventurero","Fisico", listOf<Atributo>(Atributo.FUERZA),3)
 
         assertThat(mejoraEsperada).usingRecursiveComparison().isEqualTo(mejoraRecuperada)
     }
@@ -89,10 +90,10 @@ class ClaseServiceTest {
     fun `no se puede crear una mejora bidireccional`() {
         claseService.crearClase("Aventurero")
         claseService.crearClase("Fisico")
-        claseService.crearMejora("Aventurero","Fisico", listOf<String>("Fuerza"),3)
+        claseService.crearMejora("Aventurero","Fisico", listOf(Atributo.FUERZA),3)
 
         val exception = assertThrows<RuntimeException> {
-            claseService.crearMejora("Fisico","Aventurero", listOf<String>("Fuerza"),3)
+            claseService.crearMejora("Fisico","Aventurero", listOf(Atributo.FUERZA),3)
         }
         assertThat(exception.message).isEqualTo("La mejora que estas queriendo crear no es posible")
     }
@@ -105,7 +106,7 @@ class ClaseServiceTest {
 
         claseService.crearClase(claseDelAventurero)
         claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
-        val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(""), 0)
+        val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.DESTREZA), 0)
 
         assertFalse(claseService.puedeMejorar(aventureroSinExperiencia.id()!!, mejora))
     }
@@ -117,7 +118,7 @@ class ClaseServiceTest {
 
         claseService.crearClase(claseDelAventurero)
         claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
-        val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(""), 0)
+        val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.DESTREZA), 0)
 
         assertTrue(claseService.puedeMejorar(aventureroConExperiencia.id()!!, mejora))
     }
@@ -131,7 +132,7 @@ class ClaseServiceTest {
 
         claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
         claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
-        val mejora = claseService.crearMejora(NOMBRE_DE_CLASE_FISICO, NOMBRE_DE_CLASE_MAGO, listOf(""), 0)
+        val mejora = claseService.crearMejora(NOMBRE_DE_CLASE_FISICO, NOMBRE_DE_CLASE_MAGO, listOf(Atributo.DESTREZA), 0)
 
         assertFalse(claseService.puedeMejorar(aventureroConExperiencia.id()!!, mejora))
     }
@@ -143,7 +144,7 @@ class ClaseServiceTest {
 
         claseService.crearClase(claseDelAventurero)
         claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
-        val mejoraExistente = claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf("Fuerza"), 1)
+        val mejoraExistente = claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf(Atributo.FUERZA), 1)
 
         val mejoraConInicioInvalido = Mejora("Inicio invalido", mejoraExistente.nombreDeLaClaseAMejorar(), mejoraExistente.atributos(), mejoraExistente.puntosAMejorar())
         val mejoraConClaseAMejorarInvalida = Mejora(mejoraExistente.nombreDeLaClaseInicio(), "A mejorar invalido", mejoraExistente.atributos(), mejoraExistente.puntosAMejorar())
@@ -163,7 +164,7 @@ class ClaseServiceTest {
 
         claseService.crearClase(claseDelAventurero)
         claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
-        val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(""), 0)
+        val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.FUERZA), 0)
 
         claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
         claseService.requerir(Clase(mejora.nombreDeLaClaseAMejorar()), Clase(NOMBRE_DE_CLASE_MAGO))
@@ -178,7 +179,7 @@ class ClaseServiceTest {
 
         claseService.crearClase(claseDelAventurero)
         claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
-        val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(""), 0)
+        val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.FUERZA), 0)
 
         claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
         claseService.requerir(Clase(claseDelAventurero), Clase(mejora.nombreDeLaClaseAMejorar()))
@@ -194,7 +195,7 @@ class ClaseServiceTest {
 
         claseService.crearClase(claseDelAventurero)
         claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
-        claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(""), 0)
+        claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.FUERZA), 0)
 
         val posiblesMejoras = claseService.posiblesMejoras(aventureroSinExperiencia.id()!!)
 
@@ -208,7 +209,7 @@ class ClaseServiceTest {
 
         claseService.crearClase(claseDelAventurero)
         claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
-        val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(""), 0)
+        val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.FUERZA), 0)
 
         val posiblesMejoras = claseService.posiblesMejoras(aventureroConExperiencia.id()!!)
 
@@ -223,7 +224,7 @@ class ClaseServiceTest {
 
         claseService.crearClase(claseDelAventurero)
         claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
-        claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(""), 0)
+        claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.FUERZA), 0)
 
         claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
         claseService.requerir(Clase(NOMBRE_DE_CLASE_FISICO), Clase(NOMBRE_DE_CLASE_MAGO))
@@ -231,6 +232,62 @@ class ClaseServiceTest {
         val posiblesMejoras = claseService.posiblesMejoras(aventureroConExperiencia.id()!!)
 
         assertTrue(posiblesMejoras.isEmpty())
+    }
+
+    /*OBTENER MEJORA*/
+    @Test
+    fun `un aventurero puede adquirir una nueva clase`(){
+        val aventureroConExp = factory.crearAventureroConExperiencia(3)
+        val atributosMejorables = listOf(Atributo.FUERZA, Atributo.CONSTITUCION)
+        claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
+        claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO, atributosMejorables, 4)
+        claseService.requerir(Clase(NOMBRE_DE_CLASE_AVENTURERO), Clase(NOMBRE_DE_CLASE_FISICO))
+
+        val aventureroMejorado = claseService.ganarProficiencia(aventureroConExp.id()!!,NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO)
+
+        assertTrue(aventureroMejorado.clases().contains("Fisico"))
+    }
+
+    @Test
+    fun `un aventurero puede adquirir mejoras en sus atributos ganando una nueva proficiencia`(){
+        val aventureroConExp = factory.crearAventureroConExperiencia(3)
+        val fuerzaAntesDeMejora = aventureroConExp.fuerza()
+        val constitucionAntesDeMejora = aventureroConExp.constitucion()
+        val atributosMejorables = listOf(Atributo.FUERZA,Atributo.CONSTITUCION)
+        claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
+        claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO, atributosMejorables, 4)
+        claseService.requerir(Clase(NOMBRE_DE_CLASE_AVENTURERO), Clase(NOMBRE_DE_CLASE_FISICO))
+
+        val aventureroMejorado = claseService.ganarProficiencia(aventureroConExp.id()!!,NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO)
+
+        assertThat(aventureroMejorado.fuerza()).isEqualTo(fuerzaAntesDeMejora + 4)
+        assertThat(aventureroMejorado.constitucion()).isEqualTo(constitucionAntesDeMejora + 4)
+    }
+
+    @Test
+    fun `un aventurero no puede ganar una proficiencia si no existe una mejora que lo avale`(){
+        val aventurero = factory.crearAventureroConExperiencia(0)
+
+        val exception = assertThrows<RuntimeException> {
+            claseService.ganarProficiencia(aventurero.id()!!,NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO)
+        }
+        assertThat(exception.message).isEqualTo("La mejora de Aventurero hacia Mago no existe.")
+    }
+
+    @Test
+    fun `un aventurero no puede ganar una proficiencia si no posee la experiencia necesaria`(){
+        val aventurero = factory.crearAventureroConExperiencia(0)
+        claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
+        claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.INTELIGENCIA), 4)
+        claseService.requerir(Clase(NOMBRE_DE_CLASE_AVENTURERO), Clase(NOMBRE_DE_CLASE_FISICO))
+
+        val exception = assertThrows<RuntimeException> {
+            claseService.ganarProficiencia(aventurero.id()!!,NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO)
+        }
+        assertThat(exception.message).isEqualTo("El aventurero no cumple las condiciones para obtener una mejora.")
     }
 
     @AfterEach

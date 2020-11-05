@@ -3,7 +3,7 @@ package ar.edu.unq.epers.tactics.modelo
 class Mejora(
     private val nombreDeLaClaseInicio:String,
     private val nombreDeLaClaseAMejorar:String,
-    private val atributos: List<String>,
+    internal val atributos: List<Atributo>,
     private val puntosAMejorar:Int
 ){
     fun nombreDeLaClaseInicio() = nombreDeLaClaseInicio

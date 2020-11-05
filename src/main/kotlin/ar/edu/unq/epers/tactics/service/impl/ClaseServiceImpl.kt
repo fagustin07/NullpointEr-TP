@@ -1,12 +1,14 @@
 package ar.edu.unq.epers.tactics.service.impl
 
+import ar.edu.unq.epers.tactics.modelo.Atributo
+import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.persistencia.dao.AventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.ClaseDAO
 import ar.edu.unq.epers.tactics.service.ClaseService
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
-import java.lang.RuntimeException
+import org.neo4j.driver.exceptions.NoSuchRecordException
 
 class ClaseServiceImpl(private val claseDAO: ClaseDAO, val aventureroDAO: AventureroDAO) : ClaseService {
 
@@ -18,11 +20,11 @@ class ClaseServiceImpl(private val claseDAO: ClaseDAO, val aventureroDAO: Aventu
     override fun crearMejora(
         nombreClaseInicio: String,
         nombreClaseAMejorar: String,
-        atributos: List<String>,
+        atributos: List<Atributo>,
         valorAAumentar: Int
     ): Mejora {
-        claseDAO.verificarBidireccionalidad(nombreClaseInicio,nombreClaseAMejorar)
-        return claseDAO.crearMejora(nombreClaseInicio,nombreClaseAMejorar,atributos,valorAAumentar)
+        claseDAO.verificarBidireccionalidad(nombreClaseInicio, nombreClaseAMejorar)
+        return claseDAO.crearMejora(nombreClaseInicio, nombreClaseAMejorar, atributos, valorAAumentar)
     }
 
     override fun requerir(clasePredecesora: Clase, claseSucesora: Clase) {
@@ -31,21 +33,49 @@ class ClaseServiceImpl(private val claseDAO: ClaseDAO, val aventureroDAO: Aventu
     }
 
     override fun puedeMejorar(aventureroID: Long, mejora: Mejora): Boolean =
-            HibernateTransactionRunner.runTrx {
-                aventureroDAO.resultadoDeEjecutarCon(aventureroID) {
-                    it.tieneExperiencia() &&  claseDAO.puedeMejorarseTeniendo(it.clases(), mejora)
-                }
+        HibernateTransactionRunner.runTrx {
+            aventureroDAO.resultadoDeEjecutarCon(aventureroID) {
+                claseDAO.puedeMejorarse(it, mejora)
             }
+        }
 
     override fun posiblesMejoras(aventureroID: Long): Set<Mejora> {
         return HibernateTransactionRunner.runTrx {
-            val aventurero = aventureroDAO.recuperar(aventureroID)
-
-            if (!aventurero.tieneExperiencia())
-                emptySet()
-            else
-                claseDAO.posiblesMejorasTeniendo(aventurero.clases())
+            aventureroDAO.resultadoDeEjecutarCon(aventureroID) {
+                claseDAO.posiblesMejorasPara(it)
+            }
         }
+    }
+
+    override fun ganarProficiencia(
+        aventureroId: Long,
+        nombreClaseInicio: String,
+        nombreClaseAMejorar: String
+    ): Aventurero {
+        return HibernateTransactionRunner.runTrx {
+            val aventurero = aventureroDAO.recuperar(aventureroId)
+            val mejoraBuscada = buscarLaMejora(nombreClaseInicio, nombreClaseAMejorar)
+            obtenerMejoraSiDebe(aventurero, mejoraBuscada)
+            aventureroDAO.actualizar(aventurero)
+        }
+    }
+
+    private fun buscarLaMejora(nombreDeLaClaseInicio: String, nombreDeLaClaseAMejorar: String): Mejora {
+        try {
+            return claseDAO.buscarMejora(nombreDeLaClaseInicio, nombreDeLaClaseAMejorar)
+        } catch (e: NoSuchRecordException) {
+            throw RuntimeException("La mejora de $nombreDeLaClaseInicio hacia $nombreDeLaClaseAMejorar no existe.")
+        }
+    }
+
+    private fun obtenerMejoraSiDebe(aventurero: Aventurero, mejoraBuscada: Mejora) {
+        verificarQuePuedaAplicarseMejoraA(aventurero, mejoraBuscada)
+        aventurero.obtenerMejora(mejoraBuscada)
+    }
+
+    private fun verificarQuePuedaAplicarseMejoraA(aventurero: Aventurero, mejoraBuscada: Mejora) {
+        if (!claseDAO.puedeMejorarse(aventurero, mejoraBuscada))
+            throw RuntimeException("El aventurero no cumple las condiciones para obtener una mejora.")
     }
 
     private fun verificarBidireccionalidad(clasePredecesora: Clase, claseSucesora: Clase) {

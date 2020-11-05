@@ -1,5 +1,7 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.neo4j
 
+import ar.edu.unq.epers.tactics.modelo.Atributo
+import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.persistencia.dao.ClaseDAO
@@ -25,7 +27,7 @@ class Neo4JClaseDAO : ClaseDAO {
         return clase
     }
 
-    override fun crearMejora(nombreClaseInicio: String, nombreClaseAMejorar: String, atributos: List<String>, valorAAumentar: Int): Mejora {
+    override fun crearMejora(nombreClaseInicio: String, nombreClaseAMejorar: String, atributos: List<Atributo>, valorAAumentar: Int): Mejora {
         return Neo4JTransactionRunner().runTrx { session ->
             val query = """
                MATCH (claseInicio:Clase {nombre: ${'$'}nombreClaseInicio}) 
@@ -39,7 +41,7 @@ class Neo4JClaseDAO : ClaseDAO {
                     "nombreClaseInicio", nombreClaseInicio,
                     "nombreClaseAMejorar", nombreClaseAMejorar,
                     "valorAAumentar", valorAAumentar,
-                    "atributos", atributos
+                    "atributos", atributos.map { it.toString() }
                 )
             )
             val record = result.single()
@@ -48,7 +50,7 @@ class Neo4JClaseDAO : ClaseDAO {
                 val mejora = record[2]
                 val nombreClaseInicio: String = claseInicio["nombre"].asString()
                 val nombreClaseAMejorar: String = claseAMejorar["nombre"].asString()
-                val atributos: List<String> = mejora["atributos"].asList{ it.asString() }
+                val atributos: List<Atributo> = mejora["atributos"].asList{ it.asString() }.map{ Atributo.desdeString(it)}
                 val puntos: Int = mejora["puntos"].asInt()
                 Mejora(nombreClaseInicio,nombreClaseAMejorar,atributos,puntos)
         }
@@ -72,10 +74,10 @@ class Neo4JClaseDAO : ClaseDAO {
         }
     }
 
-    override fun puedeMejorarseTeniendo(clasesQueSeTiene: MutableSet<String>, mejora: Mejora): Boolean {
+    override fun puedeMejorarse(aventurero: Aventurero, mejora: Mejora): Boolean {
         verificarQueExistaMejora(mejora)
 
-        return Neo4JTransactionRunner().runTrx { session ->
+        return aventurero.tieneExperiencia() && Neo4JTransactionRunner().runTrx { session ->
             val query = """
                 MATCH (habilitante:Clase { nombre: ${'$'}nombreDeLaClaseInicio })
                 MATCH (mejora:Clase { nombre: ${'$'}nombreDeLaClaseAMejorar })
@@ -92,17 +94,42 @@ class Neo4JClaseDAO : ClaseDAO {
             session.run(
                     query,
                     Values.parameters(
-                            "clasesQueSeTiene", clasesQueSeTiene,
+                            "clasesQueSeTiene", aventurero.clases(),
                             "nombreDeLaClaseInicio", mejora.nombreDeLaClaseInicio(),
                             "nombreDeLaClaseAMejorar", mejora.nombreDeLaClaseAMejorar(),
-                            "atributos", mejora.atributos(),
+                            "atributos", mejora.atributos().map { it.toString() },
                             "puntos", mejora.puntosAMejorar()
                     )
             ).single()[0].asBoolean()
         }
     }
 
-    override fun posiblesMejorasTeniendo(nombresDeClasesQueSeTiene: MutableSet<String>): Set<Mejora> {
+    override fun buscarMejora(nombreDeLaClaseInicio: String, nombreDeLaClaseAMejorar: String): Mejora {
+        return Neo4JTransactionRunner().runTrx {session ->
+            val query = """
+               MATCH (claseInicio:Clase {nombre: ${'$'}nombreClaseInicio}) 
+               MATCH (claseAMejorar:Clase {nombre: ${'$'}nombreClaseMejorada}) 
+               MATCH (claseInicio)-[mejora:habilita]->(claseAMejorar)
+               RETURN mejora
+            """
+            val result = session
+                .run(query,
+                    Values.parameters(
+                        "nombreClaseInicio", nombreDeLaClaseInicio,
+                        "nombreClaseMejorada", nombreDeLaClaseAMejorar
+                    ))
+            val record = result.single()
+            val mejora = record[0]
+            val atributos: List<Atributo> = mejora["atributos"].asList{ it.asString() }.map { Atributo.desdeString(it) }
+            val puntos: Int = mejora["puntos"].asInt()
+
+            Mejora(nombreDeLaClaseInicio,nombreDeLaClaseAMejorar, atributos,puntos)
+        }
+    }
+
+    override fun posiblesMejorasPara(aventurero: Aventurero): Set<Mejora> {
+        if (!aventurero.tieneExperiencia()) return emptySet()
+
         return Neo4JTransactionRunner().runTrx { session ->
             val query = """
                 MATCH (habilitante)-[h:habilita]->(mejora)
@@ -113,19 +140,19 @@ class Neo4JClaseDAO : ClaseDAO {
                     WHERE NOT (requerido.nombre IN ${'$'}nombresDeClasesQueSeTiene)
                 }
                 RETURN habilitante.nombre, mejora.nombre, h.atributos, h.puntos
-            """
+                """
             session
-                    .run(query, Values.parameters("nombresDeClasesQueSeTiene", nombresDeClasesQueSeTiene))
-                    .stream()
-                    .map {
-                        Mejora(
-                                it[0].asString(),
-                                it[1].asString(),
-                                it[2].asList { it.asString() },
-                                it[3].asInt()
-                        )
-                    }
-                    .collect(Collectors.toSet())
+                .run(query, Values.parameters("nombresDeClasesQueSeTiene", aventurero.clases()))
+                .stream()
+                .map {
+                    Mejora(
+                        it[0].asString(),
+                        it[1].asString(),
+                        it[2].asList { it.asString() }.map { Atributo.desdeString(it) },
+                        it[3].asInt()
+                    )
+                }
+                .collect(Collectors.toSet())
         }
     }
 
@@ -205,7 +232,7 @@ class Neo4JClaseDAO : ClaseDAO {
                         Values.parameters(
                                 "nombreDeLaClaseInicio", mejora.nombreDeLaClaseInicio(),
                                 "nombreDeLaClaseAMejorar", mejora.nombreDeLaClaseAMejorar(),
-                                "atributos", mejora.atributos(),
+                                "atributos", mejora.atributos().map { it.toString() },
                                 "puntos", mejora.puntosAMejorar()
                         )
                 ).single()[0].asBoolean()
