@@ -23,7 +23,6 @@ class Aventurero(private var nombre: String) {
     @CollectionTable(name="clases")
     private var clases: MutableSet<String> = mutableSetOf("Aventurero")
 
-    private var vida: Double = 0.0
     private var mana: Double = 0.0
     private var poderTotal: Double = 0.0
     private var nivel: Int = 1
@@ -74,13 +73,13 @@ class Aventurero(private var nombre: String) {
         this.destreza = destreza
         this.constitucion = constitucion
         this.fuerza = fuerza
-        this.recalcularVidaYMana()
+        this.recalcularMana()
         this.recalcularPoderTotal()
     }
 
     init {
         //this.clases = mutableListOf("Aventurero")
-        this.recalcularVidaYMana()
+        this.recalcularMana()
         this.recalcularPoderTotal()
     }
 
@@ -100,7 +99,8 @@ class Aventurero(private var nombre: String) {
     fun constitucion() = constitucion
     fun inteligencia() = inteligencia
 
-    fun vidaActual() = vida-dañoRecibido
+    fun vidaInicial() = nivel() * 5 + constitucion * 2 + fuerza
+    fun vidaActual() = vidaInicial() - dañoRecibido
     fun mana() = mana
     fun armadura() = nivel() + constitucion
     fun velocidad() = nivel() + destreza
@@ -196,7 +196,7 @@ class Aventurero(private var nombre: String) {
         this.tacticas = otroAventurero.tacticas()
         this.imagenURL = otroAventurero.imagenURL()
         this.dañoRecibido = otroAventurero.dañoRecibido
-        this.recalcularVidaYMana()
+        this.recalcularMana()
     }
 
     internal fun darleElId(id: Long?) {
@@ -212,7 +212,7 @@ class Aventurero(private var nombre: String) {
         this.turnosDefendido = 0
         this.aventureroDefendido = null
         this.defensor = null
-        this.recalcularVidaYMana()
+        this.recalcularMana()
     }
 
     fun salirDeLaParty() {
@@ -238,12 +238,11 @@ class Aventurero(private var nombre: String) {
             defensor!!.recibirDaño(dañoAAplicar / 2)
             this.consumirTurnoDeDefensa()
         } else {
-            this.dañoRecibido = min(this.dañoRecibido+dañoAAplicar, vida)
+            this.dañoRecibido = min(this.dañoRecibido+dañoAAplicar, vidaInicial())
         }
     }
 
-    private fun recalcularVidaYMana() {
-        vida = ((nivel() * 5) + (constitucion * 2) + fuerza)
+    private fun recalcularMana() {
         mana = nivel() + inteligencia
     }
 
