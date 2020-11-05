@@ -185,6 +185,48 @@ class AventureroTest {
     }
 
     @Test
+    fun `cuando a un aventurero se le actualiza su atributo fuerza se actualiza su poder total`() {
+        val aventurero = Aventurero("Juan","URL",10.0,10.0,10.0,10.0)
+        val poderTotalAntes = aventurero.poderTotal()
+        val aventureroActualizado = Aventurero("Juan","URL",20.0,10.0,10.0,10.0)
+
+        aventurero.actualizarse(aventureroActualizado)
+        val poderTotalActualEsperado = aventurero.dañoFisico() + aventurero.precisionFisica() + aventurero.poderMagico()
+
+        assertThat(poderTotalAntes).isLessThan(poderTotalActualEsperado)
+        assertThat(aventurero.poderTotal()).isEqualTo(poderTotalActualEsperado)
+
+    }
+
+
+    @Test
+    fun `cuando a un aventurero se le actualiza su atributo fuerza su vida tambien se actualiza`() {
+        val aventurero = Aventurero("Juan","URL",10.0,10.0,10.0,10.0)
+        val vidaAntes = aventurero.vidaActual()
+        val aventureroActualizado = Aventurero("Juan","URL",20.0,10.0,10.0,10.0)
+
+        aventurero.actualizarse(aventureroActualizado)
+        val vidaActualEsperada = ((aventurero.nivel() * 5) + (aventurero.constitucion()* 2) + aventurero.fuerza())
+
+        assertThat(vidaAntes).isLessThan(vidaActualEsperada)
+        assertThat(aventurero.vidaActual()).isEqualTo(vidaActualEsperada)
+    }
+
+
+    @Test
+    fun `cuando a un aventurero se le actualiza su atributo inteligencia su mana tambien se actualiza`() {
+        val aventurero = Aventurero("Juan","URL",10.0,10.0,10.0,10.0)
+        val manaAntes = aventurero.mana()
+        val aventureroActualizado = Aventurero("Juan","URL",10.0,10.0,20.0,10.0)
+
+        aventurero.actualizarse(aventureroActualizado)
+        val manaActualEsperado = aventurero.nivel() + aventurero.inteligencia()
+
+        assertThat(manaAntes).isLessThan(manaActualEsperado)
+        assertThat(aventurero.mana()).isEqualTo(manaActualEsperado)
+    }
+
+    @Test
     fun `un aventurero inicialmente tiene cero puntos de experiencia`() {
         val aventurero = Aventurero("Marcos","URL",10.0,10.0,10.0,10.0)
 

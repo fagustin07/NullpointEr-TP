@@ -27,27 +27,34 @@ class Aventurero(private var nombre: String) {
     private var poderTotal: Double = 0.0
     private var nivel: Int = 1
     private var experiencia: Int = 0
-    private var fuerza: Double = 1.0
+    var fuerza: Double = 1.0
         set(nuevoPuntaje) {
             this.validarPuntaje(nuevoPuntaje, "fuerza")
             field = nuevoPuntaje
+            this.recalcularPoderTotal()
+            this.recalcularMana()
         }
-    private var destreza: Double = 1.0
+    var destreza: Double = 1.0
         set(nuevoPuntaje) {
             this.validarPuntaje(nuevoPuntaje, "destreza")
             field = nuevoPuntaje
+            this.recalcularPoderTotal()
         }
 
-    private var inteligencia: Double = 1.0
+    var inteligencia: Double = 1.0
         set(nuevoPuntaje) {
             this.validarPuntaje(nuevoPuntaje, "inteligencia")
             field = nuevoPuntaje
+            this.recalcularPoderTotal()
+            this.recalcularMana()
         }
 
-    private var constitucion: Double = 1.0
+    var constitucion: Double = 1.0
         set(nuevoPuntaje) {
             this.validarPuntaje(nuevoPuntaje, "constitucion")
             field = nuevoPuntaje
+            this.recalcularPoderTotal()
+            this.recalcularMana()
         }
 
     private var dañoRecibido = 0.0
@@ -197,6 +204,7 @@ class Aventurero(private var nombre: String) {
         this.imagenURL = otroAventurero.imagenURL()
         this.dañoRecibido = otroAventurero.dañoRecibido
         this.recalcularMana()
+        this.recalcularPoderTotal()
     }
 
     internal fun darleElId(id: Long?) {
