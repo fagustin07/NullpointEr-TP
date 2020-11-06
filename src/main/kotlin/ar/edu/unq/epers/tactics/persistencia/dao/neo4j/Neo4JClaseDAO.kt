@@ -123,23 +123,22 @@ class Neo4JClaseDAO : ClaseDAO {
     override fun caminoMasRentable(puntosDeExperiencia: Int, clasesDePartida: Set<String>, atributoDeseado: Atributo): List<Mejora> {
         return Neo4JTransactionRunner().runTrx {session ->
             val query = """
-                MATCH (claseInicio:Clase) 
-                MATCH (claseAMejorar:Clase) 
-                MATCH (claseInicio)-[mejora:habilita]->(claseAMejorar)
+                UNWIND ${'$'}nombresClasesDePartida AS nombreDeClaseDePartida
+                MATCH (claseInicio:Clase { nombre: nombreDeClaseDePartida }) 
+                MATCH (claseInicio)-[mejora:habilita]->(claseAMejorar:Clase)
                 RETURN claseInicio.nombre AS nombreDeClaseDeInicio, claseAMejorar.nombre, mejora.atributos AS atributos, mejora.puntos AS puntos
                 """
 
-            val list = session
+            session
                 .run(
                     query,
                     Values.parameters(
                         "puntosDeExperiencia", puntosDeExperiencia,
-                        "clasesDePartida", clasesDePartida,
+                        "nombresClasesDePartida", clasesDePartida,
                         "atributoDeseado", atributoDeseado.toString()
                     )
-                ).list()
-
-            list
+                )
+                .list()
                 .stream()
                 .map{
                     Mejora(
@@ -149,7 +148,6 @@ class Neo4JClaseDAO : ClaseDAO {
                         it["puntos"].asInt())
                 }
                 .collect(Collectors.toList())
-
         }
     }
 

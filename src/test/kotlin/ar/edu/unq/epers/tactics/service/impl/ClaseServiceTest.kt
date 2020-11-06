@@ -326,7 +326,7 @@ class ClaseServiceTest {
         claseService.crearMejora(NOMBRE_DE_CLASE_MAGO, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.CONSTITUCION), 10)
 
 
-        val mejorasParaCaminoMasRentable = claseService.caminoMasRentable(1, aventureroId, Atributo.FUERZA)
+        val mejorasParaCaminoMasRentable = claseService.caminoMasRentable(10, aventureroId, Atributo.FUERZA)
 
         assertEquals(1, mejorasParaCaminoMasRentable.size)
         assertThat(mejorasParaCaminoMasRentable.contains(mejoraEsperada))
