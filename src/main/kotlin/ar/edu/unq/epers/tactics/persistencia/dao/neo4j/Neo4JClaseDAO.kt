@@ -139,6 +139,8 @@ class Neo4JClaseDAO : ClaseDAO {
                     claseAMejorar.nombre,
                     mejora.atributos,
                     mejora.puntos
+                ORDER BY mejora.puntos DESC
+                LIMIT 1
                 """
 
             session
