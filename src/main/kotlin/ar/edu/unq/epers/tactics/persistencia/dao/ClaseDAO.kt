@@ -12,11 +12,7 @@ interface ClaseDAO {
 
     fun requeridasDe(claseSucesora: Clase): List<Clase>
 
-    fun requiereEnAlgunNivelDe(claseSucesora: Clase, claseAntecesora: Clase): Boolean
-
     fun crearMejora(nombreClaseInicio:String, nombreClaseAMejorar:String, atributos:List<Atributo>, valorAAumentar:Int): Mejora
-
-    fun verificarQueLaClaseDeInicioNoSeaHabilitadaPorClaseAMejorar(nombreClaseInicio: String, nombreClaseAMejorar: String)
 
     fun posiblesMejorasPara(aventurero: Aventurero): Set<Mejora>
 

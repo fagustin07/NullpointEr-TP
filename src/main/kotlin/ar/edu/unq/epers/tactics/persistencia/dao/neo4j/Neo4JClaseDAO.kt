@@ -28,6 +28,8 @@ class Neo4JClaseDAO : ClaseDAO {
     }
 
     override fun crearMejora(nombreClaseInicio: String, nombreClaseAMejorar: String, atributos: List<Atributo>, valorAAumentar: Int): Mejora {
+        verificarQueLaClaseDeInicioNoSeaHabilitadaPorClaseAMejorar(nombreClaseInicio, nombreClaseAMejorar)
+
         return Neo4JTransactionRunner().runTrx { session ->
             val query = """
                MATCH (claseInicio:Clase {nombre: ${'$'}nombreClaseInicio}) 
@@ -51,6 +53,8 @@ class Neo4JClaseDAO : ClaseDAO {
 
 
     override fun requerir(nombreClaseHabilitada: String, nombreClaseRequerida: String) {
+        verificarQueNoExistaEnNingunNivelRequerimiento(nombreClaseHabilitada, nombreClaseRequerida)
+
         Neo4JTransactionRunner().runTrx { session ->
             val query = """
                MATCH (claseHabilitada:Clase {nombre: ${'$'}nombreClaseHabilitada})
@@ -124,8 +128,9 @@ class Neo4JClaseDAO : ClaseDAO {
         return Neo4JTransactionRunner().runTrx {session ->
             val query = """
                 UNWIND ${'$'}nombresClasesDePartida AS nombreDeClaseDePartida
-                MATCH (claseInicio:Clase { nombre: nombreDeClaseDePartida }) 
+                MATCH (claseInicio:Clase { nombre: nombreDeClaseDePartida })
                 MATCH (claseInicio)-[mejora:habilita]->(claseAMejorar:Clase)
+                WHERE ${'$'}atributoDeseado IN mejora.atributos
                 RETURN claseInicio.nombre AS nombreDeClaseDeInicio, claseAMejorar.nombre, mejora.atributos AS atributos, mejora.puntos AS puntos
                 """
 
@@ -194,56 +199,13 @@ class Neo4JClaseDAO : ClaseDAO {
         }
     }
 
-    override fun requiereEnAlgunNivelDe(claseSucesora: Clase, claseAntecesora: Clase): Boolean {
-        return Neo4JTransactionRunner().runTrx { session ->
-            val query = """
-                MATCH (clase:Clase {nombre: ${'$'}nombreDeClaseAntecesora})  
-                MATCH (clase)-[:requiere *1..]->(requisito) 
-                RETURN ${'$'}nombreDeClaseSucesora IN collect(requisito.nombre)
-            """
-            val result = session.run(
-                query,
-                Values.parameters(
-                    "nombreDeClaseSucesora",
-                    claseSucesora.nombre(),
-                    "nombreDeClaseAntecesora",
-                    claseAntecesora.nombre()
-                )
-            )
-            result.single()[0].asBoolean()
-        }
-    }
-
-    override fun verificarQueLaClaseDeInicioNoSeaHabilitadaPorClaseAMejorar(nombreClaseInicio: String, nombreClaseAMejorar: String){ // TODO: revisar
-        val query = """
-                        MATCH (from:Clase {nombre: ${'$'}fromName }) 
-                        MATCH (to:Clase {nombre: ${'$'}toName })
-                        MATCH path = (to)-[:habilita]->(from)
-                        RETURN count(path) > 0 AS habilitante_es_habilitada_por_mejora
-                    """
-        return Neo4JTransactionRunner().runTrx { session ->
-            val resultado = session
-                .run(
-                    query,
-                    Values.parameters(
-                        "fromName", nombreClaseInicio,
-                        "toName", nombreClaseAMejorar
-                    )
-                )
-                .single()[0].asBoolean()
-
-                if(resultado){
-                    throw RuntimeException("La mejora que estas queriendo crear no es posible")
-                }
-        }
-    }
-
     fun clear() {
         Neo4JTransactionRunner().runTrx { session ->
             session.run("MATCH (n) DETACH DELETE n")
         }
     }
-
+    /** PRIVATE **/
+    /* Testing */
     private fun existeMejora(mejora: Mejora) =
             Neo4JTransactionRunner().runTrx { session ->
                 val query = """
@@ -262,10 +224,59 @@ class Neo4JClaseDAO : ClaseDAO {
                                 "puntos", mejora.puntosAMejorar()
                         )
                 ).single()[0].asBoolean()
-
             }
 
+    private fun requiereEnAlgunNivelDe(claseSucesora: String, claseAntecesora: String): Boolean {
+        return Neo4JTransactionRunner().runTrx { session ->
+            val query = """
+                MATCH (clase:Clase {nombre: ${'$'}nombreDeClaseAntecesora})  
+                MATCH (clase)-[:requiere *1..]->(requisito) 
+                RETURN ${'$'}nombreDeClaseSucesora IN collect(requisito.nombre)
+            """
+            val result = session.run(
+                query,
+                Values.parameters(
+                    "nombreDeClaseSucesora", claseSucesora,
+                    "nombreDeClaseAntecesora", claseAntecesora
+                )
+            )
+            result.single()[0].asBoolean()
+        }
+    }
+
+    /* Assertions */
     private fun verificarQueExistaMejora(mejora: Mejora) {
         if (!existeMejora(mejora)) throw RuntimeException("No existe la mejora")
     }
+
+    private fun verificarQueNoExistaEnNingunNivelRequerimiento(clasePredecesora: String, claseSucesora: String) {
+        if (requiereEnAlgunNivelDe(clasePredecesora, claseSucesora)) {
+            throw RuntimeException("No se puede establecer una relacion bidireccional entre ${clasePredecesora} y ${claseSucesora}")
+        }
+    }
+
+    private fun verificarQueLaClaseDeInicioNoSeaHabilitadaPorClaseAMejorar(nombreClaseInicio: String, nombreClaseAMejorar: String){ // TODO: revisar
+        val query = """
+                MATCH (from:Clase {nombre: ${'$'}fromName })
+                MATCH (to:Clase {nombre: ${'$'}toName })
+                MATCH path = (to)-[:habilita]->(from)
+                RETURN count(path) > 0 AS habilitante_es_habilitada_por_mejora
+            """
+        return Neo4JTransactionRunner().runTrx { session ->
+            val resultado = session
+                .run(
+                    query,
+                    Values.parameters(
+                        "fromName", nombreClaseInicio,
+                        "toName", nombreClaseAMejorar
+                    )
+                )
+                .single()[0].asBoolean()
+
+            if(resultado){
+                throw RuntimeException("La mejora que estas queriendo crear no es posible")
+            }
+        }
+    }
+
 }
