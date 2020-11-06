@@ -4,6 +4,7 @@ import ar.edu.unq.epers.tactics.modelo.Atributo
 import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.neo4j.Neo4JClaseDAO
 import helpers.FactoryAventureroLeaderboardService
 import org.assertj.core.api.Assertions.assertThat
@@ -292,6 +293,7 @@ class ClaseServiceTest {
 
     @AfterEach
     internal fun tearDown() {
+        PartyServiceImpl(HibernatePartyDAO()).eliminarTodo()
         claseDAO.clear()
     }
 }

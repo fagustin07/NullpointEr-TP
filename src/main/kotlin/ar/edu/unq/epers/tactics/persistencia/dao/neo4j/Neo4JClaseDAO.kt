@@ -183,25 +183,23 @@ class Neo4JClaseDAO : ClaseDAO {
         }
     }
 
-    override fun verificarBidireccionalidad(nombreClaseInicio: String, nombreClaseAMejorar: String){
+    override fun verificarBidireccionalidad(nombreClaseInicio: String, nombreClaseAMejorar: String) {
         return Neo4JTransactionRunner().runTrx { session ->
             val query = """
-                        MATCH (c:Clase {nombre: ${'$'}nombreClase }) 
-                        MATCH (habilitante)-[:habilita]->(habilitado)
-                        RETURN habilitado
+                        MATCH (clase:Clase {nombre: ${'$'}nombreClaseInicial }) 
+                        MATCH (clase)-[:habilita]->(habilitado)
+                        RETURN ${'$'}nombreClaseAvanzada IN collect(habilitado.nombre)
                     """
-            val result = session.run(
-                    query,Values.parameters(
-                    "nombreClase",nombreClaseAMejorar
+            val esBidirecional = session.run(
+                query, Values.parameters(
+                    "nombreClaseInicial",
+                    nombreClaseAMejorar,
+                    "nombreClaseAvanzada",
+                    nombreClaseInicio
                 )
-            )
-            result.list { record ->
-                val clase = record[0]
-                val nombreClaseHabilitadaPorClaseAMejorar: String = clase["nombre"].asString()
-                if(nombreClaseHabilitadaPorClaseAMejorar == nombreClaseInicio){
-                    throw RuntimeException("La mejora que estas queriendo crear no es posible")
-                }
-            }
+            ).single()[0].asBoolean()
+
+            if (esBidirecional) throw RuntimeException("La mejora que estas queriendo crear no es posible")
         }
     }
 
