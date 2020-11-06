@@ -35,7 +35,7 @@ class Neo4JClaseDAO : ClaseDAO {
                MERGE (claseInicio)-[h:habilita {puntos:${'$'}valorAAumentar, atributos:${'$'}atributos}]->(claseAMejorar)
                RETURN claseInicio, claseAMejorar,h
             """
-            val result = session.run(
+            session.run(
                 query,
                 Values.parameters(
                     "nombreClaseInicio", nombreClaseInicio,
@@ -44,15 +44,8 @@ class Neo4JClaseDAO : ClaseDAO {
                     "atributos", atributos.map { it.toString() }
                 )
             )
-            val record = result.single()
-                val claseInicio = record[0]
-                val claseAMejorar = record[1]
-                val mejora = record[2]
-                val nombreClaseInicio: String = claseInicio["nombre"].asString()
-                val nombreClaseAMejorar: String = claseAMejorar["nombre"].asString()
-                val atributos: List<Atributo> = mejora["atributos"].asList{ it.asString() }.map{ Atributo.desdeString(it)}
-                val puntos: Int = mejora["puntos"].asInt()
-                Mejora(nombreClaseInicio,nombreClaseAMejorar,atributos,puntos)
+
+            Mejora(nombreClaseInicio,nombreClaseAMejorar,atributos,valorAAumentar)
         }
     }
 
@@ -156,14 +149,14 @@ class Neo4JClaseDAO : ClaseDAO {
         }
     }
 
-    override fun requeridasDe(clase: Clase): MutableList<Clase> {
+    override fun requeridasDe(claseSucesora: Clase): MutableList<Clase> {
         return Neo4JTransactionRunner().runTrx { session ->
             val query = """
                MATCH (clase:Clase {nombre: ${'$'}nombreClase})  
                MATCH (clase)-[:requiere]->(requisito) 
                RETURN requisito.nombre
             """
-            val result = session.run(query, Values.parameters("nombreClase", clase.nombre()))
+            val result = session.run(query, Values.parameters("nombreClase", claseSucesora.nombre()))
             result.list {
                 Clase(it[0].asString())
             }
@@ -190,25 +183,23 @@ class Neo4JClaseDAO : ClaseDAO {
         }
     }
 
-    override fun verificarBidireccionalidad(nombreClaseInicio: String, nombreClaseAMejorar: String){
+    override fun verificarBidireccionalidad(nombreClaseInicio: String, nombreClaseAMejorar: String) {
         return Neo4JTransactionRunner().runTrx { session ->
             val query = """
-                        MATCH (c:Clase {nombre: ${'$'}nombreClase }) 
-                        MATCH (habilitante)-[:habilita]->(habilitado)
-                        RETURN habilitado
+                        MATCH (clase:Clase {nombre: ${'$'}nombreClaseInicial }) 
+                        MATCH (clase)-[:habilita]->(habilitado)
+                        RETURN ${'$'}nombreClaseAvanzada IN collect(habilitado.nombre)
                     """
-            val result = session.run(
-                    query,Values.parameters(
-                    "nombreClase",nombreClaseAMejorar
+            val esBidirecional = session.run(
+                query, Values.parameters(
+                    "nombreClaseInicial",
+                    nombreClaseAMejorar,
+                    "nombreClaseAvanzada",
+                    nombreClaseInicio
                 )
-            )
-            result.list { record ->
-                val clase = record[0]
-                val nombreClaseHabilitadaPorClaseAMejorar: String = clase["nombre"].asString()
-                if(nombreClaseHabilitadaPorClaseAMejorar == nombreClaseInicio){
-                    throw RuntimeException("La mejora que estas queriendo crear no es posible")
-                }
-            }
+            ).single()[0].asBoolean()
+
+            if (esBidirecional) throw RuntimeException("La mejora que estas queriendo crear no es posible")
         }
     }
 

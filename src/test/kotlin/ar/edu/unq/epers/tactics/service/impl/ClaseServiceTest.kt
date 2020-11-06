@@ -4,6 +4,7 @@ import ar.edu.unq.epers.tactics.modelo.Atributo
 import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.neo4j.Neo4JClaseDAO
 import helpers.FactoryAventureroLeaderboardService
 import org.assertj.core.api.Assertions.assertThat
@@ -37,7 +38,7 @@ class ClaseServiceTest {
         val clasePredecesora = claseService.crearClase("Paladin")
         val claseSucesora = claseService.crearClase("Clerigo")
 
-        claseService.requerir(clasePredecesora, claseSucesora)
+        claseService.requerir(clasePredecesora.nombre(), claseSucesora.nombre())
 
         assertThat(claseDAO.requeridasDe(clasePredecesora))
             .usingRecursiveFieldByFieldElementComparator()
@@ -48,9 +49,9 @@ class ClaseServiceTest {
     fun `dos clases no pueden requerirse entre si`() {
         val clasePredecesora = claseService.crearClase("Paladin")
         val claseSucesora = claseService.crearClase("Clerigo")
-        claseService.requerir(clasePredecesora, claseSucesora)
+        claseService.requerir(clasePredecesora.nombre(), claseSucesora.nombre())
 
-        assertThatThrownBy { claseService.requerir(claseSucesora, clasePredecesora) }
+        assertThatThrownBy { claseService.requerir(claseSucesora.nombre(), clasePredecesora.nombre()) }
             .hasMessageContaining("No se puede establecer una relacion bidireccional")
             .hasMessageContaining(clasePredecesora.nombre())
             .hasMessageContaining(claseSucesora.nombre())
@@ -63,10 +64,10 @@ class ClaseServiceTest {
         val clasePredecesora = claseService.crearClase("Paladin")
         val claseDelMedio = claseService.crearClase("Guerrero de la Luz")
         val claseSucesora = claseService.crearClase("Clerigo")
-        claseService.requerir(clasePredecesora, claseDelMedio)
-        claseService.requerir(claseDelMedio, claseSucesora)
+        claseService.requerir(clasePredecesora.nombre(), claseDelMedio.nombre())
+        claseService.requerir(claseDelMedio.nombre(), claseSucesora.nombre())
 
-        assertThatThrownBy { claseService.requerir(claseSucesora, clasePredecesora) }
+        assertThatThrownBy { claseService.requerir(claseSucesora.nombre(), clasePredecesora.nombre()) }
             .hasMessageContaining("No se puede establecer una relacion bidireccional")
             .hasMessageContaining(clasePredecesora.nombre())
             .hasMessageContaining(claseSucesora.nombre())
@@ -167,7 +168,7 @@ class ClaseServiceTest {
         val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.FUERZA), 0)
 
         claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
-        claseService.requerir(Clase(mejora.nombreDeLaClaseAMejorar()), Clase(NOMBRE_DE_CLASE_MAGO))
+        claseService.requerir(mejora.nombreDeLaClaseAMejorar(), NOMBRE_DE_CLASE_MAGO)
 
         assertFalse(claseService.puedeMejorar(aventureroConExperiencia.id()!!, mejora))
     }
@@ -182,7 +183,7 @@ class ClaseServiceTest {
         val mejora = claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.FUERZA), 0)
 
         claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
-        claseService.requerir(Clase(claseDelAventurero), Clase(mejora.nombreDeLaClaseAMejorar()))
+        claseService.requerir(claseDelAventurero, mejora.nombreDeLaClaseAMejorar())
 
         assertTrue(claseService.puedeMejorar(aventureroConExperiencia.id()!!, mejora))
     }
@@ -227,7 +228,7 @@ class ClaseServiceTest {
         claseService.crearMejora(claseDelAventurero, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.FUERZA), 0)
 
         claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
-        claseService.requerir(Clase(NOMBRE_DE_CLASE_FISICO), Clase(NOMBRE_DE_CLASE_MAGO))
+        claseService.requerir(NOMBRE_DE_CLASE_FISICO, NOMBRE_DE_CLASE_MAGO)
 
         val posiblesMejoras = claseService.posiblesMejoras(aventureroConExperiencia.id()!!)
 
@@ -242,7 +243,7 @@ class ClaseServiceTest {
         claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
         claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
         claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO, atributosMejorables, 4)
-        claseService.requerir(Clase(NOMBRE_DE_CLASE_AVENTURERO), Clase(NOMBRE_DE_CLASE_FISICO))
+        claseService.requerir(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO)
 
         val aventureroMejorado = claseService.ganarProficiencia(aventureroConExp.id()!!,NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO)
 
@@ -258,7 +259,7 @@ class ClaseServiceTest {
         claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
         claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
         claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO, atributosMejorables, 4)
-        claseService.requerir(Clase(NOMBRE_DE_CLASE_AVENTURERO), Clase(NOMBRE_DE_CLASE_FISICO))
+        claseService.requerir(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO)
 
         val aventureroMejorado = claseService.ganarProficiencia(aventureroConExp.id()!!,NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO)
 
@@ -282,7 +283,7 @@ class ClaseServiceTest {
         claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
         claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
         claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.INTELIGENCIA), 4)
-        claseService.requerir(Clase(NOMBRE_DE_CLASE_AVENTURERO), Clase(NOMBRE_DE_CLASE_FISICO))
+        claseService.requerir(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO)
 
         val exception = assertThrows<RuntimeException> {
             claseService.ganarProficiencia(aventurero.id()!!,NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO)
@@ -292,6 +293,7 @@ class ClaseServiceTest {
 
     @AfterEach
     internal fun tearDown() {
+        PartyServiceImpl(HibernatePartyDAO()).eliminarTodo()
         claseDAO.clear()
     }
 }

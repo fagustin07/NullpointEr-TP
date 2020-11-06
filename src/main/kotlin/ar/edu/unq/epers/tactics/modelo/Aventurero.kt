@@ -222,8 +222,8 @@ class Aventurero(private var nombre: String) {
     fun reestablecerse() {
         this.dañoRecibido = 0.0
         this.turnosDefendido = 0
-        this.aventureroDefendido = null
         this.defensor = null
+        this.dejarDeDefender()
         this.recalcularMana()
     }
 
@@ -274,7 +274,12 @@ class Aventurero(private var nombre: String) {
     }
 
     private fun perderDefensor() {
+        this.defensor!!.dejarDeDefender()
         this.defensor = null
+    }
+
+    private fun dejarDeDefender() {
+        this.aventureroDefendido = null
     }
 
     private fun subirDeNivel() {
