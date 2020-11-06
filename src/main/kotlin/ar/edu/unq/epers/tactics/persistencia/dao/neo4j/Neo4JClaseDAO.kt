@@ -137,12 +137,12 @@ class Neo4JClaseDAO : ClaseDAO {
                 MATCH (from)-[mejoras:habilita*$puntosDeExperiencia]->(to:Clase)
                 WHERE ${'$'}atributoDeseado IN last(mejoras).atributos
 
-                RETURN [mejora in mejoras | {
-                    from: startNode(mejora).nombre,
-                    to: endNode(mejora).nombre,
-                    atriburos: mejora.atributos,
-                    puntos: mejora.puntos
-                }]
+                RETURN [mejora in mejoras | [
+                    startNode(mejora).nombre,
+                    endNode(mejora).nombre,
+                    mejora.atributos,
+                    mejora.puntos
+                ]]
                 """
 
             session
