@@ -7,6 +7,7 @@ import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.persistencia.dao.ClaseDAO
 import ar.edu.unq.epers.tactics.service.runner.Neo4JTransactionRunner
 import org.neo4j.driver.*
+import java.lang.Integer.max
 import java.lang.RuntimeException
 import java.util.stream.Collectors
 
@@ -131,18 +132,17 @@ class Neo4JClaseDAO : ClaseDAO {
                 
                 MATCH (claseInicio:Clase { nombre: nombreDeClaseDePartida })
                 
-                MATCH paths = (claseInicio)-[mejoras:habilita*$puntosDeExperiencia]->(claseAMejorar:Clase)
-                WHERE ALL(each IN mejoras WHERE ${'$'}atributoDeseado IN each.atributos)
-                
-                UNWIND mejoras AS mejora
-                
-                RETURN
-                    claseInicio.nombre,
-                    claseAMejorar.nombre,
-                    mejora.atributos,
-                    mejora.puntos
-                ORDER BY mejora.puntos DESC
-                LIMIT 1
+                MATCH (from:Clase { nombre: nombreDeClaseDePartida })
+
+                MATCH (from)-[mejoras:habilita*$puntosDeExperiencia]->(to:Clase)
+                WHERE ${'$'}atributoDeseado IN last(mejoras).atributos
+
+                RETURN [mejora in mejoras | {
+                    from: startNode(mejora).nombre,
+                    to: endNode(mejora).nombre,
+                    atriburos: mejora.atributos,
+                    puntos: mejora.puntos
+                }]
                 """
 
             session

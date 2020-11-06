@@ -23,7 +23,7 @@ class ClaseServiceTest {
 
     private val claseDAO = Neo4JClaseDAO()
     private val claseService: ClaseServiceImpl = ClaseServiceImpl(claseDAO, HibernateAventureroDAO())
-
+/*
     @Test
     fun `cuando se crea una clase inicia con nombre`() {
         val nombre = "Aventurero"
@@ -285,8 +285,8 @@ class ClaseServiceTest {
         }
         assertThat(exception.message).isEqualTo("El aventurero no cumple las condiciones para obtener una mejora.")
     }
-
-    /** CAMINO MAS RENTABLE **/ // TODO: de aca para abajo los nombres de tests son un desastre. la forma de testear que se fue por el mejor camino no esta muy buena
+*/
+    /** CAMINO MAS RENTABLE **/
     @Test
     fun `cuando niguna clase del aventurero habilita ninguna mejora, no existe un camino mas rentable`() {
         val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
@@ -367,6 +367,46 @@ class ClaseServiceTest {
         val caminoMasRentable = claseService.caminoMasRentable(0, aventureroId, Atributo.FUERZA)
 
         assertTrue(caminoMasRentable.isEmpty())
+    }
+
+    @Test
+    fun `un nodo que no otorga fuerza asdasdasdasdd`() {
+        val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
+
+        claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
+
+        claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
+        claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf(Atributo.FUERZA), 1)
+
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
+        val mejoraQueOtorgaFuerza = claseService.crearMejora(NOMBRE_DE_CLASE_MAGO, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.FUERZA), 66)
+
+        val caminoMasRentable = claseService.caminoMasRentable(22222, aventureroId, Atributo.FUERZA)
+
+        assertEquals(2, caminoMasRentable.size)
+        assertEquals(
+            mejoraQueOtorgaFuerza.puntosAMejorar(),
+            caminoMasRentable.sumBy { it.puntosAMejorar() }
+        )
+    }
+
+    //////////////////
+    @Test
+    fun `cuanasdasdasddo una clase del aventurero habilita una mejora que otorga fuerza esta forma parte del camino mas rentable`() {
+        val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
+
+        claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
+
+        claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
+        claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf(Atributo.FUERZA), 10)
+
+        val caminoMasRentable = claseService.caminoMasRentable(2222, aventureroId, Atributo.FUERZA)
+
+        assertEquals(1, caminoMasRentable.size)
+        assertEquals(
+            10,
+            caminoMasRentable.sumBy { it.puntosAMejorar() }
+        )
     }
 
     @AfterEach
