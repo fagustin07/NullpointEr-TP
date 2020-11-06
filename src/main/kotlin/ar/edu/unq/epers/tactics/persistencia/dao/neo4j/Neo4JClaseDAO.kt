@@ -134,7 +134,11 @@ class Neo4JClaseDAO : ClaseDAO {
                 MATCH (claseInicio)-[mejora:habilita]->(claseAMejorar:Clase)
                 WHERE ${'$'}atributoDeseado IN mejora.atributos
                 
-                RETURN claseInicio.nombre AS nombreDeClaseDeInicio, claseAMejorar.nombre, mejora.atributos AS atributos, mejora.puntos AS puntos
+                RETURN
+                    claseInicio.nombre,
+                    claseAMejorar.nombre,
+                    mejora.atributos,
+                    mejora.puntos
                 """
 
             session
@@ -150,10 +154,10 @@ class Neo4JClaseDAO : ClaseDAO {
                 .stream()
                 .map{
                     Mejora(
-                        it["nombreDeClaseDeInicio"].asString(),
-                        it["nombreClaseMejorada"].asString(),
-                        it["atributos"].asList { Atributo.desdeString(it.asString()) },
-                        it["puntos"].asInt())
+                        it[0].asString(),
+                        it[1].asString(),
+                        it[2].asList { Atributo.desdeString(it.asString()) },
+                        it[3].asInt())
                 }
                 .collect(Collectors.toList())
         }
