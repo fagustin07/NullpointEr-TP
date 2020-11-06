@@ -23,7 +23,7 @@ class ClaseServiceTest {
 
     private val claseDAO = Neo4JClaseDAO()
     private val claseService: ClaseServiceImpl = ClaseServiceImpl(claseDAO, HibernateAventureroDAO())
-/*
+
     @Test
     fun `cuando se crea una clase inicia con nombre`() {
         val nombre = "Aventurero"
@@ -285,7 +285,7 @@ class ClaseServiceTest {
         }
         assertThat(exception.message).isEqualTo("El aventurero no cumple las condiciones para obtener una mejora.")
     }
-*/
+
     /** CAMINO MAS RENTABLE **/ // TODO: de aca para abajo los nombres de tests son un desastre. la forma de testear que se fue por el mejor camino no esta muy buena
     @Test
     fun `cuando niguna clase del aventurero habilita ninguna mejora, no existe un camino mas rentable`() {
@@ -353,6 +353,20 @@ class ClaseServiceTest {
             mejoraConMasFuerza.puntosAMejorar(),
             caminoMasRentable.sumBy { it.puntosAMejorar() }
         )
+    }
+
+    @Test
+    fun `cuando existen posibles mejoras pero no se le pasan puntosDeExperiencia no se obtienen mejoras`() {
+        val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
+
+        claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
+
+        claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
+        claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf(Atributo.FUERZA), 66)
+
+        val caminoMasRentable = claseService.caminoMasRentable(0, aventureroId, Atributo.FUERZA)
+
+        assertTrue(caminoMasRentable.isEmpty())
     }
 
     @AfterEach

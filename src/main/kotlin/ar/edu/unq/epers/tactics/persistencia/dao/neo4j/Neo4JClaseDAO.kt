@@ -131,8 +131,10 @@ class Neo4JClaseDAO : ClaseDAO {
                 
                 MATCH (claseInicio:Clase { nombre: nombreDeClaseDePartida })
                 
-                MATCH (claseInicio)-[mejora:habilita]->(claseAMejorar:Clase)
-                WHERE ${'$'}atributoDeseado IN mejora.atributos
+                MATCH paths = (claseInicio)-[mejoras:habilita*$puntosDeExperiencia]->(claseAMejorar:Clase)
+                WHERE ALL(each IN mejoras WHERE ${'$'}atributoDeseado IN each.atributos)
+                
+                UNWIND mejoras AS mejora
                 
                 RETURN
                     claseInicio.nombre,
@@ -147,7 +149,7 @@ class Neo4JClaseDAO : ClaseDAO {
                 .run(
                     query,
                     Values.parameters(
-                        "puntosDeExperiencia", puntosDeExperiencia,
+                        "longitudMaximaDeCamino", puntosDeExperiencia,
                         "nombresClasesDePartida", clasesDePartida,
                         "atributoDeseado", atributoDeseado.toString()
                     )
