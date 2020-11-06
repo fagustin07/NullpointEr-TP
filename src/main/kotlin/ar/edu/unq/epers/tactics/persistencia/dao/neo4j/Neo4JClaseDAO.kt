@@ -128,9 +128,12 @@ class Neo4JClaseDAO : ClaseDAO {
         return Neo4JTransactionRunner().runTrx {session ->
             val query = """
                 UNWIND ${'$'}nombresClasesDePartida AS nombreDeClaseDePartida
+                
                 MATCH (claseInicio:Clase { nombre: nombreDeClaseDePartida })
+                
                 MATCH (claseInicio)-[mejora:habilita]->(claseAMejorar:Clase)
                 WHERE ${'$'}atributoDeseado IN mejora.atributos
+                
                 RETURN claseInicio.nombre AS nombreDeClaseDeInicio, claseAMejorar.nombre, mejora.atributos AS atributos, mejora.puntos AS puntos
                 """
 
