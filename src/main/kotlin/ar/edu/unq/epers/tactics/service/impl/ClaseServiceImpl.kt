@@ -27,9 +27,9 @@ class ClaseServiceImpl(private val claseDAO: ClaseDAO, val aventureroDAO: Aventu
         return claseDAO.crearMejora(nombreClaseInicio, nombreClaseAMejorar, atributos, valorAAumentar)
     }
 
-    override fun requerir(nombreClasePredecesora: Clase, nombreClaseSucesora: Clase) {
-        verificarBidireccionalidad(nombreClasePredecesora, nombreClaseSucesora)
-        claseDAO.requerir(nombreClasePredecesora.nombre(), nombreClaseSucesora.nombre())
+    override fun requerir(nombreClasePredecesora: String, nombreClaseSucesora: String) {
+        verificarBidireccionalidad(Clase(nombreClasePredecesora), Clase(nombreClaseSucesora))
+        claseDAO.requerir(nombreClasePredecesora, nombreClaseSucesora)
     }
 
     override fun puedeMejorar(aventureroID: Long, mejora: Mejora): Boolean =
