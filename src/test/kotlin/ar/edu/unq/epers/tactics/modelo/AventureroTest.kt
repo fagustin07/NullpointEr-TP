@@ -156,6 +156,18 @@ class AventureroTest {
     }
 
     @Test
+    fun `un aventurero deja de defender a otro luego de defenderlo por 3 ataques efectivos`() {
+        val otroAventurero = Aventurero("Pepe")
+        cacho.defenderA(otroAventurero)
+
+        repeat(3){
+            otroAventurero.recibirAtaqueFisicoSiDebe(0.5,9999.0)
+        }
+
+        assertFalse(cacho.estaDefendiendo())
+    }
+
+    @Test
     fun `un aventurero deja de estar defendido cuando se reestablece`() {
         val otroAventurero = Aventurero("Pepe")
         cacho.defenderA(otroAventurero)
