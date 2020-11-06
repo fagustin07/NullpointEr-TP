@@ -120,6 +120,39 @@ class Neo4JClaseDAO : ClaseDAO {
         }
     }
 
+    override fun caminoMasRentable(puntosDeExperiencia: Int, clasesDePartida: Set<String>, atributoDeseado: Atributo): List<Mejora> {
+        return Neo4JTransactionRunner().runTrx {session ->
+            val query = """
+                MATCH (claseInicio:Clase) 
+                MATCH (claseAMejorar:Clase) 
+                MATCH (claseInicio)-[mejora:habilita]->(claseAMejorar)
+                RETURN claseInicio.nombre AS nombreDeClaseDeInicio, claseAMejorar.nombre, mejora.atributos AS atributos, mejora.puntos AS puntos
+                """
+
+            val list = session
+                .run(
+                    query,
+                    Values.parameters(
+                        "puntosDeExperiencia", puntosDeExperiencia,
+                        "clasesDePartida", clasesDePartida,
+                        "atributoDeseado", atributoDeseado.toString()
+                    )
+                ).list()
+
+            list
+                .stream()
+                .map{
+                    Mejora(
+                        it["nombreDeClaseDeInicio"].asString(),
+                        it["nombreClaseMejorada"].asString(),
+                        it["atributos"].asList { Atributo.desdeString(it.asString()) },
+                        it["puntos"].asInt())
+                }
+                .collect(Collectors.toList())
+
+        }
+    }
+
     override fun posiblesMejorasPara(aventurero: Aventurero): Set<Mejora> {
         if (!aventurero.tieneExperiencia()) return emptySet()
 
@@ -183,23 +216,27 @@ class Neo4JClaseDAO : ClaseDAO {
         }
     }
 
-    override fun verificarBidireccionalidad(nombreClaseInicio: String, nombreClaseAMejorar: String) {
-        return Neo4JTransactionRunner().runTrx { session ->
-            val query = """
-                        MATCH (clase:Clase {nombre: ${'$'}nombreClaseInicial }) 
-                        MATCH (clase)-[:habilita]->(habilitado)
-                        RETURN ${'$'}nombreClaseAvanzada IN collect(habilitado.nombre)
+    override fun verificarQueLaClaseDeInicioNoSeaHabilitadaPorClaseAMejorar(nombreClaseInicio: String, nombreClaseAMejorar: String){ // TODO: revisar
+        val query = """
+                        MATCH (from:Clase {nombre: ${'$'}fromName }) 
+                        MATCH (to:Clase {nombre: ${'$'}toName })
+                        MATCH path = (to)-[:habilita]->(from)
+                        RETURN count(path) > 0 AS habilitante_es_habilitada_por_mejora
                     """
-            val esBidirecional = session.run(
-                query, Values.parameters(
-                    "nombreClaseInicial",
-                    nombreClaseAMejorar,
-                    "nombreClaseAvanzada",
-                    nombreClaseInicio
+        return Neo4JTransactionRunner().runTrx { session ->
+            val resultado = session
+                .run(
+                    query,
+                    Values.parameters(
+                        "fromName", nombreClaseInicio,
+                        "toName", nombreClaseAMejorar
+                    )
                 )
-            ).single()[0].asBoolean()
+                .single()[0].asBoolean()
 
-            if (esBidirecional) throw RuntimeException("La mejora que estas queriendo crear no es posible")
+                if(resultado){
+                    throw RuntimeException("La mejora que estas queriendo crear no es posible")
+                }
         }
     }
 

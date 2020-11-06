@@ -12,4 +12,5 @@ interface ClaseService {
     fun puedeMejorar(aventureroID: Long, mejora: Mejora): Boolean
     fun posiblesMejoras(aventureroID: Long): Set<Mejora>
     fun ganarProficiencia(aventureroId:Long, nombreClaseInicio:String,nombreClaseAMejorar:String): Aventurero
+    fun caminoMasRentable(puntosDeExperiencia: Int, aventureroId: Long, atributo: Atributo): List<Mejora>
 }

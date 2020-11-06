@@ -1,8 +1,8 @@
 package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Atributo
-import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.modelo.Clase
+import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.neo4j.Neo4JClaseDAO
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.lang.RuntimeException
 
 class ClaseServiceTest {
     val factory = FactoryAventureroLeaderboardService()
@@ -88,7 +87,7 @@ class ClaseServiceTest {
     }
 
     @Test
-    fun `no se puede crear una mejora bidireccional`() {
+    fun `una clase no puede habilitar a aquella que la habilita`() {
         claseService.crearClase("Aventurero")
         claseService.crearClase("Fisico")
         claseService.crearMejora("Aventurero","Fisico", listOf(Atributo.FUERZA),3)
@@ -289,6 +288,48 @@ class ClaseServiceTest {
             claseService.ganarProficiencia(aventurero.id()!!,NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO)
         }
         assertThat(exception.message).isEqualTo("El aventurero no cumple las condiciones para obtener una mejora.")
+    }
+
+    /** CAMINO MAS RENTABLE **/
+    @Test
+    fun `cuando niguna clase del aventurero habilita ninguna mejora, no existe un camino mas rentable`() {
+        val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
+        claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
+
+        val camino = claseService.caminoMasRentable(1, aventureroId, Atributo.FUERZA )
+        assertTrue(camino.isEmpty())
+    }
+
+    @Test
+    fun `un solo camino que si zzzzzzzzzzzzzzz`() {
+        val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
+        
+        claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
+        claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
+        val mejora = claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf(Atributo.FUERZA), 10)
+
+        val mejorasParaCaminoMasRentable = claseService.caminoMasRentable(1, aventureroId, Atributo.FUERZA)
+
+        assertEquals(1, mejorasParaCaminoMasRentable.size)
+        assertThat(mejorasParaCaminoMasRentable.contains(mejora))
+    }
+
+    @Test
+    fun `un solo camino que si sobra un salto asdasdadasd`() {
+        val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
+
+        claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
+        claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
+        val mejoraEsperada = claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf(Atributo.FUERZA), 10)
+
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
+        claseService.crearMejora(NOMBRE_DE_CLASE_MAGO, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.CONSTITUCION), 10)
+
+
+        val mejorasParaCaminoMasRentable = claseService.caminoMasRentable(1, aventureroId, Atributo.FUERZA)
+
+        assertEquals(1, mejorasParaCaminoMasRentable.size)
+        assertThat(mejorasParaCaminoMasRentable.contains(mejoraEsperada))
     }
 
     @AfterEach

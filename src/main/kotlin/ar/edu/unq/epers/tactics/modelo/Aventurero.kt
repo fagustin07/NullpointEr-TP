@@ -322,21 +322,29 @@ class Aventurero(private var nombre: String) {
 
 enum class Atributo {
     FUERZA {
+        override fun toString() = "FUERZA"
+
         override fun mejorarPara(aventurero: Aventurero, puntosAMejorar: Int) {
             aventurero.mejorarAtributos(puntosDeMejoraFuerza = puntosAMejorar)
         }
     },
     INTELIGENCIA {
+        override fun toString() = "INTELIGENCIA"
+
         override fun mejorarPara(aventurero: Aventurero, puntosAMejorar: Int) {
             aventurero.mejorarAtributos(puntosDeMejoraInteligencia = puntosAMejorar)
         }
     },
     CONSTITUCION {
+        override fun toString() = "CONSTITUCION"
+
         override fun mejorarPara(aventurero: Aventurero, puntosAMejorar: Int) {
             aventurero.mejorarAtributos(puntosDeMejoraCostitucion = puntosAMejorar)
         }
     },
     DESTREZA {
+        override fun toString() = "DESTREZA"
+
         override fun mejorarPara(aventurero: Aventurero, puntosAMejorar: Int) {
             aventurero.mejorarAtributos(puntosDeMejoraDestreza = puntosAMejorar)
         }
@@ -345,6 +353,7 @@ enum class Atributo {
     abstract fun mejorarPara(aventurero: Aventurero, puntosAMejorar: Int)
 
     companion object {
+
         fun desdeString(string : String) : Atributo{
             val upperCasedString = string.toUpperCase()
             return values().first { it.toString().equals(upperCasedString) }

@@ -23,7 +23,7 @@ class ClaseServiceImpl(private val claseDAO: ClaseDAO, val aventureroDAO: Aventu
         atributos: List<Atributo>,
         valorAAumentar: Int
     ): Mejora {
-        claseDAO.verificarBidireccionalidad(nombreClaseInicio, nombreClaseAMejorar)
+        claseDAO.verificarQueLaClaseDeInicioNoSeaHabilitadaPorClaseAMejorar(nombreClaseInicio, nombreClaseAMejorar)
         return claseDAO.crearMejora(nombreClaseInicio, nombreClaseAMejorar, atributos, valorAAumentar)
     }
 
@@ -57,6 +57,14 @@ class ClaseServiceImpl(private val claseDAO: ClaseDAO, val aventureroDAO: Aventu
             val mejoraBuscada = buscarLaMejora(nombreClaseInicio, nombreClaseAMejorar)
             obtenerMejoraSiDebe(aventurero, mejoraBuscada)
             aventureroDAO.actualizar(aventurero)
+        }
+    }
+
+    override fun caminoMasRentable(puntosDeExperiencia: Int, aventureroId: Long, atributo: Atributo): List<Mejora> {
+        return HibernateTransactionRunner.runTrx {
+            aventureroDAO.resultadoDeEjecutarCon(aventureroId) {
+                claseDAO.caminoMasRentable(puntosDeExperiencia, it.clases(), atributo)
+            }
         }
     }
 

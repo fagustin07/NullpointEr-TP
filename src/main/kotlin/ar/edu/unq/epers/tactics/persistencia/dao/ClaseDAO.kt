@@ -16,11 +16,13 @@ interface ClaseDAO {
 
     fun crearMejora(nombreClaseInicio:String, nombreClaseAMejorar:String, atributos:List<Atributo>, valorAAumentar:Int): Mejora
 
-    fun verificarBidireccionalidad(nombreClaseInicio: String,nombreClaseAMejorar: String)
+    fun verificarQueLaClaseDeInicioNoSeaHabilitadaPorClaseAMejorar(nombreClaseInicio: String, nombreClaseAMejorar: String)
 
     fun posiblesMejorasPara(aventurero: Aventurero): Set<Mejora>
 
     fun puedeMejorarse(aventurero: Aventurero, mejora: Mejora): Boolean
 
     fun buscarMejora(nombreDeLaClaseInicio: String, nombreDeLaClaseAMejorar: String): Mejora
+
+    fun caminoMasRentable(puntosDeExperiencia: Int, clases: Set<String>, atributo: Atributo): List<Mejora>
 }
