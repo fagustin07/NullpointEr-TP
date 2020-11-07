@@ -136,15 +136,21 @@ class Neo4JClaseDAO : ClaseDAO {
 
                 MATCH (from)-[mejoras:habilita*$puntosDeExperiencia]->(to:Clase)
                 WHERE ${'$'}atributoDeseado IN last(mejoras).atributos
-
-                RETURN [mejora in mejoras | [
-                    startNode(mejora).nombre,
-                    endNode(mejora).nombre,
-                    mejora.atributos,
-                    mejora.puntos
-                ]]
-                ORDER BY reduce(acc = 0, x IN [each IN mejoras WHERE ${'$'}atributoDeseado in each.atributos| each.puntos] | acc + x) DESC
-                LIMIT 1
+                
+                CALL {
+                    WITH mejoras
+                    RETURN mejoras AS mejorasFiltradas
+                    ORDER BY reduce(acc = 0, x in [each in mejoras where 'constitucion' in each.atributos| each.puntos] | acc + x) DESC
+                    LIMIT 1 
+                } 
+                
+                UNWIND mejorasFiltradas AS m
+                RETURN [
+                    startNode(m).nombre,
+                    endNode(m).nombre,
+                    m.atributos,
+                    m.puntos
+                ]
                 """
 
             session
