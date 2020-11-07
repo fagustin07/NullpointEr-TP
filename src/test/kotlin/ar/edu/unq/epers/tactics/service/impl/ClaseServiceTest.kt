@@ -23,7 +23,7 @@ class ClaseServiceTest {
 
     private val claseDAO = Neo4JClaseDAO()
     private val claseService: ClaseServiceImpl = ClaseServiceImpl(claseDAO, HibernateAventureroDAO())
-/*
+
     @Test
     fun `cuando se crea una clase inicia con nombre`() {
         val nombre = "Aventurero"
@@ -285,7 +285,7 @@ class ClaseServiceTest {
         }
         assertThat(exception.message).isEqualTo("El aventurero no cumple las condiciones para obtener una mejora.")
     }
-*/
+
     /** CAMINO MAS RENTABLE **/
     @Test
     fun `cuando niguna clase del aventurero habilita ninguna mejora, no existe un camino mas rentable`() {
