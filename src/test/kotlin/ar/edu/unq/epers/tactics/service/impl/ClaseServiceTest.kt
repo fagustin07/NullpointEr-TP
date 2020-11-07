@@ -376,7 +376,7 @@ class ClaseServiceTest {
         claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
 
         claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
-        claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf(Atributo.FUERZA), 1)
+        claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf(), 1)
 
         claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
         val mejoraQueOtorgaFuerza = claseService.crearMejora(NOMBRE_DE_CLASE_MAGO, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.FUERZA), 66)
