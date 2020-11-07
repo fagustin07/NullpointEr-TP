@@ -143,7 +143,7 @@ class Neo4JClaseDAO : ClaseDAO {
                     mejora.atributos,
                     mejora.puntos
                 ]]
-                ORDER BY reduce(acc = 0, x in [each in mejoras where 'constitucion' in each.atributos| each.puntos] | acc + x) DESC
+                ORDER BY reduce(acc = 0, x IN [each IN mejoras WHERE ${'$'}atributoDeseado in each.atributos| each.puntos] | acc + x) DESC
                 LIMIT 1
                 """
 
