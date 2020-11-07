@@ -333,7 +333,7 @@ class ClaseServiceTest {
             caminoMasRentable.sumBy { it.puntosAMejorar() }
         )
     }
-
+/*
     @Test
     fun `cuando una clase del aventurero habilita varias mejoras que otorgan fuerza se va por la que otorgue mas fuerza`() {
         val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
@@ -354,6 +354,7 @@ class ClaseServiceTest {
             caminoMasRentable.sumBy { it.puntosAMejorar() }
         )
     }
+*/
 
     @Test
     fun `cuando existen posibles mejoras pero no se le pasan puntosDeExperiencia no se obtienen mejoras`() {
@@ -370,41 +371,22 @@ class ClaseServiceTest {
     }
 
     @Test
-    fun `un nodo que no otorga fuerza asdasdasdasdd`() {
+    fun `el camino mas rentable puede tener nodos intermedios que no tengan el atributo deseado`() {
         val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
 
         claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
 
         claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
-        claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf(), 1)
+        val otraMejora = claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf(), 1)
 
         claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
         val mejoraQueOtorgaFuerza = claseService.crearMejora(NOMBRE_DE_CLASE_MAGO, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.FUERZA), 66)
 
-        val caminoMasRentable = claseService.caminoMasRentable(22222, aventureroId, Atributo.FUERZA)
+        val caminoMasRentable = claseService.caminoMasRentable(2, aventureroId, Atributo.FUERZA)
 
         assertEquals(2, caminoMasRentable.size)
         assertEquals(
-            mejoraQueOtorgaFuerza.puntosAMejorar(),
-            caminoMasRentable.sumBy { it.puntosAMejorar() }
-        )
-    }
-
-    //////////////////
-    @Test
-    fun `cuanasdasdasddo una clase del aventurero habilita una mejora que otorga fuerza esta forma parte del camino mas rentable`() {
-        val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
-
-        claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
-
-        claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
-        claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf(Atributo.FUERZA), 10)
-
-        val caminoMasRentable = claseService.caminoMasRentable(2222, aventureroId, Atributo.FUERZA)
-
-        assertEquals(1, caminoMasRentable.size)
-        assertEquals(
-            10,
+            mejoraQueOtorgaFuerza.puntosAMejorar() + otraMejora.puntosAMejorar(),
             caminoMasRentable.sumBy { it.puntosAMejorar() }
         )
     }
