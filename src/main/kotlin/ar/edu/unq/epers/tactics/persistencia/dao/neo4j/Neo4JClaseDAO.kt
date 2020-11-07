@@ -145,15 +145,14 @@ class Neo4JClaseDAO : ClaseDAO {
                 } 
                 
                 UNWIND mejorasFiltradas AS m
-                RETURN [
+                RETURN
                     startNode(m).nombre,
                     endNode(m).nombre,
                     m.atributos,
                     m.puntos
-                ]
                 """
 
-            session
+            val lista = session
                 .run(
                     query,
                     Values.parameters(
@@ -161,16 +160,15 @@ class Neo4JClaseDAO : ClaseDAO {
                         "nombresClasesDePartida", clasesDePartida,
                         "atributoDeseado", atributoDeseado.toString()
                     )
-                )
-                .list()
+                ).list()
+            lista
                 .stream()
                 .map{
-
                     Mejora(
-                        it[0][0].asString(),
-                        it[0][1].asString(),
-                        it[0][2].asList { Atributo.desdeString(it.asString()) },
-                        it[0][3].asInt())
+                        it[0].asString(),
+                        it[1].asString(),
+                        it[2].asList { Atributo.desdeString(it.asString()) },
+                        it[3].asInt())
                 }
                 .collect(Collectors.toList())
         }
