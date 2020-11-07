@@ -17,19 +17,12 @@ class ClaseServiceImpl(private val claseDAO: ClaseDAO, val aventureroDAO: Aventu
         return claseDAO.crear(clase)
     }
 
-    override fun crearMejora(
-        nombreClaseInicio: String,
-        nombreClaseAMejorar: String,
-        atributos: List<Atributo>,
-        valorAAumentar: Int
-    ): Mejora {
-        claseDAO.verificarBidireccionalidad(nombreClaseInicio, nombreClaseAMejorar)
+    override fun crearMejora(nombreClaseInicio: String, nombreClaseAMejorar: String, atributos: List<Atributo>, valorAAumentar: Int): Mejora {
         return claseDAO.crearMejora(nombreClaseInicio, nombreClaseAMejorar, atributos, valorAAumentar)
     }
 
-    override fun requerir(nombreClasePredecesora: String, nombreClaseSucesora: String) {
-        verificarBidireccionalidad(Clase(nombreClasePredecesora), Clase(nombreClaseSucesora))
-        claseDAO.requerir(nombreClasePredecesora, nombreClaseSucesora)
+    override fun requerir(clasePredecesora: String, claseSucesora: String) {
+        claseDAO.requerir(clasePredecesora, claseSucesora)
     }
 
     override fun puedeMejorar(aventureroID: Long, mejora: Mejora): Boolean =
@@ -47,16 +40,21 @@ class ClaseServiceImpl(private val claseDAO: ClaseDAO, val aventureroDAO: Aventu
         }
     }
 
-    override fun ganarProficiencia(
-        aventureroId: Long,
-        nombreClaseInicio: String,
-        nombreClaseAMejorar: String
-    ): Aventurero {
+    override fun ganarProficiencia(aventureroId: Long,  nombreClaseInicio: String, nombreClaseAMejorar: String): Aventurero {
         return HibernateTransactionRunner.runTrx {
-            val aventurero = aventureroDAO.recuperar(aventureroId)
-            val mejoraBuscada = buscarLaMejora(nombreClaseInicio, nombreClaseAMejorar)
-            obtenerMejoraSiDebe(aventurero, mejoraBuscada)
-            aventureroDAO.actualizar(aventurero)
+            aventureroDAO.resultadoDeEjecutarCon(aventureroId) {
+                val mejoraBuscada = buscarLaMejora(nombreClaseInicio, nombreClaseAMejorar)
+                obtenerMejoraSiDebe(it, mejoraBuscada)
+                it
+            }
+        }
+    }
+
+    override fun caminoMasRentable(puntosDeExperiencia: Int, aventureroId: Long, atributo: Atributo): List<Mejora> {
+        return HibernateTransactionRunner.runTrx {
+            aventureroDAO.resultadoDeEjecutarCon(aventureroId) {
+                claseDAO.caminoMasRentable(puntosDeExperiencia, it.clases(), atributo)
+            }
         }
     }
 
@@ -76,15 +74,5 @@ class ClaseServiceImpl(private val claseDAO: ClaseDAO, val aventureroDAO: Aventu
     private fun verificarQuePuedaAplicarseMejoraA(aventurero: Aventurero, mejoraBuscada: Mejora) {
         if (!claseDAO.puedeMejorarse(aventurero, mejoraBuscada))
             throw RuntimeException("El aventurero no cumple las condiciones para obtener una mejora.")
-    }
-
-    private fun verificarBidireccionalidad(clasePredecesora: Clase, claseSucesora: Clase) {
-        if (esRequeridaPor(clasePredecesora, claseSucesora)) {
-            throw RuntimeException("No se puede establecer una relacion bidireccional entre ${clasePredecesora.nombre()} y ${claseSucesora.nombre()}")
-        }
-    }
-
-    private fun esRequeridaPor(claseSucesora: Clase, claseAntecesora: Clase): Boolean {
-        return claseDAO.requiereEnAlgunNivelDe(claseSucesora, claseAntecesora)
     }
 }
