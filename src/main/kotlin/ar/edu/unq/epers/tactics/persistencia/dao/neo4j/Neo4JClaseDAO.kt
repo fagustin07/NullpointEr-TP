@@ -140,8 +140,8 @@ class Neo4JClaseDAO : ClaseDAO {
                 CALL {
                     WITH mejoras
                     RETURN mejoras AS mejorasFiltradas
-                    ORDER BY reduce(acc = 0, x in [each in mejoras where 'constitucion' in each.atributos| each.puntos] | acc + x) DESC
-                    LIMIT 1 
+                    ORDER BY reduce(acc = 0, x in [each IN mejoras WHERE ${'$'}atributoDeseado IN each.atributos| each.puntos] | acc + x) DESC
+                    LIMIT 1
                 } 
                 
                 UNWIND mejorasFiltradas AS m
@@ -165,6 +165,7 @@ class Neo4JClaseDAO : ClaseDAO {
                 .list()
                 .stream()
                 .map{
+
                     Mejora(
                         it[0][0].asString(),
                         it[0][1].asString(),
