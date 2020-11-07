@@ -156,6 +156,18 @@ class AventureroTest {
     }
 
     @Test
+    fun `un aventurero deja de defender a otro luego de defenderlo por 3 ataques efectivos`() {
+        val otroAventurero = Aventurero("Pepe")
+        cacho.defenderA(otroAventurero)
+
+        repeat(3){
+            otroAventurero.recibirAtaqueFisicoSiDebe(0.5,9999.0)
+        }
+
+        assertFalse(cacho.estaDefendiendo())
+    }
+
+    @Test
     fun `un aventurero deja de estar defendido cuando se reestablece`() {
         val otroAventurero = Aventurero("Pepe")
         cacho.defenderA(otroAventurero)
@@ -183,4 +195,154 @@ class AventureroTest {
                                             aventurero.poderMagico()
         assertThat(aventurero.poderTotal()).isEqualTo(poderTotalDeAventureroEsperado)
     }
+
+    @Test
+    fun `cuando a un aventurero se le actualiza su atributo fuerza se actualiza su poder total`() {
+        val aventurero = Aventurero("Juan","URL",10.0,10.0,10.0,10.0)
+        val poderTotalAntes = aventurero.poderTotal()
+        val aventureroActualizado = Aventurero("Juan","URL",20.0,10.0,10.0,10.0)
+
+        aventurero.actualizarse(aventureroActualizado)
+        val poderTotalActualEsperado = aventurero.dañoFisico() + aventurero.precisionFisica() + aventurero.poderMagico()
+
+        assertThat(poderTotalAntes).isLessThan(poderTotalActualEsperado)
+        assertThat(aventurero.poderTotal()).isEqualTo(poderTotalActualEsperado)
+
+    }
+
+
+    @Test
+    fun `cuando a un aventurero se le actualiza su atributo fuerza su vida tambien se actualiza`() {
+        val aventurero = Aventurero("Juan","URL",10.0,10.0,10.0,10.0)
+        val vidaAntes = aventurero.vidaActual()
+        val aventureroActualizado = Aventurero("Juan","URL",20.0,10.0,10.0,10.0)
+
+        aventurero.actualizarse(aventureroActualizado)
+        val vidaActualEsperada = ((aventurero.nivel() * 5) + (aventurero.constitucion()* 2) + aventurero.fuerza())
+
+        assertThat(vidaAntes).isLessThan(vidaActualEsperada)
+        assertThat(aventurero.vidaActual()).isEqualTo(vidaActualEsperada)
+    }
+
+
+    @Test
+    fun `cuando a un aventurero se le actualiza su atributo inteligencia su mana tambien se actualiza`() {
+        val aventurero = Aventurero("Juan","URL",10.0,10.0,10.0,10.0)
+        val manaAntes = aventurero.mana()
+        val aventureroActualizado = Aventurero("Juan","URL",10.0,10.0,20.0,10.0)
+
+        aventurero.actualizarse(aventureroActualizado)
+        val manaActualEsperado = aventurero.nivel() + aventurero.inteligencia()
+
+        assertThat(manaAntes).isLessThan(manaActualEsperado)
+        assertThat(aventurero.mana()).isEqualTo(manaActualEsperado)
+    }
+
+    @Test
+    fun `un aventurero inicialmente tiene cero puntos de experiencia`() {
+        val aventurero = Aventurero("Marcos","URL",10.0,10.0,10.0,10.0)
+
+        assertThat(aventurero.experiencia()).isEqualTo(0)
+        assertFalse(aventurero.tieneExperiencia())
+    }
+
+    @Test
+    fun `un aventurero aumenta su vida, mana y poder total al ganar una pelea`(){
+        val aventurero = Aventurero("Pepe")
+        val vidaAntesDeGanarPelea = aventurero.vidaActual()
+        val manaAntesDeGanarPelea = aventurero.mana()
+        val poderTotalAntesDeGanarPelea = aventurero.poderTotal()
+
+        aventurero.ganarPelea()
+
+        assertThat(aventurero.vidaActual()).isGreaterThan(vidaAntesDeGanarPelea)
+        assertThat(aventurero.mana()).isGreaterThan(manaAntesDeGanarPelea)
+        assertThat(aventurero.poderTotal()).isGreaterThan(poderTotalAntesDeGanarPelea)
+    }
+
+    @Test
+    fun `un aventurero pierde un punto de experiencia al obtener una mejora`() {
+        val mejora = Mejora("Aventurero", "Guerrero",listOf(),0)
+        val aventurero = Aventurero("Jose")
+        aventurero.ganarPelea()
+        val experienciaAntesDeMejora = aventurero.experiencia()
+
+        aventurero.obtenerMejora(mejora)
+
+        assertThat(aventurero.experiencia()).isEqualTo(experienciaAntesDeMejora - 1)
+    }
+
+    @Test
+    fun `un aventurero adquiere una nueva clase`() {
+        val mejora = Mejora("Aventurero", "Guerrero",listOf(),0)
+        val aventurero = Aventurero("Jose")
+        aventurero.ganarPelea()
+
+        aventurero.obtenerMejora(mejora)
+
+        assertTrue(aventurero.clases().contains("Guerrero"))
+    }
+
+    @Test
+    fun `un aventurero sube puntos en atributos ignorando el uppercase??????`() {
+        val mejora = Mejora("Aventurero", "Guerrero",listOf(Atributo.DESTREZA),4)
+        val aventurero = Aventurero("Jose")
+        aventurero.ganarPelea()
+        val destrezaAntesDeMejora = aventurero.destreza()
+
+        aventurero.obtenerMejora(mejora)
+
+        assertThat(aventurero.destreza()).isEqualTo(destrezaAntesDeMejora + 4)
+    }
+
+    @Test
+    fun `un aventurero aumenta su poder total cuando adquiere una mejora con fuerza, destreza o inteligencia`() {
+        val mejora = Mejora("Aventurero", "Guerrero",
+            listOf(Atributo.DESTREZA, Atributo.INTELIGENCIA, Atributo.FUERZA),4)
+        val aventurero = Aventurero("Jose")
+        aventurero.ganarPelea()
+        val poderTotalAntesDeMejora = aventurero.poderTotal()
+        aventurero.obtenerMejora(mejora)
+
+        assertThat(aventurero.poderTotal()).isGreaterThan(poderTotalAntesDeMejora)
+    }
+
+    @Test
+    fun `un aventurero mantiene el mismo poder total si la mejora solo sube su constitucion`() {
+        val mejora = Mejora("Aventurero", "Tanque",
+            listOf(Atributo.CONSTITUCION),4)
+        val aventurero = Aventurero("Jose")
+        aventurero.ganarPelea()
+        val poderTotalAntesDeMejora = aventurero.poderTotal()
+        aventurero.obtenerMejora(mejora)
+
+        assertThat(aventurero.poderTotal()).isEqualTo(poderTotalAntesDeMejora)
+    }
+
+    @Test
+    fun `un aventurero aumenta su vida cuando adquiere una nueva mejora que aumenta su constitucion o fuerza`() {
+        val mejora = Mejora("Aventurero", "Guerrero",
+            listOf(Atributo.CONSTITUCION, Atributo.FUERZA),4)
+        val aventurero = Aventurero("Jose")
+        aventurero.ganarPelea()
+        val vidaAntesDeMejora = aventurero.vidaActual()
+
+        aventurero.obtenerMejora(mejora)
+
+        assertThat(aventurero.vidaActual()).isGreaterThan(vidaAntesDeMejora)
+    }
+
+    @Test
+    fun `un aventurero no aumenta su vida si adquiere una mejora que no incluye fuerza o constitucion`() {
+        val mejora = Mejora("Aventurero", "Guerrero",
+            listOf(Atributo.INTELIGENCIA),4)
+        val aventurero = Aventurero("Jose")
+        aventurero.ganarPelea()
+        val vidaAntesDeMejora = aventurero.vidaActual()
+
+        aventurero.obtenerMejora(mejora)
+
+        assertThat(aventurero.vidaActual()).isEqualTo(vidaAntesDeMejora)
+    }
+
 }

@@ -3,6 +3,7 @@ package ar.edu.unq.epers.tactics.modelo
 import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import ar.edu.unq.epers.tactics.modelo.habilidades.HabilidadNula
 import javax.persistence.*
+import kotlin.String
 import kotlin.math.max
 import kotlin.math.min
 
@@ -18,9 +19,15 @@ class Aventurero(private var nombre: String) {
     @JoinColumn(name = "aventurero_id")
     private var tacticas: MutableList<Tactica> = mutableListOf()
 
-    private var vida: Double = 0.0
+    @ElementCollection(fetch=FetchType.EAGER)
+    @CollectionTable(name="clases")
+    private var clases: MutableSet<String> = mutableSetOf("Aventurero")
+
     private var mana: Double = 0.0
-    private  var poderTotal: Double = 0.0
+    private var poderTotal: Double = 0.0
+    private var nivel: Int = 1
+    private var experiencia: Int = 0
+
     private var fuerza: Double = 1.0
         set(nuevoPuntaje) {
             this.validarPuntaje(nuevoPuntaje, "fuerza")
@@ -45,6 +52,7 @@ class Aventurero(private var nombre: String) {
         }
 
     private var dañoRecibido = 0.0
+    fun experiencia() = this.experiencia
 
     @OneToOne(fetch = FetchType.EAGER)
     private var defensor: Aventurero? = null
@@ -66,12 +74,13 @@ class Aventurero(private var nombre: String) {
         this.destreza = destreza
         this.constitucion = constitucion
         this.fuerza = fuerza
-        this.recalcularVidaYMana()
+        this.recalcularMana()
         this.recalcularPoderTotal()
     }
 
     init {
-        this.recalcularVidaYMana()
+        //this.clases = mutableListOf("Aventurero")
+        this.recalcularMana()
         this.recalcularPoderTotal()
     }
 
@@ -83,7 +92,7 @@ class Aventurero(private var nombre: String) {
     fun id() = id
     fun nombre() = nombre
     fun imagenURL() = this.imagenURL
-    fun nivel() = 1
+    fun nivel() = nivel
     fun poderTotal() = poderTotal
 
     fun fuerza() = fuerza
@@ -91,7 +100,8 @@ class Aventurero(private var nombre: String) {
     fun constitucion() = constitucion
     fun inteligencia() = inteligencia
 
-    fun vidaActual() = vida-dañoRecibido
+    fun vidaInicial() = nivel() * 5 + constitucion * 2 + fuerza
+    fun vidaActual() = vidaInicial() - dañoRecibido
     fun mana() = mana
     fun armadura() = nivel() + constitucion
     fun velocidad() = nivel() + destreza
@@ -107,6 +117,8 @@ class Aventurero(private var nombre: String) {
 
     fun tacticas() = this.tacticas
 
+    fun clases() = clases//mutableListOf("Aventurero")//clases
+
     /** TESTING **/
     fun esAliadoDe(otroAventurero: Aventurero) = aliados().contains(otroAventurero)
 
@@ -117,6 +129,8 @@ class Aventurero(private var nombre: String) {
     fun estaDefendiendo() = this.aventureroDefendido != null
 
     fun estaSiendoDefendiendo() = this.defensor != null
+
+    fun tieneExperiencia() = experiencia > 0
 
     /** ACTIONS **/
     fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
@@ -174,6 +188,16 @@ class Aventurero(private var nombre: String) {
         if (this.esEnemigoDe(receptor)) throw  RuntimeException("${this.nombre} no puede defender a un enemigo!")
     }
 
+    internal fun obtenerMejora(mejoraAObtener: Mejora) {
+        mejoraAObtener.atributos().forEach { atributo ->
+            this.mejorarAtributo(atributo, mejoraAObtener.puntosAMejorar())
+        }
+        this.ganarClaseDeMejora(mejoraAObtener)
+        this.experiencia -= 1
+        recalcularMana()
+        recalcularPoderTotal()
+    }
+
     internal fun actualizarse(otroAventurero: Aventurero) {
         this.inteligencia = otroAventurero.inteligencia()
         this.destreza = otroAventurero.destreza()
@@ -183,7 +207,8 @@ class Aventurero(private var nombre: String) {
         this.tacticas = otroAventurero.tacticas()
         this.imagenURL = otroAventurero.imagenURL()
         this.dañoRecibido = otroAventurero.dañoRecibido
-        this.recalcularVidaYMana()
+        this.recalcularMana()
+        this.recalcularPoderTotal()
     }
 
     internal fun darleElId(id: Long?) {
@@ -197,9 +222,9 @@ class Aventurero(private var nombre: String) {
     fun reestablecerse() {
         this.dañoRecibido = 0.0
         this.turnosDefendido = 0
-        this.aventureroDefendido = null
         this.defensor = null
-        this.recalcularVidaYMana()
+        this.dejarDeDefender()
+        this.recalcularMana()
     }
 
     fun salirDeLaParty() {
@@ -208,6 +233,13 @@ class Aventurero(private var nombre: String) {
 
     fun actualizarDañoRecibido(nuevoDañoRecibido: Double) {
         this.dañoRecibido = nuevoDañoRecibido
+    }
+
+    fun ganarPelea(){
+        subirDeNivel()
+        ganarPuntoDeExperiencia()
+        recalcularMana()
+        recalcularPoderTotal()
     }
 
     /*** PRIVATE ***/
@@ -220,12 +252,11 @@ class Aventurero(private var nombre: String) {
             defensor!!.recibirDaño(dañoAAplicar / 2)
             this.consumirTurnoDeDefensa()
         } else {
-            this.dañoRecibido = min(this.dañoRecibido+dañoAAplicar, vida)
+            this.dañoRecibido = min(this.dañoRecibido+dañoAAplicar, vidaInicial())
         }
     }
 
-    private fun recalcularVidaYMana() {
-        vida = ((nivel() * 5) + (constitucion * 2) + fuerza)
+    private fun recalcularMana() {
         mana = nivel() + inteligencia
     }
 
@@ -243,17 +274,90 @@ class Aventurero(private var nombre: String) {
     }
 
     private fun perderDefensor() {
+        this.defensor!!.dejarDeDefender()
         this.defensor = null
     }
+
+    private fun dejarDeDefender() {
+        this.aventureroDefendido = null
+    }
+
+    private fun subirDeNivel() {
+        nivel += 1
+    }
+
+    private fun ganarPuntoDeExperiencia() { experiencia += 1 }
 
     private fun validarPuntaje(nuevoPuntaje: Double, nombreDeAtributo: String) {
         if (nuevoPuntaje > 100) throw  RuntimeException("La $nombreDeAtributo no puede exceder los 100 puntos!")
         if (nuevoPuntaje < 1) throw  RuntimeException("La $nombreDeAtributo no puede ser menor a 1 punto!")
     }
 
+    private fun ganarClaseDeMejora(mejoraAObtener: Mejora) {
+        val nombreDeNuevaClase = mejoraAObtener.nombreDeLaClaseAMejorar().toLowerCase().capitalize()
+        this.clases.add(nombreDeNuevaClase)
+    }
+
+    private fun mejorarAtributo(atributo: Atributo, puntosAMejorar: Int) {
+        atributo.mejorarPara(this, puntosAMejorar)
+    }
+
+    fun mejorarAtributos(
+        puntosDeMejoraFuerza: Int = 0,
+        puntosDeMejoraInteligencia: Int = 0,
+        puntosDeMejoraDestreza: Int = 0,
+        puntosDeMejoraCostitucion: Int = 0
+    ) {
+        this.fuerza += puntosDeMejoraFuerza
+        this.inteligencia += puntosDeMejoraInteligencia
+        this.destreza += puntosDeMejoraDestreza
+        this.constitucion += puntosDeMejoraCostitucion
+    }
 //    private fun validarSiEstaVivo() {
 //        if (!this.estaVivo()) throw RuntimeException("Un aventurero muerto no puede resolver su turno");
 //    }
 
+
+}
+
+enum class Atributo {
+    FUERZA {
+        override fun toString() = "FUERZA"
+
+        override fun mejorarPara(aventurero: Aventurero, puntosAMejorar: Int) {
+            aventurero.mejorarAtributos(puntosDeMejoraFuerza = puntosAMejorar)
+        }
+    },
+    INTELIGENCIA {
+        override fun toString() = "INTELIGENCIA"
+
+        override fun mejorarPara(aventurero: Aventurero, puntosAMejorar: Int) {
+            aventurero.mejorarAtributos(puntosDeMejoraInteligencia = puntosAMejorar)
+        }
+    },
+    CONSTITUCION {
+        override fun toString() = "CONSTITUCION"
+
+        override fun mejorarPara(aventurero: Aventurero, puntosAMejorar: Int) {
+            aventurero.mejorarAtributos(puntosDeMejoraCostitucion = puntosAMejorar)
+        }
+    },
+    DESTREZA {
+        override fun toString() = "DESTREZA"
+
+        override fun mejorarPara(aventurero: Aventurero, puntosAMejorar: Int) {
+            aventurero.mejorarAtributos(puntosDeMejoraDestreza = puntosAMejorar)
+        }
+    };
+
+    abstract fun mejorarPara(aventurero: Aventurero, puntosAMejorar: Int)
+
+    companion object {
+
+        fun desdeString(string : String) : Atributo{
+            val upperCasedString = string.toUpperCase()
+            return values().first { it.toString().equals(upperCasedString) }
+        }
+    }
 
 }
