@@ -130,8 +130,6 @@ class Neo4JClaseDAO : ClaseDAO {
             val query = """
                 UNWIND ${'$'}nombresClasesDePartida AS nombreDeClaseDePartida
                 
-                MATCH (claseInicio:Clase { nombre: nombreDeClaseDePartida })
-                
                 MATCH (from:Clase { nombre: nombreDeClaseDePartida })
 
                 MATCH (from)-[mejoras:habilita*$puntosDeExperiencia]->(to:Clase)
