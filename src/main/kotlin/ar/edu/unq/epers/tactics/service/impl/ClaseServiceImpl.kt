@@ -17,12 +17,7 @@ class ClaseServiceImpl(private val claseDAO: ClaseDAO, val aventureroDAO: Aventu
         return claseDAO.crear(clase)
     }
 
-    override fun crearMejora(
-        nombreClaseInicio: String,
-        nombreClaseAMejorar: String,
-        atributos: List<Atributo>,
-        valorAAumentar: Int
-    ): Mejora {
+    override fun crearMejora(nombreClaseInicio: String, nombreClaseAMejorar: String, atributos: List<Atributo>, valorAAumentar: Int): Mejora {
         return claseDAO.crearMejora(nombreClaseInicio, nombreClaseAMejorar, atributos, valorAAumentar)
     }
 
