@@ -143,6 +143,8 @@ class Neo4JClaseDAO : ClaseDAO {
                     mejora.atributos,
                     mejora.puntos
                 ]]
+                ORDER BY reduce(acc = 0, x in [each in mejoras where 'constitucion' in each.atributos| each.puntos] | acc + x) DESC
+                LIMIT 1
                 """
 
             session
@@ -158,10 +160,10 @@ class Neo4JClaseDAO : ClaseDAO {
                 .stream()
                 .map{
                     Mejora(
-                        it[0].asString(),
-                        it[1].asString(),
-                        it[2].asList { Atributo.desdeString(it.asString()) },
-                        it[3].asInt())
+                        it[0][0].asString(),
+                        it[0][1].asString(),
+                        it[0][2].asList { Atributo.desdeString(it.asString()) },
+                        it[0][3].asInt())
                 }
                 .collect(Collectors.toList())
         }
