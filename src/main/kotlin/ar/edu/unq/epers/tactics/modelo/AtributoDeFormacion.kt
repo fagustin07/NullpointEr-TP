@@ -1,5 +1,5 @@
 package ar.edu.unq.epers.tactics.modelo
 
-class AtributoDeFormacion {
+class AtributoDeFormacion(val nombreAtributo: String, val puntosDeGanancia: Int) {
 
 }

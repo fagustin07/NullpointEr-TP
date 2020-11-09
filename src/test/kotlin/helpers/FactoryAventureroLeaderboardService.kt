@@ -1,8 +1,6 @@
 package helpers
 
-import ar.edu.unq.epers.tactics.modelo.Aventurero
-import ar.edu.unq.epers.tactics.modelo.Party
-import ar.edu.unq.epers.tactics.modelo.Tactica
+import ar.edu.unq.epers.tactics.modelo.*
 import ar.edu.unq.epers.tactics.modelo.enums.Accion
 import ar.edu.unq.epers.tactics.modelo.enums.Criterio
 import ar.edu.unq.epers.tactics.modelo.enums.TipoDeEstadistica
@@ -114,4 +112,13 @@ class FactoryAventureroLeaderboardService {
 
         return aventurero
     }
+
+    fun crearClases(nombresDeClases: List<Pair<String, Int>>): List<Clase> {
+        val clases = mutableListOf<Clase>()
+        nombresDeClases.forEach { pair -> repeat(pair.second) { clases.add(Clase(pair.first)) } }
+        return clases
+    }
+
+    fun crearStats(paresAtributoGanancia: List<Pair<String, Int>>) =
+        paresAtributoGanancia.map { AtributoDeFormacion(it.first, it.second) }
 }
