@@ -35,6 +35,8 @@ dependencies {
     runtimeOnly("mysql:mysql-connector-java")
 
     compile("org.neo4j.driver:neo4j-java-driver:4.0.1")
+
+    compile ("org.mongodb:mongodb-driver-sync:3.12.0")
 }
 
 tasks.withType<Test> {
