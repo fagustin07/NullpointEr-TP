@@ -1,6 +1,8 @@
 package ar.edu.unq.epers.tactics.modelo
 
 import org.bson.codecs.pojo.annotations.BsonProperty
+
+import org.bson.codecs.pojo.annotations.BsonProperty
 import org.bson.types.ObjectId
 
 class Formacion {
