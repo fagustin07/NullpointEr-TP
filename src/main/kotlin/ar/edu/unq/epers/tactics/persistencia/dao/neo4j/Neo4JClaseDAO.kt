@@ -271,7 +271,7 @@ class Neo4JClaseDAO : ClaseDAO {
         }
     }
 
-    private fun verificarQueLaClaseDeInicioNoSeaHabilitadaPorClaseAMejorar(nombreClaseInicio: String, nombreClaseAMejorar: String){ // TODO: revisar
+    private fun verificarQueLaClaseDeInicioNoSeaHabilitadaPorClaseAMejorar(nombreClaseInicio: String, nombreClaseAMejorar: String){
         val query = """
                 MATCH (from:Clase {nombre: ${'$'}fromName })
                 MATCH (to:Clase {nombre: ${'$'}toName })
