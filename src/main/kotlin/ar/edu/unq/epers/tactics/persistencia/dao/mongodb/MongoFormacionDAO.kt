@@ -6,7 +6,6 @@ import ar.edu.unq.epers.tactics.persistencia.dao.FormacionDAO
 
 class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionDAO {
 
-<<<<<<< HEAD
     /*ACTIONS*/
     override fun guardar(formacion: Formacion): Formacion {
         this.validarSiExisteLaFormacion(formacion)

@@ -23,9 +23,8 @@ class FormacionServiceTest {
         formacionService = FormacionServiceImpl(formacionDAO)
     }
 
-    /*CREAR FORMACION*/
     @Test
-    fun `se puede crear una formacion`() {
+    fun `se puede persistir una formacion`() {
         val requerimientos = factory.crearClases(listOf("Gran Mago" to 2, "Magico" to 5))
         val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
 
