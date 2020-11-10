@@ -13,7 +13,9 @@ class FormacionServiceImpl(val formacionDAO: FormacionDAO) : FormacionService {
         requerimientos: List<Clase>,
         stats: List<AtributoDeFormacion>
     ): Formacion {
-        return Formacion(nombreFormacion,requerimientos,stats)
+        val formacion = Formacion(nombreFormacion, requerimientos, stats)
+
+        return formacionDAO.guardar(formacion)
     }
 
     override fun todasLasFormaciones(): List<Formacion> {

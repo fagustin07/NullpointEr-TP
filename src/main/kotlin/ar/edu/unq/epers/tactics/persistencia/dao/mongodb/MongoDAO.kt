@@ -17,11 +17,11 @@ open class MongoDAO<T>(entityType: Class<T>) {
     fun deleteAll() {
         collection.drop()
     }
-/*
+
     fun save(anObject: T) {
         save(listOf(anObject))
     }
-*/
+
     fun update(anObject: T, id: String?) {
         collection.replaceOne(Filters.eq("id", id), anObject)
     }
