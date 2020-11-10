@@ -14,6 +14,10 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
         return buscarFormacion(formacion)!!
     }
 
+    override fun getAll(): List<Formacion> {
+        return collection.find().into(mutableListOf())
+    }
+
     /*PRIVATE*/
 
     /*ACTIONS*/
