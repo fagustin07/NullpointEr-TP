@@ -1,12 +1,11 @@
 package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Atributo
-import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.neo4j.Neo4JClaseDAO
-import helpers.FactoryAventureroLeaderboardService
+import helpers.Factory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.AfterEach
@@ -15,7 +14,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class ClaseServiceTest {
-    val factory = FactoryAventureroLeaderboardService()
+    val factory = Factory()
 
     private val NOMBRE_DE_CLASE_AVENTURERO = "Aventurero"
     private val NOMBRE_DE_CLASE_MAGO = "Mago"
