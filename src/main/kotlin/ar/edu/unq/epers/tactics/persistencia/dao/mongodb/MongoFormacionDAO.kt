@@ -2,7 +2,11 @@ package ar.edu.unq.epers.tactics.persistencia.dao.mongodb
 
 import ar.edu.unq.epers.tactics.exceptions.DuplicateFormationException
 import ar.edu.unq.epers.tactics.modelo.Formacion
+import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.FormacionDAO
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.mongodb.client.model.Filters.*
+import org.bson.Document
 
 class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionDAO {
 
@@ -16,6 +20,14 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
 
     override fun getAll(): List<Formacion> {
         return collection.find().into(mutableListOf())
+    }
+
+    override fun formacionesQuePosee(party: Party): List<Formacion> {
+        val clases = ObjectMapper().writer().writeValueAsString(party.aventureros().map { it.clases() }.flatten()) // [Aventurero, Magico, Aventurero]
+        val filterType = type("requerimientos", "array")
+        val filterExpression = nor(Document.parse("{ \"requerimientos\" :{\$elemMatch:{\$nin: ${clases}}}}"))
+
+        return this.find(and(filterType, filterExpression))
     }
 
     /*PRIVATE*/

@@ -1,10 +1,18 @@
 package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.exceptions.DuplicateFormationException
+import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Formacion
+import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.FormacionDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.mongodb.MongoFormacionDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.neo4j.Neo4JClaseDAO
+import ar.edu.unq.epers.tactics.service.AventureroService
+import ar.edu.unq.epers.tactics.service.ClaseService
 import ar.edu.unq.epers.tactics.service.FormacionService
+import ar.edu.unq.epers.tactics.service.PartyService
 import helpers.Factory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -13,16 +21,27 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class FormacionServiceTest {
+    lateinit var claseDAO: Neo4JClaseDAO
+    lateinit var aventureroService: AventureroService
     private val factory = Factory()
     lateinit var formacionService: FormacionService
     lateinit var formacionDAO: FormacionDAO
+    lateinit var partyService: PartyService
+    lateinit var claseService: ClaseService
 
     @BeforeEach
     fun setUp() {
+        val partyDAO = HibernatePartyDAO()
+        val aventureroDAO = HibernateAventureroDAO()
+        aventureroService = AventureroServiceImpl(aventureroDAO, partyDAO)
         formacionDAO = MongoFormacionDAO()
-        formacionService = FormacionServiceImpl(formacionDAO)
+        partyService = PartyServiceImpl(partyDAO)
+        formacionService = FormacionServiceImpl(formacionDAO, partyService)
+        claseDAO = Neo4JClaseDAO()
+        claseService = ClaseServiceImpl(claseDAO, aventureroDAO)
     }
 
+    /*CREAR FORMACION*/
     @Test
     fun `se puede persistir una formacion`() {
         val requerimientos = factory.crearClases(listOf("Gran Mago" to 2, "Magico" to 5))
@@ -42,7 +61,7 @@ class FormacionServiceTest {
 
         formacionService.crearFormacion("ForBidden", requerimientos, stats)
 
-        val exception = assertThrows<DuplicateFormationException>{
+        val exception = assertThrows<DuplicateFormationException> {
             formacionService.crearFormacion("ForBidden", requerimientos, stats)
         }
 
@@ -74,8 +93,89 @@ class FormacionServiceTest {
         assertThat(formacionesRecuperadas).isEmpty()
     }
 
+    /*FORMACION QUE POSEE*/
+
+    @Test
+    fun `una party vacia no posee ninguna formacion`() {
+        val requerimientos = factory.crearClases(listOf("Gran Mago" to 2, "Magico" to 5))
+        val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
+
+        formacionService.crearFormacion("ForBidden", requerimientos, stats)
+
+        val party = Party("Los jefes", "url")
+        val partyId = partyService.crear(party).id()
+
+        assertThat(formacionService.formacionesQuePosee(partyId!!)).isEmpty()
+    }
+
+    @Test
+    fun `una party puede poseer una formacion`() {
+        val requerimientos = factory.crearClases(listOf("Aventurero" to 2, "Magico" to 1))
+        val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
+
+        val formacion = formacionService.crearFormacion("ForBidden", requerimientos, stats)
+
+        val party = crearPartyApropiadaParaFormacion()
+
+        assertThat(formacionService.formacionesQuePosee(party.id()!!))
+            .usingRecursiveFieldByFieldElementComparator()
+            .contains(formacion)
+    }
+
+    @Test
+    fun `una party puede poseer mas de una formacion`() {
+        val requerimientosMagico = factory.crearClases(listOf("Aventurero" to 2, "Magico" to 1))
+        val requerimientosAventureros = factory.crearClases(listOf("Aventurero" to 3))
+        val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
+
+        val formacion1 = formacionService.crearFormacion("ForBidden", requerimientosMagico, stats)
+        val formacion2 = formacionService.crearFormacion("Allowed", requerimientosAventureros, stats)
+
+        val party = crearPartyApropiadaParaFormacion()
+
+        assertThat(formacionService.formacionesQuePosee(party.id()!!))
+            .usingRecursiveFieldByFieldElementComparator()
+            .contains(formacion1, formacion2)
+    }
+
+    @Test
+    fun `una party puede no poseer todas las formaciones`() {
+        val requerimientosMagico = factory.crearClases(listOf("Aventurero" to 2, "Magico" to 1))
+        val requerimientosPaladin = factory.crearClases(listOf("Paladin" to 3))
+        val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
+
+        val formacion1 = formacionService.crearFormacion("ForBidden", requerimientosMagico, stats)
+        val formacion2 = formacionService.crearFormacion("NotAllowed", requerimientosPaladin, stats)
+
+        val party = crearPartyApropiadaParaFormacion()
+
+        assertThat(formacionService.formacionesQuePosee(party.id()!!))
+            .usingRecursiveFieldByFieldElementComparator()
+            .contains(formacion1)
+            .doesNotContain(formacion2)
+    }
+
+    private fun crearPartyApropiadaParaFormacion(): Party {
+        val party = partyService.crear(Party("Los plus ultra", "url"))
+        val aventurero1 = Aventurero("av1")
+        val aventurero2 = Aventurero("av2")
+        var magico = Aventurero("mag")
+        partyService.agregarAventureroAParty(party.id()!!, aventurero1)
+        partyService.agregarAventureroAParty(party.id()!!, aventurero2)
+        magico = partyService.agregarAventureroAParty(party.id()!!, magico)
+        magico.ganarPelea()
+        aventureroService.actualizar(magico)
+
+        claseService.crearClase("Aventurero")
+        claseService.crearClase("Magico")
+        claseService.crearMejora("Aventurero", "Magico", listOf(), 0)
+        claseService.ganarProficiencia(magico.id()!!, "Aventurero", "Magico")
+        return party
+    }
+
     @AfterEach
-    fun tearDown(){
+    fun tearDown() {
         formacionDAO.deleteAll()
+        claseDAO.clear()
     }
 }

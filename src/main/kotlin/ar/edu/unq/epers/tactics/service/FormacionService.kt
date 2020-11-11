@@ -14,8 +14,8 @@ interface FormacionService {
     fun todasLasFormaciones():List<Formacion>
 
 
-    fun atributosQueCorresponden(partyId:Int):List<AtributoDeFormacion>
+    fun atributosQueCorresponden(partyId:Long):List<AtributoDeFormacion>
 
 
-    fun formacionesQuePosee(partyId:Int): List<Formacion>
+    fun formacionesQuePosee(partyId:Long): List<Formacion>
 }
