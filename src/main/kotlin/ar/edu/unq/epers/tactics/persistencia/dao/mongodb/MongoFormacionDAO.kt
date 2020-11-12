@@ -23,7 +23,9 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
     }
 
     override fun formacionesQuePosee(party: Party): List<Formacion> {
-        val clases = ObjectMapper().writer().writeValueAsString(party.aventureros().map { it.clases() }.flatten()) // [Aventurero, Magico, Aventurero]
+        val clases = ObjectMapper()
+            .writer()
+            .writeValueAsString(party.aventureros().map { it.clases() }.flatten())
         val filterType = type("requerimientos", "array")
         val filterExpression = nor(Document.parse("{ \"requerimientos\" :{\$elemMatch:{\$nin: ${clases}}}}"))
 

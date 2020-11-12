@@ -109,6 +109,20 @@ class FormacionServiceTest {
     }
 
     @Test
+    fun `una party puede no poseer una formacion por no tener la cantidad suficiente de clases`() {
+        val requerimientos = factory.crearClases(listOf("Aventurero" to 6))
+        val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
+
+        formacionService.crearFormacion("ForBidden", requerimientos, stats)
+
+        val party = crearPartyApropiadaParaFormacion()
+
+        assertThat(formacionService.formacionesQuePosee(party.id()!!))
+            .isEmpty()
+
+    }
+
+    @Test
     fun `una party puede poseer una formacion`() {
         val requerimientos = factory.crearClases(listOf("Aventurero" to 2, "Magico" to 1))
         val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
