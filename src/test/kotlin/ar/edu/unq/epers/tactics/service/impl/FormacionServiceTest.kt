@@ -23,9 +23,8 @@ class FormacionServiceTest {
         formacionService = FormacionServiceImpl(formacionDAO)
     }
 
-    /*CREAR FORMACION*/
     @Test
-    fun `se puede crear una formacion`() {
+    fun `se puede persistir una formacion`() {
         val requerimientos = factory.crearClases(listOf("Gran Mago" to 2, "Magico" to 5))
         val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
 
@@ -48,6 +47,31 @@ class FormacionServiceTest {
         }
 
         assertThat(exception.message).isEqualTo("Ya existe una formacion con el nombre dado.")
+    }
+
+    @Test
+    fun `luego de persistir dos formaciones si las recupero obtengo las mismas dos que fueron persisitidas`() {
+        val requerimientosFormacion1 = factory.crearClases(listOf("Guerrero" to 2, "Guerrero" to 5))
+        val statsFormacion1 = factory.crearStats(listOf("Fuerza" to 10, "Destreza" to 15))
+
+        val requerimientosFormacion2 = factory.crearClases(listOf("Gran Mago" to 2, "Magico" to 5))
+        val statsFormacion2 = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
+
+        val formacion1 = formacionService.crearFormacion("BoyScouts", requerimientosFormacion1, statsFormacion1)
+        val formacion2 = formacionService.crearFormacion("ForBidden", requerimientosFormacion2, statsFormacion2)
+
+        val formacionesPersistidas = listOf(formacion1,formacion2)
+        val formacionesRecuperadas = formacionService.todasLasFormaciones()
+
+        assertThat(formacionesRecuperadas).allMatch { formacionRecuperada -> formacionesPersistidas.any { formacionGenerada ->
+            formacionGenerada.nombre == formacionRecuperada.nombre }}
+
+    }
+
+    @Test
+    fun `al intentar recuperar todas las formaciones sin tener ninguna creada se obtiene una lista vacia`() {
+        val formacionesRecuperadas = formacionService.todasLasFormaciones()
+        assertThat(formacionesRecuperadas).isEmpty()
     }
 
     @AfterEach

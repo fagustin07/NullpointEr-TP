@@ -19,7 +19,7 @@ class FormacionServiceImpl(val formacionDAO: FormacionDAO) : FormacionService {
     }
 
     override fun todasLasFormaciones(): List<Formacion> {
-        TODO("Not yet implemented")
+        return formacionDAO.getAll()
     }
 
     override fun atributosQueCorresponden(partyId: Int): List<AtributoDeFormacion> {
