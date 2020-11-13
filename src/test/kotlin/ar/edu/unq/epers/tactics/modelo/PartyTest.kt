@@ -93,4 +93,38 @@ class PartyTest {
         assertEquals("${aventurero.nombre()} no pertenece a ${party.nombre()}.", exception.message)
     }
 
+    @Test
+    fun `al pedirle a una party sin aventureros las clase en las que estos son proficientes no se obtiene ninguna`() {
+        val party = Party("Nombre de party", "/imagen.jpg")
+        assertTrue(party.clasesDeSusPersonajes().isEmpty())
+    }
+
+    @Test
+    fun `al pedirle a una party con un aventurero las clase en las que estos son proficientes se obtienen aquellas en la que el mismo es proficiente`() {
+        val party = Party("Nombre de party", "/imagen.jpg")
+        val aventurero = Aventurero("Nombre aventurero")
+        party.agregarUnAventurero(aventurero)
+
+        val clasesObtenidas = party.clasesDeSusPersonajes()
+
+        assertEquals(1, clasesObtenidas.size)
+        assertTrue(clasesObtenidas.containsAll(aventurero.clases()))
+    }
+
+    @Test // TODO: no me convence como quedo expresada la parte de la asercion
+    fun `al pedirle a una party con varios aventureros las clase en las que estos son proficientes se obtienen aquellas en la que son proficientes incluyendo repetidos`() {
+        val party = Party("Nombre de party", "/imagen.jpg")
+        val unAventurero = Aventurero("Pepe")
+        val otroAventurero = Aventurero("Juan")
+
+        party.agregarUnAventurero(unAventurero)
+        party.agregarUnAventurero(otroAventurero)
+
+        val clasesObtenidas = party.clasesDeSusPersonajes()
+
+        assertEquals(2, clasesObtenidas.size)
+        assertTrue(clasesObtenidas.containsAll(unAventurero.clases()))
+        assertTrue(clasesObtenidas.containsAll(otroAventurero.clases()))
+    }
+
 }

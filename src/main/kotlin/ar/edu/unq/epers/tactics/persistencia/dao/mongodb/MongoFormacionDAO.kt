@@ -75,6 +75,12 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
     private fun buscarFormacion(formacion: Formacion) =
         this.getBy("nombre", formacion.nombre)
 
+    /* ACCESSING */
+    override fun atributosQueCorresponden(clasesQueSeTiene: List<String>) =
+        collection.find().into(mutableListOf())
+            .filter { !clasesQueSeTiene.isEmpty() && clasesQueSeTiene.containsAll(it.requerimientos) }
+            .flatMap { it.stats }
+
     /* TESTING */
     private fun existeLaFormacion(formacion: Formacion) = this.buscarFormacion(formacion) != null
 

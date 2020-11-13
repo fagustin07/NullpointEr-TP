@@ -4,9 +4,12 @@ import ar.edu.unq.epers.tactics.modelo.AtributoDeFormacion
 import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.modelo.Formacion
 import ar.edu.unq.epers.tactics.persistencia.dao.FormacionDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.service.FormacionService
+import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import ar.edu.unq.epers.tactics.service.PartyService
 
+class FormacionServiceImpl(val formacionDAO: FormacionDAO, val partyDAO: PartyDAO) : FormacionService {
 class FormacionServiceImpl(val formacionDAO: FormacionDAO, val partyService: PartyService) : FormacionService {
 
     override fun crearFormacion(
@@ -24,9 +27,15 @@ class FormacionServiceImpl(val formacionDAO: FormacionDAO, val partyService: Par
     }
 
     override fun atributosQueCorresponden(partyId: Long): List<AtributoDeFormacion> {
-        TODO("Not yet implemented")
+        return HibernateTransactionRunner.runTrx {
+            partyDAO.resultadoDeEjecutarCon(partyId) {
+                formacionDAO.atributosQueCorresponden(it.clasesDeSusPersonajes())
+            }
+        }
     }
 
+    override fun formacionesQuePosee(partyId: Long): List<Formacion> {
+        TODO("Not yet implemented")
     override fun formacionesQuePosee(partyId: Long): List<Formacion> {
         val party = partyService.recuperar(partyId)
         return formacionDAO.formacionesQuePosee(party)

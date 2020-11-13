@@ -40,6 +40,8 @@ class Party(private var nombre: String, private var imagenURL: String) {
     fun aventureros() = aventureros
     fun imagenURL() = imagenURL
 
+    fun clasesDeSusPersonajes() = aventureros.flatMap { it.clases() }
+
     fun darleElId(id: Long?) {
         this.id = id
     }

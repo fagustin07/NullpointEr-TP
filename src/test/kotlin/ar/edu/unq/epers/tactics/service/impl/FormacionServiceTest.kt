@@ -1,10 +1,13 @@
 package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.exceptions.DuplicateFormationException
+import ar.edu.unq.epers.tactics.modelo.AtributoDeFormacion
+import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Formacion
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.FormacionDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.mongodb.MongoFormacionDAO
@@ -37,6 +40,7 @@ class FormacionServiceTest {
         val aventureroDAO = HibernateAventureroDAO()
         aventureroService = AventureroServiceImpl(aventureroDAO, partyDAO)
         formacionDAO = MongoFormacionDAO()
+        formacionService = FormacionServiceImpl(formacionDAO, HibernatePartyDAO())
         partyService = PartyServiceImpl(partyDAO)
         formacionService = FormacionServiceImpl(formacionDAO, partyService)
         claseDAO = Neo4JClaseDAO()
@@ -70,6 +74,53 @@ class FormacionServiceTest {
 
         assertThat(exception.message).isEqualTo("Ya existe una formacion con el nombre dado.")
     }
+
+    /* ATRIBUTOS DE FORMACION QUE CORRESPONDEN A UNA PARTY */
+    @Test
+    fun `cuando una party no tiene aventureros no le corresponden atributos de formacion`() {
+        val partyId = factory.nuevaPartyPersistida()
+
+        formacionService.crearFormacion("Nombre de formacion", listOf(claseAventurero()), listOf(atributoDeFormacionFuerza()))
+
+        val atributosQueCorresponden = formacionService.atributosQueCorresponden(partyId)
+
+        assertThat(atributosQueCorresponden).isEmpty()
+    }
+
+    @Test
+    fun `cuando una party con aventureros cumple con los todos requisitos de una formacion le corresponden atributos de formacion zzzzzzzzzzzzzzz`() {
+        val partyId = factory.nuevaPartyPersistida()
+        factory.crearAventureroProficienteEnAventurero(partyId)
+
+        val requerimientos = listOf(claseAventurero())
+        val stats = listOf(atributoDeFormacionFuerza())
+        formacionService.crearFormacion("Nombre de formacion", requerimientos, stats)
+
+        val atributosQueCorresponden = formacionService.atributosQueCorresponden(partyId)
+
+        assertThat(atributosQueCorresponden).usingRecursiveComparison().ignoringFields("id").isEqualTo(stats)
+    }
+
+    @Test
+    fun `cuando una party con aventureros no cumple con los todos requisitos de una formacion no le corresponden atributos de formacion zzzzzzzzzzzzzzz`() {
+        val partyId = factory.nuevaPartyPersistida()
+        factory.crearAventureroProficienteEnAventurero(partyId)
+
+        val requerimientos = listOf(claseAventurero(), claseMago())
+        val stats = listOf(atributoDeFormacionFuerza())
+        formacionService.crearFormacion("Nombre de formacion", requerimientos, stats)
+
+        val atributosQueCorresponden = formacionService.atributosQueCorresponden(partyId)
+
+        assertThat(atributosQueCorresponden).isEmpty()
+    }
+
+    private fun atributoDeFormacionFuerza() = AtributoDeFormacion("Fuerza", 1)
+
+    private fun claseAventurero() = Clase("Aventurero")
+
+    private fun claseMago() = Clase("Mago")
+
 
     @Test
     fun `luego de persistir dos formaciones si las recupero obtengo las mismas dos que fueron persisitidas`() {

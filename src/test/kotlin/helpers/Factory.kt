@@ -115,4 +115,8 @@ class Factory {
 
     fun crearStats(paresAtributoGanancia: List<Pair<String, Int>>) =
         paresAtributoGanancia.map { AtributoDeFormacion(it.first, it.second) }
+
+    fun crearAventureroProficienteEnAventurero(partyId: Long): Aventurero {
+        return nuevoMagoEn(partyId)
+    }
 }
