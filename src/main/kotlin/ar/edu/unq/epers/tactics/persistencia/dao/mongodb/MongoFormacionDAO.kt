@@ -78,7 +78,7 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
     /* ACCESSING */
     override fun atributosQueCorresponden(clasesQueSeTiene: List<String>) =
         collection.find().into(mutableListOf())
-            .filter { !clasesQueSeTiene.isEmpty() && clasesQueSeTiene.containsAll(it.requerimientos) }
+            .filter { !clasesQueSeTiene.isEmpty() && clasesQueSeTiene.containsAll(it.requerimientos.keys) }
             .flatMap { it.stats }
 
     /* TESTING */
