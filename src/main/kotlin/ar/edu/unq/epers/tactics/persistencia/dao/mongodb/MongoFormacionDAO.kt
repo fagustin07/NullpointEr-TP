@@ -2,10 +2,13 @@ package ar.edu.unq.epers.tactics.persistencia.dao.mongodb
 
 import ar.edu.unq.epers.tactics.exceptions.DuplicateFormationException
 import ar.edu.unq.epers.tactics.modelo.AtributoDeFormacion
+import ar.edu.unq.epers.tactics.modelo.AtributoDeFormacion
 import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.modelo.Formacion
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.FormacionDAO
+import com.fasterxml.jackson.databind.ObjectMapper
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mongodb.client.model.Filters.*
 import org.bson.Document
@@ -76,10 +79,48 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
         this.getBy("nombre", formacion.nombre)
 
     /* ACCESSING */
-    override fun atributosQueCorresponden(clasesQueSeTiene: List<String>) =
-        collection.find().into(mutableListOf())
-            .filter { !clasesQueSeTiene.isEmpty() && clasesQueSeTiene.containsAll(it.requerimientos.keys) }
-            .flatMap { it.stats }
+    override fun atributosQueCorresponden(clasesQueSeTiene: List<String>): List<AtributoDeFormacion> {
+        // TODO: la conversion de List<String> a Map<String, Int> esta repetida en Formacion
+        val clasesQueSeTieneString =
+            ObjectMapper().writer().writeValueAsString(
+                clasesQueSeTiene
+                    .fold(mutableMapOf<String, Int>()) { map, nombreDeClase ->
+                        map.put(
+                            nombreDeClase,
+                            map.getOrElse(nombreDeClase, { 0 }) + 1
+                        )
+                        map
+                    }
+            )
+
+        val mapFunction = """
+            function() {
+                const clasesQueSeTiene = $clasesQueSeTieneString
+        
+                const cumpleConTodosLosRequisitos =
+                    Object
+                        .keys(this.requerimientos)
+                        .map(nombre => ({nombre, cantidad: this.requerimientos[nombre]}))
+                        .every(({nombre, cantidad}) => clasesQueSeTiene[nombre] >= cantidad)
+        
+                if (cumpleConTodosLosRequisitos)
+                    this.stats.forEach(stat => emit(stat.nombreAtributo, {nombreAtributo: stat.nombreAtributo, puntosDeGanancia: stat.puntosDeGanancia}))
+            }
+            """
+
+        val reduceFunction = """
+            function(atributo, stats) {
+                return {
+                    nombreAtributo: atributo,
+                    puntosDeGanancia: Arrays.sum(stats.map(stat => stat.puntosDeGanancia))
+                }
+            }
+        """
+
+        return collection
+            .mapReduce(mapFunction, reduceFunction, AtributoDeFormacion::class.java)
+            .into(mutableListOf())
+    }
 
     /* TESTING */
     private fun existeLaFormacion(formacion: Formacion) = this.buscarFormacion(formacion) != null

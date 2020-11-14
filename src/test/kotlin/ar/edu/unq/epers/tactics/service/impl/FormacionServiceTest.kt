@@ -93,7 +93,7 @@ class FormacionServiceTest {
         factory.crearAventureroProficienteEnAventurero(partyId)
 
         val requerimientos = listOf(claseAventurero())
-        val stats = listOf(atributoDeFormacionFuerza())
+        val stats = listOf(atributoDeFormacionFuerza(), atributoDeFormacionInteligencia())
         formacionService.crearFormacion("Nombre de formacion", requerimientos, stats)
 
         val atributosQueCorresponden = formacionService.atributosQueCorresponden(partyId)
@@ -116,6 +116,7 @@ class FormacionServiceTest {
     }
 
     private fun atributoDeFormacionFuerza() = AtributoDeFormacion("Fuerza", 1)
+    private fun atributoDeFormacionInteligencia() = AtributoDeFormacion("Inteligencia", 2)
 
     private fun claseAventurero() = Clase("Aventurero")
 
