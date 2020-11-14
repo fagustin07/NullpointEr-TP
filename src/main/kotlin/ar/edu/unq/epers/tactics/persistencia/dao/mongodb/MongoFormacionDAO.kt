@@ -8,6 +8,7 @@ import ar.edu.unq.epers.tactics.modelo.Formacion
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.FormacionDAO
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.bson.Document
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mongodb.client.model.Filters.*
@@ -116,10 +117,18 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
                 }
             }
         """
-
         return collection
-            .mapReduce(mapFunction, reduceFunction, AtributoDeFormacion::class.java)
+            .mapReduce(mapFunction, reduceFunction, Map::class.java)
+            .map {
+                val document = it.get("value") as Document
+
+                val nombreAtributo = document.getString("nombreAtributo")
+                val puntosDeGanancia = document.getDouble("puntosDeGanancia").toInt()
+
+                AtributoDeFormacion(nombreAtributo, puntosDeGanancia)
+            }
             .into(mutableListOf())
+
     }
 
     /* TESTING */
