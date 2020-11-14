@@ -106,25 +106,20 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
         
                 if (cumpleConTodosLosRequisitos)
                     this.stats.forEach(({nombreAtributo, puntosDeGanancia}) =>
-                        emit(nombreAtributo, {nombreAtributo, puntosDeGanancia}))
+                        emit(nombreAtributo, puntosDeGanancia))
             }
             """
 
         val reduceFunction = """
-            function(atributo, stats) {
-                return {
-                    nombreAtributo: atributo,
-                    puntosDeGanancia: Array.sum(stats.map(stat => stat.puntosDeGanancia))
-                }
+            function(nombreAtributo, variosPuntosDeGanancia) {
+                return Array.sum(variosPuntosDeGanancia)
             }
         """
         return collection
             .mapReduce(mapFunction, reduceFunction, Map::class.java)
             .map {
-                val document = it.get("value") as Document
-
-                val nombreAtributo = document.getString("nombreAtributo")
-                val puntosDeGanancia = document.getDouble("puntosDeGanancia").toInt()
+                val nombreAtributo = it.get("_id") as String
+                val puntosDeGanancia = (it.get("value") as Double).toInt()
 
                 AtributoDeFormacion(nombreAtributo, puntosDeGanancia)
             }
