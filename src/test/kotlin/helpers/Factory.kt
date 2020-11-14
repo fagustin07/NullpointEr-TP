@@ -113,12 +113,6 @@ class Factory {
         return aventurero
     }
 
-    fun crearClases(nombresDeClases: List<Pair<String, Int>>): List<Clase> {
-        val clases = mutableListOf<Clase>()
-        nombresDeClases.forEach { pair -> repeat(pair.second) { clases.add(Clase(pair.first)) } }
-        return clases
-    }
-
     fun crearStats(paresAtributoGanancia: List<Pair<String, Int>>) =
         paresAtributoGanancia.map { AtributoDeFormacion(it.first, it.second) }
 }
