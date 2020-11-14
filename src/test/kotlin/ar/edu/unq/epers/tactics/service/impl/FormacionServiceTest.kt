@@ -15,12 +15,14 @@ import ar.edu.unq.epers.tactics.service.FormacionService
 import ar.edu.unq.epers.tactics.service.PartyService
 import helpers.Factory
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class FormacionServiceTest {
+    lateinit var recursiveComparisonConfiguration: RecursiveComparisonConfiguration
     lateinit var claseDAO: Neo4JClaseDAO
     lateinit var aventureroService: AventureroService
     private val factory = Factory()
@@ -39,12 +41,13 @@ class FormacionServiceTest {
         formacionService = FormacionServiceImpl(formacionDAO, partyService)
         claseDAO = Neo4JClaseDAO()
         claseService = ClaseServiceImpl(claseDAO, aventureroDAO)
+        recursiveComparisonConfiguration = RecursiveComparisonConfiguration.builder().withIgnoredFields("id").build()
     }
 
     /*CREAR FORMACION*/
     @Test
     fun `se puede persistir una formacion`() {
-        val requerimientos = factory.crearClases(listOf("Gran Mago" to 2, "Magico" to 5))
+        val requerimientos = mapOf<String, Int>(Pair("Gran Mago", 2), Pair("Magico", 5) )
         val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
 
         val formacionCreada = formacionService.crearFormacion("ForBidden", requerimientos, stats)
@@ -56,7 +59,7 @@ class FormacionServiceTest {
 
     @Test
     fun `al querer crear una formacion con un nombre ya existente se levanta una excepcion`() {
-        val requerimientos = factory.crearClases(listOf("Gran Mago" to 2, "Magico" to 5))
+        val requerimientos = mapOf<String, Int>(Pair("Gran Mago", 2), Pair("Magico", 5) )
         val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
 
         formacionService.crearFormacion("ForBidden", requerimientos, stats)
@@ -70,10 +73,10 @@ class FormacionServiceTest {
 
     @Test
     fun `luego de persistir dos formaciones si las recupero obtengo las mismas dos que fueron persisitidas`() {
-        val requerimientosFormacion1 = factory.crearClases(listOf("Guerrero" to 2, "Guerrero" to 5))
+        val requerimientosFormacion1 = mapOf<String, Int>(Pair("Guerrero", 2), Pair("Guerrero", 5) )
         val statsFormacion1 = factory.crearStats(listOf("Fuerza" to 10, "Destreza" to 15))
 
-        val requerimientosFormacion2 = factory.crearClases(listOf("Gran Mago" to 2, "Magico" to 5))
+        val requerimientosFormacion2 = mapOf<String, Int>(Pair("Gran Mago", 2), Pair("Magico", 5) )
         val statsFormacion2 = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
 
         val formacion1 = formacionService.crearFormacion("BoyScouts", requerimientosFormacion1, statsFormacion1)
@@ -97,7 +100,7 @@ class FormacionServiceTest {
 
     @Test
     fun `una party vacia no posee ninguna formacion`() {
-        val requerimientos = factory.crearClases(listOf("Gran Mago" to 2, "Magico" to 5))
+        val requerimientos = mapOf<String, Int>(Pair("Gran Mago", 2), Pair("Magico", 5) )
         val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
 
         formacionService.crearFormacion("ForBidden", requerimientos, stats)
@@ -110,7 +113,7 @@ class FormacionServiceTest {
 
     @Test
     fun `una party puede no poseer una formacion por no tener la cantidad suficiente de clases`() {
-        val requerimientos = factory.crearClases(listOf("Aventurero" to 6))
+        val requerimientos = mapOf<String, Int>(Pair("Gran Mago", 2), Pair("Magico", 5) )
         val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
 
         formacionService.crearFormacion("ForBidden", requerimientos, stats)
@@ -124,7 +127,7 @@ class FormacionServiceTest {
 
     @Test
     fun `una party puede poseer una formacion`() {
-        val requerimientos = factory.crearClases(listOf("Aventurero" to 2, "Magico" to 1))
+        val requerimientos = mapOf<String, Int>(Pair("Aventurero", 2), Pair("Magico", 1) )
         val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
 
         val formacion = formacionService.crearFormacion("ForBidden", requerimientos, stats)
@@ -132,14 +135,14 @@ class FormacionServiceTest {
         val party = crearPartyApropiadaParaFormacion()
 
         assertThat(formacionService.formacionesQuePosee(party.id()!!))
-            .usingRecursiveFieldByFieldElementComparator()
+            .usingRecursiveFieldByFieldElementComparator(recursiveComparisonConfiguration)
             .contains(formacion)
     }
 
     @Test
     fun `una party puede poseer mas de una formacion`() {
-        val requerimientosMagico = factory.crearClases(listOf("Aventurero" to 2, "Magico" to 1))
-        val requerimientosAventureros = factory.crearClases(listOf("Aventurero" to 3))
+        val requerimientosMagico = mapOf<String, Int>(Pair("Aventurero", 2), Pair("Magico", 1) )
+        val requerimientosAventureros = mapOf<String, Int>(Pair("Aventurero", 3))
         val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
 
         val formacion1 = formacionService.crearFormacion("ForBidden", requerimientosMagico, stats)
@@ -148,14 +151,14 @@ class FormacionServiceTest {
         val party = crearPartyApropiadaParaFormacion()
 
         assertThat(formacionService.formacionesQuePosee(party.id()!!))
-            .usingRecursiveFieldByFieldElementComparator()
+            .usingRecursiveFieldByFieldElementComparator(recursiveComparisonConfiguration)
             .contains(formacion1, formacion2)
     }
 
     @Test
     fun `una party puede no poseer todas las formaciones`() {
-        val requerimientosMagico = factory.crearClases(listOf("Aventurero" to 2, "Magico" to 1))
-        val requerimientosPaladin = factory.crearClases(listOf("Paladin" to 3))
+        val requerimientosMagico = mapOf<String, Int>(Pair("Aventurero", 2), Pair("Magico", 1) )
+        val requerimientosPaladin = mapOf<String, Int>(Pair("Paladin", 3))
         val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
 
         val formacion1 = formacionService.crearFormacion("ForBidden", requerimientosMagico, stats)
@@ -164,7 +167,7 @@ class FormacionServiceTest {
         val party = crearPartyApropiadaParaFormacion()
 
         assertThat(formacionService.formacionesQuePosee(party.id()!!))
-            .usingRecursiveFieldByFieldElementComparator()
+            .usingRecursiveFieldByFieldElementComparator(recursiveComparisonConfiguration)
             .contains(formacion1)
             .doesNotContain(formacion2)
     }

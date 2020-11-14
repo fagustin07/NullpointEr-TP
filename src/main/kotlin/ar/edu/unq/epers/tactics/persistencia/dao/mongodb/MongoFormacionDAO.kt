@@ -1,6 +1,8 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.mongodb
 
 import ar.edu.unq.epers.tactics.exceptions.DuplicateFormationException
+import ar.edu.unq.epers.tactics.modelo.AtributoDeFormacion
+import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.modelo.Formacion
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.FormacionDAO
@@ -23,13 +25,48 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
     }
 
     override fun formacionesQuePosee(party: Party): List<Formacion> {
-        val clases = ObjectMapper()
-            .writer()
-            .writeValueAsString(party.aventureros().map { it.clases() }.flatten())
-        val filterType = type("requerimientos", "array")
-        val filterExpression = nor(Document.parse("{ \"requerimientos\" :{\$elemMatch:{\$nin: ${clases}}}}"))
+        val clases = ObjectMapper().writer().writeValueAsString(
+            party.aventureros().map { it.clases() }.flatten().groupBy { it }.mapValues { it.value.size }
+        )
 
-        return this.find(and(filterType, filterExpression))
+        val mapFunction = """
+            function() {
+                const clasesQueSeTiene = $clases
+        
+                const tieneLosRequisitos =
+                    Object
+                        .keys(this.requerimientos)
+                        .map(nombre => ({nombre, cantidad: this.requerimientos[nombre]}))
+                        .every(({nombre, cantidad}) => clasesQueSeTiene[nombre] >= cantidad)
+        
+                if(tieneLosRequisitos) {
+                    emit(this.nombre, this)
+                }
+            }
+            """
+
+        val reduceFunction = """
+            function(nombre_formacion, formacion) {
+                return formacion
+            }
+        """
+        return collection
+            .mapReduce(mapFunction, reduceFunction, Map::class.java)
+            .map {
+                val formacion = it.get("value") as Map<String, String>
+                val nombre = formacion.get("nombre") as String
+                val requerimientos = (formacion.get("requerimientos") as Map<String, Int>)
+                val atributos = (formacion.get("stats") as List<Map<String, Int>>).map { it ->
+                    AtributoDeFormacion(
+                        it.get("nombreAtributo") as String,
+                        it.get("puntosDeGanancia") as Int
+                    )
+                }
+
+                Formacion(nombre, requerimientos, atributos)
+            }
+            .toList()
+
     }
 
     /*PRIVATE*/

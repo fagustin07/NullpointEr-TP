@@ -11,7 +11,7 @@ class FormacionServiceImpl(val formacionDAO: FormacionDAO, val partyService: Par
 
     override fun crearFormacion(
         nombreFormacion: String,
-        requerimientos: List<Clase>,
+        requerimientos: Map<String, Int>,
         stats: List<AtributoDeFormacion>
     ): Formacion {
         val formacion = Formacion(nombreFormacion, requerimientos, stats)

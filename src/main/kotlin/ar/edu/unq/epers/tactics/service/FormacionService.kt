@@ -8,7 +8,7 @@ interface FormacionService {
 
     fun crearFormacion(
         nombreFormacion:String,
-        requerimientos:List<Clase>,
+        requerimientos:Map<String, Int>,
         stats:List<AtributoDeFormacion>): Formacion
 
     fun todasLasFormaciones():List<Formacion>
