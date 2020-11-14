@@ -81,17 +81,10 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
 
     /* ACCESSING */
     override fun atributosQueCorresponden(clasesQueSeTiene: List<String>): List<AtributoDeFormacion> {
-        // TODO: la conversion de List<String> a Map<String, Int> esta repetida en Formacion
+        // TODO: la conversion de List<String> a Map<String, Int> esta repetida en el constructor de Formacion
         val clasesQueSeTieneString =
             ObjectMapper().writer().writeValueAsString(
-                clasesQueSeTiene
-                    .fold(mutableMapOf<String, Int>()) { map, nombreDeClase ->
-                        map.put(
-                            nombreDeClase,
-                            map.getOrElse(nombreDeClase, { 0 }) + 1
-                        )
-                        map
-                    }
+                clasesQueSeTiene.groupBy { it } .mapValues { it.value.size }
             )
 
         val mapFunction = """
@@ -123,9 +116,16 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
 
                 AtributoDeFormacion(nombreAtributo, puntosDeGanancia)
             }
-            .into(mutableListOf())
+            .toList()
 
     }
+
+    /*PRIVATE*/
+
+    /*ACTIONS*/
+    private fun buscarFormacion(formacion: Formacion) =
+        this.getBy("nombre", formacion.nombre)
+
 
     /* TESTING */
     private fun existeLaFormacion(formacion: Formacion) = this.buscarFormacion(formacion) != null

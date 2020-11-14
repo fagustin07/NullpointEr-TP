@@ -10,7 +10,6 @@ interface FormacionDAO {
     fun getAll(): List<Formacion>
     fun deleteAll()
 
-    //TODO: esto habria que sacarlo despues. Tiene que resolverse en una query de Mongo
     fun atributosQueCorresponden(clasesDeSusPersonajes: List<String>): List<AtributoDeFormacion>
     fun formacionesQuePosee(party: Party) : List<Formacion>
 }
