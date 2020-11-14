@@ -88,7 +88,7 @@ class FormacionServiceTest {
     }
 
     @Test
-    fun `cuando una party con aventureros cumple con los todos requisitos de una formacion le corresponden atributos de formacion zzzzzzzzzzzzzzz`() {
+    fun `cuando una party con aventureros cumple con los todos requisitos de una formacion le corresponden atributos de formacion`() {
         val partyId = factory.nuevaPartyPersistida()
         factory.crearAventureroProficienteEnAventurero(partyId)
 
@@ -98,11 +98,11 @@ class FormacionServiceTest {
 
         val atributosQueCorresponden = formacionService.atributosQueCorresponden(partyId)
 
-        assertThat(atributosQueCorresponden).usingRecursiveComparison().ignoringFields("id").isEqualTo(stats)
+        assertThat(atributosQueCorresponden).usingRecursiveComparison().isEqualTo(stats)
     }
 
     @Test
-    fun `cuando una party con aventureros no cumple con los todos requisitos de una formacion no le corresponden atributos de formacion zzzzzzzzzzzzzzz`() {
+    fun `cuando una party con aventureros no cumple con los todos requisitos de una formacion no le corresponden atributos de esa formacion`() {
         val partyId = factory.nuevaPartyPersistida()
         factory.crearAventureroProficienteEnAventurero(partyId)
 
@@ -113,6 +113,37 @@ class FormacionServiceTest {
         val atributosQueCorresponden = formacionService.atributosQueCorresponden(partyId)
 
         assertThat(atributosQueCorresponden).isEmpty()
+    }
+
+    @Test
+    fun `cuando una party obtiene el mismo atributo de formacion de distintas formaciones, estos se suman`() {
+        val partyId = factory.nuevaPartyPersistida()
+        factory.crearAventureroProficienteEnAventurero(partyId)
+
+        val requerimientos = listOf(claseAventurero())
+
+        val statsConFuerzaYConsistencia = listOf(
+            AtributoDeFormacion("Fuerza", 1),
+            AtributoDeFormacion("Consistencia", 3)
+        )
+
+        val statsConFuerza = listOf(
+            AtributoDeFormacion("Fuerza", 1)
+        )
+
+        formacionService.crearFormacion("Formacion 1", requerimientos, statsConFuerzaYConsistencia)
+        formacionService.crearFormacion("Formacion 2", requerimientos, statsConFuerza)
+
+
+        val atributosQueCorresponden = formacionService.atributosQueCorresponden(partyId)
+
+        val statsEsperadas = listOf(
+            AtributoDeFormacion("Fuerza", 2),
+            AtributoDeFormacion("Consistencia", 3)
+        )
+
+        assertThat(atributosQueCorresponden.sortedBy { it.nombreAtributo })
+            .usingRecursiveComparison().isEqualTo(statsEsperadas.sortedBy { it.nombreAtributo })
     }
 
     private fun atributoDeFormacionFuerza() = AtributoDeFormacion("Fuerza", 1)

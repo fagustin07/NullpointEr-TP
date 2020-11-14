@@ -105,7 +105,8 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
                         .every(({nombre, cantidad}) => clasesQueSeTiene[nombre] >= cantidad)
         
                 if (cumpleConTodosLosRequisitos)
-                    this.stats.forEach(stat => emit(stat.nombreAtributo, {nombreAtributo: stat.nombreAtributo, puntosDeGanancia: stat.puntosDeGanancia}))
+                    this.stats.forEach(({nombreAtributo, puntosDeGanancia}) =>
+                        emit(nombreAtributo, {nombreAtributo, puntosDeGanancia}))
             }
             """
 
@@ -113,7 +114,7 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
             function(atributo, stats) {
                 return {
                     nombreAtributo: atributo,
-                    puntosDeGanancia: Arrays.sum(stats.map(stat => stat.puntosDeGanancia))
+                    puntosDeGanancia: Array.sum(stats.map(stat => stat.puntosDeGanancia))
                 }
             }
         """
