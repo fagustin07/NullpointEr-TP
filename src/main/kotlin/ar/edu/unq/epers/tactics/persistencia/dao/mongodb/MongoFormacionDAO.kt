@@ -46,8 +46,8 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
             """
 
         val reduceFunction = """
-            function(nombre_formacion, formacion) {
-                return formacion
+            function(nombre_formacion, formaciones) {
+                throw 'Nunca deberia ejecutarse esto. No puede haber nombres de  formaciones repetidos'
             }
         """
         return collection
