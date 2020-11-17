@@ -391,7 +391,7 @@ class ClaseServiceTest {
     }
 
     @Test // Este test fue planteado en el ISSUE que nos levantaron
-    fun `cuando un camino corto que no consume todos los puntos de experiencia es el que otorga mas puntos ese es el mas rentable`() {
+    fun `cuando el camino que otorga mas puntos es corto y sobran puntos de experiencia se siguen buscando mejoras para maximizar el uso de los mismos`() {
         val NOMBRE_DE_CLASE_FISICO99 = "NOMBRE_DE_CLASE_FISICO99"
 
         val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
@@ -404,15 +404,12 @@ class ClaseServiceTest {
         claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
         claseService.crearMejora(NOMBRE_DE_CLASE_MAGO, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.FUERZA), 66)
 
-        val mejoraQueOtorgaFuerza99 = claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO99, listOf(Atributo.FUERZA), 999)
+        claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO99, listOf(Atributo.FUERZA), 99)
 
 
         val caminoMasRentable = claseService.caminoMasRentable(2, aventureroId, Atributo.FUERZA)
 
-        assertEquals(
-            mejoraQueOtorgaFuerza99.puntosAMejorar(),
-            caminoMasRentable.sumBy { it.puntosAMejorar() }
-        )
+        assertEquals(166, caminoMasRentable.sumBy { it.puntosAMejorar() })
     }
 
     @AfterEach
