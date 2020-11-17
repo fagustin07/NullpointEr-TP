@@ -390,6 +390,31 @@ class ClaseServiceTest {
         )
     }
 
+    @Test // Este test fue planteado en el ISSUE que nos levantaron
+    fun `cuando un camino corto que no consume todos los puntos de experiencia es el que otorga mas puntos ese es el mas rentable`() {
+        val NOMBRE_DE_CLASE_FISICO99 = "NOMBRE_DE_CLASE_FISICO99"
+
+        val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
+
+        claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
+        claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO99)
+
+        claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf(), 1)
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
+        claseService.crearMejora(NOMBRE_DE_CLASE_MAGO, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.FUERZA), 66)
+
+        val mejoraQueOtorgaFuerza99 = claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO99, listOf(Atributo.FUERZA), 999)
+
+
+        val caminoMasRentable = claseService.caminoMasRentable(2, aventureroId, Atributo.FUERZA)
+
+        assertEquals(
+            mejoraQueOtorgaFuerza99.puntosAMejorar(),
+            caminoMasRentable.sumBy { it.puntosAMejorar() }
+        )
+    }
+
     @AfterEach
     internal fun tearDown() {
         PartyServiceImpl(HibernatePartyDAO()).eliminarTodo()

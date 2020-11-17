@@ -132,7 +132,7 @@ class Neo4JClaseDAO : ClaseDAO {
                 
                 MATCH (from:Clase { nombre: nombreDeClaseDePartida })
 
-                MATCH (from)-[mejoras:habilita*$puntosDeExperiencia]->(to:Clase)
+                MATCH (from)-[mejoras:habilita*0..$puntosDeExperiencia]->(to:Clase)
                 WHERE ${'$'}atributoDeseado IN last(mejoras).atributos
                 
                 CALL {
