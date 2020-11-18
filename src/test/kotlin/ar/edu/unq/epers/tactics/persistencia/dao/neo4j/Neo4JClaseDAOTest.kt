@@ -51,6 +51,35 @@ internal class Neo4JClaseDAOTest {
             .isEqualTo(166)
     }
 
+    @Test
+    fun `las mejoras ya adquiridas no aparecen en el camino mas rentable`() {
+        val NOMBRE_DE_CLASE_FISICO99 = "NOMBRE_DE_CLASE_FISICO99"
+
+        claseDAO.crear(Clase(NOMBRE_DE_CLASE_AVENTURERO))
+        claseDAO.crear(Clase(NOMBRE_DE_CLASE_MAGO))
+        claseDAO.crear(Clase(NOMBRE_DE_CLASE_FISICO99))
+        claseDAO.crear(Clase(NOMBRE_DE_CLASE_FISICO))
+        claseDAO.crear(Clase("Gran Patriarca"))
+
+        claseDAO.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf(), 1)
+        claseDAO.crearMejora(NOMBRE_DE_CLASE_MAGO, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.FUERZA), 66)
+        claseDAO.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO99, listOf(Atributo.FUERZA), 99)
+        claseDAO.crearMejora(
+            NOMBRE_DE_CLASE_FISICO,
+            "Gran Patriarca",
+            listOf(Atributo.FUERZA, Atributo.INTELIGENCIA, Atributo.DESTREZA, Atributo.CONSTITUCION),
+            100
+        )
+
+        val caminoMasRentable = claseDAO.caminoMasRentable(5, setOf("Aventurero", "Mago"), Atributo.FUERZA)
+
+        assertThat(caminoMasRentable.size).isEqualTo(2)
+        assertThat(caminoMasRentable[0].nombreDeLaClaseAMejorar()).isEqualTo(NOMBRE_DE_CLASE_FISICO)
+        assertThat(caminoMasRentable[1].nombreDeLaClaseAMejorar()).isEqualTo("Gran Patriarca")
+
+        assertThat(caminoMasRentable.sumBy { it.puntosAMejorar()}).isEqualTo(166)
+    }
+
     @AfterEach
     internal fun tearDown() {
         claseDAO.clear()

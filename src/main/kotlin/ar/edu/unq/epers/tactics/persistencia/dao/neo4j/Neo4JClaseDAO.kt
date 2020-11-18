@@ -134,7 +134,8 @@ class Neo4JClaseDAO : ClaseDAO {
                 MATCH (from:Clase { nombre: nombreDeClaseDePartida })
 
                 MATCH q = (from)-[mejoras:habilita*0..$puntosDeExperiencia]->(to:Clase)
-                WHERE ${'$'}atributoDeseado IN last(mejoras).atributos
+                WHERE ${'$'}atributoDeseado IN last(mejoras).atributos 
+                AND NOT (head(mejoras).hasta IN ${'$'}nombresClasesDePartida)
                 
                 RETURN relationships(q) AS camino
                 ORDER BY reduce(acc = 0, x in [each IN camino WHERE ${'$'}atributoDeseado IN each.atributos| each.puntos] | acc + x) DESC
