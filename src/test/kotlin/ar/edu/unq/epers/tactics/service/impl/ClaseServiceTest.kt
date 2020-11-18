@@ -332,7 +332,7 @@ class ClaseServiceTest {
             caminoMasRentable.sumBy { it.puntosAMejorar() }
         )
     }
-/*
+
     @Test
     fun `cuando una clase del aventurero habilita varias mejoras que otorgan fuerza se va por la que otorgue mas fuerza`() {
         val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
@@ -353,7 +353,6 @@ class ClaseServiceTest {
             caminoMasRentable.sumBy { it.puntosAMejorar() }
         )
     }
-*/
 
     @Test
     fun `cuando existen posibles mejoras pero no se le pasan puntosDeExperiencia no se obtienen mejoras`() {
@@ -391,7 +390,7 @@ class ClaseServiceTest {
     }
 
     @Test // Este test fue planteado en el ISSUE que nos levantaron
-    fun `cuando el camino que otorga mas puntos es corto y sobran puntos de experiencia se siguen buscando mejoras para maximizar el uso de los mismos`() {
+    fun `se puede conocer el mejor camino para maximizar un atributo de un aventurero`() {
         val NOMBRE_DE_CLASE_FISICO99 = "NOMBRE_DE_CLASE_FISICO99"
 
         val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
@@ -406,10 +405,9 @@ class ClaseServiceTest {
 
         claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO99, listOf(Atributo.FUERZA), 99)
 
-
         val caminoMasRentable = claseService.caminoMasRentable(2, aventureroId, Atributo.FUERZA)
 
-        assertEquals(166, caminoMasRentable.sumBy { it.puntosAMejorar() })
+        assertEquals(99, caminoMasRentable.sumBy { it.puntosAMejorar() })
     }
 
     @AfterEach
