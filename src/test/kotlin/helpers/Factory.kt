@@ -1,8 +1,6 @@
 package helpers
 
-import ar.edu.unq.epers.tactics.modelo.Aventurero
-import ar.edu.unq.epers.tactics.modelo.Party
-import ar.edu.unq.epers.tactics.modelo.Tactica
+import ar.edu.unq.epers.tactics.modelo.*
 import ar.edu.unq.epers.tactics.modelo.enums.Accion
 import ar.edu.unq.epers.tactics.modelo.enums.Criterio
 import ar.edu.unq.epers.tactics.modelo.enums.TipoDeEstadistica
@@ -20,7 +18,7 @@ import ar.edu.unq.epers.tactics.service.impl.PartyServiceImpl
 import ar.edu.unq.epers.tactics.service.impl.PeleaServiceImpl
 import java.lang.Math.random
 
-class FactoryAventureroLeaderboardService {
+class Factory {
     private val leaderboardService: AventureroLeaderboardService
     private val peleaService: PeleaService
     private val partyService: PartyService
@@ -113,5 +111,12 @@ class FactoryAventureroLeaderboardService {
         }
 
         return aventurero
+    }
+
+    fun crearStats(paresAtributoGanancia: List<Pair<String, Int>>) =
+        paresAtributoGanancia.map { AtributoDeFormacion(it.first, it.second) }
+
+    fun crearAventureroProficienteEnAventurero(partyId: Long): Aventurero {
+        return nuevoMagoEn(partyId)
     }
 }

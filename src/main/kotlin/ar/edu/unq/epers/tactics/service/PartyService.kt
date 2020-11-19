@@ -9,7 +9,7 @@ interface PartyService {
     fun recuperar(idDeLaParty: Long): Party
     fun recuperarTodas(): List<Party>
     fun agregarAventureroAParty(idDeLaParty: Long, aventurero: Aventurero) : Aventurero
-    fun eliminarTodo() // TODO: fue eliminado en el PR. Se la dejo porque la usamamos
+    fun eliminarTodo()
     fun recuperarOrdenadas(orden: Orden, direccion: Direccion, pagina:Int?):PartyPaginadas
 }
 

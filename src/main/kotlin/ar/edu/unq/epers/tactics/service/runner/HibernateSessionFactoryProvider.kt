@@ -10,7 +10,7 @@ class HibernateSessionFactoryProvider private constructor() {
 
     init {
         val env = System.getenv()
-        val user = env.getOrDefault("MYSQL_USERNAME", "root")
+        val user = env.getOrDefault("MYSQL_USERNAME", "mauro")
         val password = env.getOrDefault("MYSQL_PASSWORD","root")
         val host = "localhost"
         val dataBase = env.getOrDefault("MYSQL_DATABASE", "epers_ejemplo_jdbc")

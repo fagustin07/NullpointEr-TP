@@ -1,13 +1,10 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.neo4j
 
-import ar.edu.unq.epers.tactics.modelo.Atributo
-import ar.edu.unq.epers.tactics.modelo.Aventurero
-import ar.edu.unq.epers.tactics.modelo.Clase
-import ar.edu.unq.epers.tactics.modelo.Mejora
+import ar.edu.unq.epers.tactics.modelo.*
 import ar.edu.unq.epers.tactics.persistencia.dao.ClaseDAO
 import ar.edu.unq.epers.tactics.service.runner.Neo4JTransactionRunner
 import org.neo4j.driver.*
-import java.lang.Integer.max
+import org.neo4j.driver.internal.value.ListValue
 import java.lang.RuntimeException
 import java.util.stream.Collectors
 
@@ -35,7 +32,11 @@ class Neo4JClaseDAO : ClaseDAO {
             val query = """
                MATCH (claseInicio:Clase {nombre: ${'$'}nombreClaseInicio}) 
                MATCH (claseAMejorar:Clase {nombre: ${'$'}nombreClaseAMejorar}) 
-               MERGE (claseInicio)-[h:habilita {puntos:${'$'}valorAAumentar, atributos:${'$'}atributos}]->(claseAMejorar)
+               MERGE (claseInicio)-[h:habilita 
+                                    {puntos:${'$'}valorAAumentar, 
+                                    atributos:${'$'}atributos,
+                                    desde:${'$'}nombreClaseInicio,
+                                    hasta:${'$'}nombreClaseAMejorar}]->(claseAMejorar)
                RETURN claseInicio, claseAMejorar,h
             """
             session.run(
@@ -125,52 +126,63 @@ class Neo4JClaseDAO : ClaseDAO {
         }
     }
 
-    override fun caminoMasRentable(puntosDeExperiencia: Int, clasesDePartida: Set<String>, atributoDeseado: Atributo): List<Mejora> {
+    override fun caminoMasRentable(puntosDeExperiencia: Int, clases: Set<String>, atributo: Atributo): List<Mejora> {
         return Neo4JTransactionRunner().runTrx {session ->
             val query = """
                 UNWIND ${'$'}nombresClasesDePartida AS nombreDeClaseDePartida
                 
                 MATCH (from:Clase { nombre: nombreDeClaseDePartida })
 
-                MATCH (from)-[mejoras:habilita*$puntosDeExperiencia]->(to:Clase)
-                WHERE ${'$'}atributoDeseado IN last(mejoras).atributos
+                MATCH q = (from)-[mejoras:habilita*0..$puntosDeExperiencia]->(to:Clase)
+                WHERE ${'$'}atributoDeseado IN last(mejoras).atributos 
+                AND NOT (head(mejoras).hasta IN ${'$'}nombresClasesDePartida)
                 
-                CALL {
-                    WITH mejoras
-                    RETURN mejoras AS mejorasFiltradas
-                    ORDER BY reduce(acc = 0, x in [each IN mejoras WHERE ${'$'}atributoDeseado IN each.atributos| each.puntos] | acc + x) DESC
-                    LIMIT 1
-                } 
-                
-                UNWIND mejorasFiltradas AS m
-                RETURN
-                    startNode(m).nombre,
-                    endNode(m).nombre,
-                    m.atributos,
-                    m.puntos
+                RETURN relationships(q) AS camino
+                ORDER BY reduce(acc = 0, x in [each IN camino WHERE ${'$'}atributoDeseado IN each.atributos| each.puntos] | acc + x) DESC
+                LIMIT 1
                 """
 
-            val lista = session
+            val queryResult = session
                 .run(
                     query,
                     Values.parameters(
                         "longitudMaximaDeCamino", puntosDeExperiencia,
-                        "nombresClasesDePartida", clasesDePartida,
-                        "atributoDeseado", atributoDeseado.toString()
+                        "nombresClasesDePartida", clases,
+                        "atributoDeseado", atributo.toString()
                     )
-                ).list()
-            lista
-                .stream()
-                .map{
-                    Mejora(
-                        it[0].asString(),
-                        it[1].asString(),
-                        it[2].asList { Atributo.desdeString(it.asString()) },
-                        it[3].asInt())
+                )
+                .list()
+
+            if(queryResult.size==0) return@runTrx listOf() //este chequeo es necesario por si la query no retorna relaciones
+            val listaResultanteDeQuery = queryResult[0][0]
+            val size = listaResultanteDeQuery.size()
+            var i = 0
+            val listaMejorCamino = mutableListOf<Mejora>()
+
+            while(i < size){
+                val inicio = this.quitarComillas(listaResultanteDeQuery[i].get("desde").toString())
+                val final = this.quitarComillas(listaResultanteDeQuery[i].get("hasta").toString())
+                val puntos = listaResultanteDeQuery[i].get("puntos").toString().toInt()
+                val atributosDeMejora = listaResultanteDeQuery[i].get("atributos")
+
+                val sizeAtributos = (atributosDeMejora as ListValue).size()
+                var j = 0
+                val atributosResultado = mutableListOf<Atributo>()
+                while(j < sizeAtributos){
+                    val atributoObtenido = this.quitarComillas(atributosDeMejora[j].toString())
+                    atributosResultado.add(Atributo.desdeString(atributoObtenido))
+                    j++
                 }
-                .collect(Collectors.toList())
+                listaMejorCamino.add(Mejora(inicio,final, atributosResultado, puntos))
+                i++
+            }
+
+            listaMejorCamino
         }
     }
+
+    //necesario porque no me deja usar sino el toString y si lo que habia ya era string, le agrega dos comillas
+    private fun quitarComillas(string: String) = String(string.toList().filter { it!='"' }.toCharArray())
 
     override fun posiblesMejorasPara(aventurero: Aventurero): Set<Mejora> {
         if (!aventurero.tieneExperiencia()) return emptySet()
@@ -271,7 +283,7 @@ class Neo4JClaseDAO : ClaseDAO {
         }
     }
 
-    private fun verificarQueLaClaseDeInicioNoSeaHabilitadaPorClaseAMejorar(nombreClaseInicio: String, nombreClaseAMejorar: String){ // TODO: revisar
+    private fun verificarQueLaClaseDeInicioNoSeaHabilitadaPorClaseAMejorar(nombreClaseInicio: String, nombreClaseAMejorar: String){
         val query = """
                 MATCH (from:Clase {nombre: ${'$'}fromName })
                 MATCH (to:Clase {nombre: ${'$'}toName })

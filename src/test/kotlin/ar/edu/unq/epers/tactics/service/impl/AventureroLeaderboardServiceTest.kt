@@ -5,7 +5,7 @@ import ar.edu.unq.epers.tactics.service.AventureroLeaderboardService
 import ar.edu.unq.epers.tactics.service.AventureroService
 import ar.edu.unq.epers.tactics.service.PartyService
 import ar.edu.unq.epers.tactics.service.PeleaService
-import helpers.FactoryAventureroLeaderboardService
+import helpers.Factory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class AventureroLeaderboardServiceTest {
-    lateinit var factory: FactoryAventureroLeaderboardService
+    lateinit var factory: Factory
     lateinit var aventureroLeaderboardService: AventureroLeaderboardService
     lateinit var partyService: PartyService
     lateinit var peleaService: PeleaService
@@ -22,7 +22,7 @@ class AventureroLeaderboardServiceTest {
 
     @BeforeEach
     fun setUp() {
-        factory = FactoryAventureroLeaderboardService()
+        factory = Factory()
         aventureroLeaderboardService = factory.aventureroLeaderboardService()
         partyService = factory.partyService()
         peleaService = factory.peleaService()
