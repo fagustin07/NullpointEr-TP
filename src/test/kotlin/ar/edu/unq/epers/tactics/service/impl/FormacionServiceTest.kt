@@ -2,12 +2,10 @@ package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.exceptions.DuplicateFormationException
 import ar.edu.unq.epers.tactics.modelo.AtributoDeFormacion
-import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Formacion
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.FormacionDAO
-import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.mongodb.MongoFormacionDAO
@@ -38,13 +36,15 @@ class FormacionServiceTest {
     fun setUp() {
         val partyDAO = HibernatePartyDAO()
         val aventureroDAO = HibernateAventureroDAO()
-        aventureroService = AventureroServiceImpl(aventureroDAO, partyDAO)
+
         formacionDAO = MongoFormacionDAO()
+        claseDAO = Neo4JClaseDAO()
+
+        aventureroService = AventureroServiceImpl(aventureroDAO, partyDAO)
         formacionService = FormacionServiceImpl(formacionDAO, HibernatePartyDAO())
         partyService = PartyServiceImpl(partyDAO)
-        formacionService = FormacionServiceImpl(formacionDAO, partyService)
-        claseDAO = Neo4JClaseDAO()
         claseService = ClaseServiceImpl(claseDAO, aventureroDAO)
+
         recursiveComparisonConfiguration = RecursiveComparisonConfiguration.builder().withIgnoredFields("id").build()
     }
 
@@ -80,7 +80,7 @@ class FormacionServiceTest {
     fun `cuando una party no tiene aventureros no le corresponden atributos de formacion`() {
         val partyId = factory.nuevaPartyPersistida()
 
-        formacionService.crearFormacion("Nombre de formacion", listOf(claseAventurero()), listOf(atributoDeFormacionFuerza()))
+        formacionService.crearFormacion("Nombre de formacion", mapOf(claseAventurero() to 1), listOf(atributoDeFormacionFuerza()))
 
         val atributosQueCorresponden = formacionService.atributosQueCorresponden(partyId)
 
@@ -92,7 +92,7 @@ class FormacionServiceTest {
         val partyId = factory.nuevaPartyPersistida()
         factory.crearAventureroProficienteEnAventurero(partyId)
 
-        val requerimientos = listOf(claseAventurero())
+        val requerimientos = mapOf(claseAventurero() to 1)
         val stats = listOf(atributoDeFormacionFuerza(), atributoDeFormacionInteligencia())
         formacionService.crearFormacion("Nombre de formacion", requerimientos, stats)
 
@@ -106,7 +106,7 @@ class FormacionServiceTest {
         val partyId = factory.nuevaPartyPersistida()
         factory.crearAventureroProficienteEnAventurero(partyId)
 
-        val requerimientos = listOf(claseAventurero(), claseMago())
+        val requerimientos = mapOf(claseAventurero() to 1, claseMago() to 1)
         val stats = listOf(atributoDeFormacionFuerza())
         formacionService.crearFormacion("Nombre de formacion", requerimientos, stats)
 
@@ -120,7 +120,7 @@ class FormacionServiceTest {
         val partyId = factory.nuevaPartyPersistida()
         factory.crearAventureroProficienteEnAventurero(partyId)
 
-        val requerimientos = listOf(claseAventurero())
+        val requerimientos = mapOf(claseAventurero() to 1)
 
         val statsConFuerzaYConsistencia = listOf(
             AtributoDeFormacion("Fuerza", 1),
@@ -149,9 +149,9 @@ class FormacionServiceTest {
     private fun atributoDeFormacionFuerza() = AtributoDeFormacion("Fuerza", 1)
     private fun atributoDeFormacionInteligencia() = AtributoDeFormacion("Inteligencia", 2)
 
-    private fun claseAventurero() = Clase("Aventurero")
+    private fun claseAventurero() = "Aventurero"
 
-    private fun claseMago() = Clase("Mago")
+    private fun claseMago() = "Mago"
 
 
     @Test
@@ -240,8 +240,8 @@ class FormacionServiceTest {
 
     @Test
     fun `una party puede no poseer todas las formaciones`() {
-        val requerimientosMagico = mapOf<String, Int>(Pair("Aventurero", 2), Pair("Magico", 1) )
-        val requerimientosPaladin = mapOf<String, Int>(Pair("Paladin", 3))
+        val requerimientosMagico = mapOf(Pair("Aventurero", 2), Pair("Magico", 1) )
+        val requerimientosPaladin = mapOf(Pair("Paladin", 3))
         val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
 
         val formacion1 = formacionService.crearFormacion("ForBidden", requerimientosMagico, stats)

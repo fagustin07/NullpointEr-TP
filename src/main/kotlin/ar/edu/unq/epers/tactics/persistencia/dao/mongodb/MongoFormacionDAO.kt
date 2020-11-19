@@ -2,7 +2,6 @@ package ar.edu.unq.epers.tactics.persistencia.dao.mongodb
 
 import ar.edu.unq.epers.tactics.exceptions.DuplicateFormationException
 import ar.edu.unq.epers.tactics.modelo.AtributoDeFormacion
-import ar.edu.unq.epers.tactics.modelo.AtributoDeFormacion
 import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.modelo.Formacion
 import ar.edu.unq.epers.tactics.modelo.Party
@@ -10,9 +9,6 @@ import ar.edu.unq.epers.tactics.persistencia.dao.FormacionDAO
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.bson.Document
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.mongodb.client.model.Filters.*
-import org.bson.Document
 
 class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionDAO {
 
@@ -75,10 +71,6 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
 
     /*PRIVATE*/
 
-    /*ACTIONS*/
-    private fun buscarFormacion(formacion: Formacion) =
-        this.getBy("nombre", formacion.nombre)
-
     /* ACCESSING */
     override fun atributosQueCorresponden(clasesQueSeTiene: List<String>): List<AtributoDeFormacion> {
         // TODO: la conversion de List<String> a Map<String, Int> esta repetida en el constructor de Formacion
@@ -119,8 +111,6 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
             .toList()
 
     }
-
-    /*PRIVATE*/
 
     /*ACTIONS*/
     private fun buscarFormacion(formacion: Formacion) =

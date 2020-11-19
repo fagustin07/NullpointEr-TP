@@ -10,10 +10,6 @@ class Formacion {
     var nombre : String? = null
     var requerimientos : Map<String, Int> = mutableMapOf()
     var stats : List<AtributoDeFormacion> = mutableListOf()
-    var id: ObjectId? = null
-    var nombre: String? = null
-    var requerimientos: Map<String, Int> = mutableMapOf()
-    var stats: List<AtributoDeFormacion> = mutableListOf()
 
     protected constructor() {}
 

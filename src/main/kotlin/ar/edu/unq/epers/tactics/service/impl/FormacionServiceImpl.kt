@@ -10,7 +10,6 @@ import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import ar.edu.unq.epers.tactics.service.PartyService
 
 class FormacionServiceImpl(val formacionDAO: FormacionDAO, val partyDAO: PartyDAO) : FormacionService {
-class FormacionServiceImpl(val formacionDAO: FormacionDAO, val partyService: PartyService) : FormacionService {
 
     override fun crearFormacion(
         nombreFormacion: String,
@@ -34,10 +33,12 @@ class FormacionServiceImpl(val formacionDAO: FormacionDAO, val partyService: Par
         }
     }
 
+
     override fun formacionesQuePosee(partyId: Long): List<Formacion> {
-        TODO("Not yet implemented")
-    override fun formacionesQuePosee(partyId: Long): List<Formacion> {
-        val party = partyService.recuperar(partyId)
-        return formacionDAO.formacionesQuePosee(party)
+        return HibernateTransactionRunner.runTrx {
+            partyDAO.resultadoDeEjecutarCon(partyId) {
+                formacionDAO.formacionesQuePosee(it)
+            }
+        }
     }
 }
