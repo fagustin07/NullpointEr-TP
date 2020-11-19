@@ -12,10 +12,6 @@ interface FormacionService {
         stats:List<AtributoDeFormacion>): Formacion
 
     fun todasLasFormaciones():List<Formacion>
-
-
-    fun atributosQueCorresponden(partyId:Long):List<AtributoDeFormacion>
-
-
+    fun atributosQueCorresponden(partyId: Long):List<AtributoDeFormacion>
     fun formacionesQuePosee(partyId:Long): List<Formacion>
 }

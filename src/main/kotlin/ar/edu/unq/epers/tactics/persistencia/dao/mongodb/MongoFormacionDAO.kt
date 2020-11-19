@@ -7,8 +7,8 @@ import ar.edu.unq.epers.tactics.modelo.Formacion
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.FormacionDAO
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.mongodb.client.model.Filters.*
 import org.bson.Document
+
 
 class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionDAO {
 
@@ -71,9 +71,51 @@ class MongoFormacionDAO : MongoDAO<Formacion>(Formacion::class.java), FormacionD
 
     /*PRIVATE*/
 
+    /* ACCESSING */
+    override fun atributosQueCorresponden(clasesQueSeTiene: List<String>): List<AtributoDeFormacion> {
+        // TODO: la conversion de List<String> a Map<String, Int> esta repetida en el constructor de Formacion
+        val clasesQueSeTieneString =
+            ObjectMapper().writer().writeValueAsString(
+                clasesQueSeTiene.groupBy { it } .mapValues { it.value.size }
+            )
+
+        val mapFunction = """
+            function() {
+                const clasesQueSeTiene = $clasesQueSeTieneString
+        
+                const cumpleConTodosLosRequisitos =
+                    Object
+                        .keys(this.requerimientos)
+                        .map(nombre => ({nombre, cantidad: this.requerimientos[nombre]}))
+                        .every(({nombre, cantidad}) => clasesQueSeTiene[nombre] >= cantidad)
+        
+                if (cumpleConTodosLosRequisitos)
+                    this.stats.forEach(({nombreAtributo, puntosDeGanancia}) =>
+                        emit(nombreAtributo, puntosDeGanancia))
+            }
+            """
+
+        val reduceFunction = """
+            function(nombreAtributo, variosPuntosDeGanancia) {
+                return Array.sum(variosPuntosDeGanancia)
+            }
+        """
+        return collection
+            .mapReduce(mapFunction, reduceFunction, Map::class.java)
+            .map {
+                val nombreAtributo = it.get("_id") as String
+                val puntosDeGanancia = (it.get("value") as Double).toInt()
+
+                AtributoDeFormacion(nombreAtributo, puntosDeGanancia)
+            }
+            .toList()
+
+    }
+
     /*ACTIONS*/
     private fun buscarFormacion(formacion: Formacion) =
         this.getBy("nombre", formacion.nombre)
+
 
     /* TESTING */
     private fun existeLaFormacion(formacion: Formacion) = this.buscarFormacion(formacion) != null
