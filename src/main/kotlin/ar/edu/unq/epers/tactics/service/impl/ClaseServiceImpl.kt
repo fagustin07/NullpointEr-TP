@@ -21,8 +21,8 @@ class ClaseServiceImpl(private val claseDAO: ClaseDAO, val aventureroDAO: Aventu
         return claseDAO.crearMejora(nombreClaseInicio, nombreClaseAMejorar, atributos, valorAAumentar)
     }
 
-    override fun requerir(clasePredecesora: String, claseSucesora: String) {
-        claseDAO.requerir(clasePredecesora, claseSucesora)
+    override fun requerir(nombreClasePredecesora: String, nombreClaseSucesora: String) {
+        claseDAO.requerir(nombreClasePredecesora, nombreClaseSucesora)
     }
 
     override fun puedeMejorar(aventureroID: Long, mejora: Mejora): Boolean =

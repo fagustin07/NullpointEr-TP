@@ -332,7 +332,7 @@ class ClaseServiceTest {
             caminoMasRentable.sumBy { it.puntosAMejorar() }
         )
     }
-/*
+
     @Test
     fun `cuando una clase del aventurero habilita varias mejoras que otorgan fuerza se va por la que otorgue mas fuerza`() {
         val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
@@ -353,7 +353,6 @@ class ClaseServiceTest {
             caminoMasRentable.sumBy { it.puntosAMejorar() }
         )
     }
-*/
 
     @Test
     fun `cuando existen posibles mejoras pero no se le pasan puntosDeExperiencia no se obtienen mejoras`() {
@@ -388,6 +387,27 @@ class ClaseServiceTest {
             mejoraQueOtorgaFuerza.puntosAMejorar() + otraMejora.puntosAMejorar(),
             caminoMasRentable.sumBy { it.puntosAMejorar() }
         )
+    }
+
+    @Test // Este test fue planteado en el ISSUE que nos levantaron
+    fun `se puede conocer el mejor camino para maximizar un atributo de un aventurero`() {
+        val NOMBRE_DE_CLASE_FISICO99 = "NOMBRE_DE_CLASE_FISICO99"
+
+        val aventureroId = factory.crearAventureroConExperiencia(0).id()!!
+
+        claseService.crearClase(NOMBRE_DE_CLASE_AVENTURERO)
+        claseService.crearClase(NOMBRE_DE_CLASE_MAGO)
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO99)
+
+        claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_MAGO, listOf(), 1)
+        claseService.crearClase(NOMBRE_DE_CLASE_FISICO)
+        claseService.crearMejora(NOMBRE_DE_CLASE_MAGO, NOMBRE_DE_CLASE_FISICO, listOf(Atributo.FUERZA), 66)
+
+        claseService.crearMejora(NOMBRE_DE_CLASE_AVENTURERO, NOMBRE_DE_CLASE_FISICO99, listOf(Atributo.FUERZA), 99)
+
+        val caminoMasRentable = claseService.caminoMasRentable(2, aventureroId, Atributo.FUERZA)
+
+        assertEquals(99, caminoMasRentable.sumBy { it.puntosAMejorar() })
     }
 
     @AfterEach
