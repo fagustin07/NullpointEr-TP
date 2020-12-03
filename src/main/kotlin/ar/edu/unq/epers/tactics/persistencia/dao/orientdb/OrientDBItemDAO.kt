@@ -1,6 +1,9 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 
 
+import ar.edu.unq.epers.tactics.exceptions.InexistentItemException
+import ar.edu.unq.epers.tactics.exceptions.ItemAlreadyRegisteredException
+import ar.edu.unq.epers.tactics.exceptions.PartyAlreadyRegisteredException
 import ar.edu.unq.epers.tactics.service.runner.OrientDBSessionFactoryProvider
 import com.orientechnologies.orient.core.db.ODatabaseSession
 import com.orientechnologies.orient.core.record.ORecord
@@ -10,6 +13,9 @@ class OrientDBItemDAO {
     val db: ODatabaseSession get() = OrientDBSessionFactoryProvider.instance.db
 
     fun registrar(nombre: String, precio: Int): Item {
+        val query = "SELECT FROM Item WHERE nombre = ?"
+        val queryResult = db.query(query, nombre)
+        if (queryResult.hasNext()) throw ItemAlreadyRegisteredException(nombre)
 
         val result = db.newVertex("Item")
         result.setProperty("nombre", nombre)
@@ -30,13 +36,9 @@ class OrientDBItemDAO {
 
             item = Item(nombre,precio)
         } else {
-            throw RuntimeException("No existe el objeto llamado ${nombre}.")
+            throw InexistentItemException(nombre)
         }
         return item
-    }
-
-    fun removeAll() {
-        db.command("DELETE VERTEX FROM Item")
     }
 
 }

@@ -1,5 +1,8 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 
+import ar.edu.unq.epers.tactics.exceptions.CannotBuyException
+import ar.edu.unq.epers.tactics.exceptions.PartyAlreadyRegisteredException
+import ar.edu.unq.epers.tactics.exceptions.PartyUnregisteredException
 import ar.edu.unq.epers.tactics.service.runner.OrientDBSessionFactoryProvider
 import com.orientechnologies.orient.core.db.ODatabaseSession
 import com.orientechnologies.orient.core.record.ORecord
@@ -11,7 +14,7 @@ class OrientDBPartyDAO {
     fun registrar(partyId: Long, monedas: Int): PartyConMonedas {
         val query = "SELECT FROM Party WHERE id = ?"
         val queryResult = db.query(query, partyId)
-        if (queryResult.hasNext()) throw RuntimeException("La party ya está registrada!")
+        if (queryResult.hasNext()) throw PartyAlreadyRegisteredException(partyId)
 
         val result = db.newVertex("Party")
         result.setProperty("id", partyId)
@@ -37,7 +40,7 @@ class OrientDBPartyDAO {
 
             party = PartyConMonedas(partyId,monedas)
         } else {
-            throw RuntimeException("La party con id ${partyId}, no está registrada.")
+            throw PartyUnregisteredException(partyId)
         }
         return party
     }
@@ -62,7 +65,8 @@ class PartyConMonedas(val id: Long, var monedas: Int) {
     fun comprar(item: Item) {
         if (item.precio > this.monedas){
             val monedasFaltantes = item.precio - this.monedas
-            throw RuntimeException("No puedes comprar el item, te faltan ${monedasFaltantes} monedas.")
+
+            throw CannotBuyException(item.nombre, monedasFaltantes)
         } else {
             monedas -= item.precio
         }
