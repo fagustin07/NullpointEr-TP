@@ -7,23 +7,21 @@ import com.orientechnologies.orient.core.db.OrientDBConfig
 class OrientDBSessionFactoryProvider private constructor() {
 
     private var orientDb: OrientDB
-    var db: ODatabaseSession
+    lateinit var session: ODatabaseSession
 
     init {
         orientDb = OrientDB("remote:localhost", OrientDBConfig.defaultConfig())
-
-        db = orientDb.open("test", "admin", "admin")
     }
 
 
     fun createSession(): ODatabaseSession {
-        db = orientDb.open("test", "admin", "admin")
+        session = orientDb.open("epers_tactics_db", "admin", "admin")
 
-        if(db.getClass("Party")==null) db.createVertexClass("Party")
-        if(db.getClass("Item")==null) db.createVertexClass("Item")
-        if(db.getClass("haComprado")==null) db.createEdgeClass("haComprado")
+        if(session.getClass("PartyConMonedas")==null) session.createVertexClass("PartyConMonedas")
+        if(session.getClass("Item")==null) session.createVertexClass("Item")
+        if(session.getClass("haComprado")==null) session.createEdgeClass("haComprado")
 
-        return db
+        return session
     }
 
     companion object {
@@ -33,8 +31,7 @@ class OrientDBSessionFactoryProvider private constructor() {
         val instance: OrientDBSessionFactoryProvider
             get() {
                 if (INSTANCE == null) {
-                    INSTANCE =
-                        OrientDBSessionFactoryProvider()
+                    INSTANCE = OrientDBSessionFactoryProvider()
                 }
                 return INSTANCE!!
             }

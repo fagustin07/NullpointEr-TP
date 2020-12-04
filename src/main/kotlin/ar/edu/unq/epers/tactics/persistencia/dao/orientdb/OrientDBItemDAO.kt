@@ -3,44 +3,42 @@ package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 
 import ar.edu.unq.epers.tactics.exceptions.InexistentItemException
 import ar.edu.unq.epers.tactics.exceptions.ItemAlreadyRegisteredException
-import ar.edu.unq.epers.tactics.exceptions.PartyAlreadyRegisteredException
+import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.service.runner.OrientDBSessionFactoryProvider
 import com.orientechnologies.orient.core.db.ODatabaseSession
 import com.orientechnologies.orient.core.record.ORecord
+import java.util.*
 
 
 class OrientDBItemDAO {
-    val db: ODatabaseSession get() = OrientDBSessionFactoryProvider.instance.db
 
-    fun registrar(nombre: String, precio: Int): Item {
-        val query = "SELECT FROM Item WHERE nombre = ?"
-        val queryResult = db.query(query, nombre)
-        if (queryResult.hasNext()) throw ItemAlreadyRegisteredException(nombre)
+    val session: ODatabaseSession get() = OrientDBSessionFactoryProvider.instance.session
 
-        val result = db.newVertex("Item")
-        result.setProperty("nombre", nombre)
-        result.setProperty("precio", precio)
+    fun guardar(item: Item): Item {
+        validarQueNoExistaAlgunItemLlamado(item.nombre)
+
+        val result = session.newVertex("Item")
+        result.setProperty("nombre", item.nombre)
+        result.setProperty("precio", item.precio)
         result.save<ORecord>()
 
-        return Item(nombre, precio)
+        return item // TODO: deberia retornar el item con el id que le dio la base de datos
     }
 
     fun recuperar(nombre: String): Item {
-        val query = "SELECT FROM Item WHERE nombre = ?"
-        val rs = db.query(query, nombre)
-
-        lateinit var item : Item
-        if (rs.hasNext()) {
-            val partyPersistida = rs.next()
-            val precio = partyPersistida.getProperty<Int>("precio")
-
-            item = Item(nombre,precio)
-        } else {
-            throw InexistentItemException(nombre)
-        }
-        return item
+        return intentarRecuperar(nombre).orElseThrow { InexistentItemException(nombre) }
     }
 
-}
+    fun intentarRecuperar(nombre: String): Optional<Item> =
+        session.query("SELECT FROM Item WHERE nombre = ?", nombre)
+            .stream()
+            .findFirst()
+            .map { Item(it.getProperty("nombre"), it.getProperty("precio")) }
 
-class Item(val nombre: String, val precio: Int)
+
+    private fun validarQueNoExistaAlgunItemLlamado(nombre: String) {
+        val query = "SELECT FROM Item WHERE nombre = ?"
+        val queryResult = session.query(query, nombre)
+        if (queryResult.hasNext()) throw ItemAlreadyRegisteredException(nombre)
+    }
+}

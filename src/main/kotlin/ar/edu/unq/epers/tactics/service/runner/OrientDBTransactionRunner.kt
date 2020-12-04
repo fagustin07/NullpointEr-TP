@@ -7,21 +7,17 @@ object OrientDBTransactionRunner {
 
 
     val currentSession: ODatabaseSession
-        get() {
-            if (sessionThreadLocal.get() == null) {
-                throw RuntimeException("No hay ninguna session en el contexto")
-            }
-            return sessionThreadLocal.get()!!
-        }
+        get() = sessionThreadLocal.get() ?: throw RuntimeException("No hay ninguna session en el contexto")
 
 
     fun <T> runTrx(bloque: ()->T): T {
         val session = OrientDBSessionFactoryProvider.instance.createSession()
+
         sessionThreadLocal.set(session)
+
         session.use {
             val tx =  session.begin()
             try {
-                //codigo de negocio
                 val resultado = bloque()
                 tx!!.commit()
                 return resultado
