@@ -39,7 +39,7 @@ class TiendaServicePersistente(protected val partyMonedasDAO: OrientDBPartyDAO, 
                 SET fechaCompra = ?
                 """
 
-            OrientDBSessionFactoryProvider.instance.session.command(query,partyId, nombreDeItemAComprar, LocalDate.now()) // TODO: con actualizar la party tal vez se deberia actualizar todo.... (?)
+            OrientDBSessionFactoryProvider.instance.session.command(query,partyId, nombreDeItemAComprar, LocalDate.now().toString()) // TODO: con actualizar la party tal vez se deberia actualizar todo.... (?)
         }
 
 
