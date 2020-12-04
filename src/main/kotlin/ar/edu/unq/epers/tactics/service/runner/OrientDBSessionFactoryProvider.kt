@@ -1,6 +1,7 @@
 package ar.edu.unq.epers.tactics.service.runner
 
 import com.orientechnologies.orient.core.db.ODatabaseSession
+import com.orientechnologies.orient.core.db.ODatabaseType
 import com.orientechnologies.orient.core.db.OrientDB
 import com.orientechnologies.orient.core.db.OrientDBConfig
 
@@ -10,7 +11,8 @@ class OrientDBSessionFactoryProvider private constructor() {
     lateinit var session: ODatabaseSession
 
     init {
-        orientDb = OrientDB("remote:localhost", OrientDBConfig.defaultConfig())
+        orientDb = OrientDB("remote:localhost", "root","root",OrientDBConfig.defaultConfig())
+        orientDb.createIfNotExists("epers_tactics_db",ODatabaseType.PLOCAL)
     }
 
 
