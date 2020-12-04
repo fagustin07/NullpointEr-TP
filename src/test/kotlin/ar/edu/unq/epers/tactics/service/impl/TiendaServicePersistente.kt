@@ -33,7 +33,7 @@ class TiendaServicePersistente(protected val partyMonedasDAO: OrientDBPartyDAO, 
             val query =
                 """
                 CREATE EDGE haComprado
-                FROM (SELECT FROM Party WHERE id = ?)
+                FROM (SELECT FROM PartyConMonedas WHERE id = ?)
                 TO (SELECT FROM Item WHERE nombre = ?)
                 """
 
