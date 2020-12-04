@@ -1,6 +1,7 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 
 import ar.edu.unq.epers.tactics.exceptions.*
+import ar.edu.unq.epers.tactics.modelo.tienda.Compra
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
@@ -28,6 +29,7 @@ class TiendaServiceTest {
     fun setUp(){
         party = partyService.crear(Party("Memories",""))
     }
+    val tiendaService = TiendaServicePersistente(OrientDBPartyDAO(), OrientDBItemDAO(), OperacionesDAO())
 
     @Test
     fun `se pueden registar partys`(){
@@ -62,6 +64,45 @@ class TiendaServiceTest {
             tiendaService.registrarItem("capa en llamas",400)
         }
         assertThat(exception.message).isEqualTo("El item capa en llamas ya se encuentra en el sistema.")
+    }
+
+    @Test
+    fun `party compra item y se le cobra`(){
+        val monedasAntesDeCompra = 500
+        val precioItem = 200
+
+        tiendaService.registrarParty(1, monedasAntesDeCompra)
+        tiendaService.registrarItem("bandera flameante", precioItem)
+
+        tiendaService.registrarCompra(1,"bandera flameante")
+
+
+        var partyRecuperada = tiendaService.recuperarParty(1)
+
+        assertThat(partyRecuperada.monedas).isEqualTo(monedasAntesDeCompra - precioItem)
+    }
+
+    @Test
+    fun `inicialmente una party no tiene ninguna compra registrada`(){
+        val party = tiendaService.registrarParty(1, 100)
+
+        val comprasRealizadas = tiendaService.comprasRealizadasPorParty(party.id)
+
+        assertThat(comprasRealizadas).isEmpty()
+    }
+
+    @Test
+    fun `una party realiza una compra y queda registrada`(){
+        val party = tiendaService.registrarParty(1, 100)
+        val item = tiendaService.registrarItem("Un item", 1)
+
+        tiendaService.registrarCompra(party.id,item.nombre)
+
+        val comprasRealizadas = tiendaService.comprasRealizadasPorParty(party.id)
+
+        val comprasEsperadas = listOf(Compra(item))
+
+        assertThat(comprasRealizadas).usingRecursiveComparison().isEqualTo(comprasEsperadas)
     }
 
     @Test

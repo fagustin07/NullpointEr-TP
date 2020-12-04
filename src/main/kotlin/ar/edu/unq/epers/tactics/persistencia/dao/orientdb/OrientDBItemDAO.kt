@@ -22,7 +22,7 @@ class OrientDBItemDAO {
         result.setProperty("precio", item.precio)
         result.save<ORecord>()
 
-        return item // TODO: deberia retornar el item con el id que le dio la base de datos
+        return item // TODO: ¿¿¿deberia retornar el item con el id que le dio la base de datos???
     }
 
     fun recuperar(nombre: String): Item {
