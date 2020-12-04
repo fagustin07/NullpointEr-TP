@@ -6,6 +6,7 @@ import ar.edu.unq.epers.tactics.modelo.tienda.PartyConMonedas
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.service.runner.OrientDBSessionFactoryProvider
 import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner.runTrx
+import java.time.LocalDate
 
 class TiendaServicePersistente(protected val partyMonedasDAO: OrientDBPartyDAO, protected val itemDAO: OrientDBItemDAO) {
 
@@ -35,9 +36,10 @@ class TiendaServicePersistente(protected val partyMonedasDAO: OrientDBPartyDAO, 
                 CREATE EDGE haComprado
                 FROM (SELECT FROM PartyConMonedas WHERE id = ?)
                 TO (SELECT FROM Item WHERE nombre = ?)
+                SET fechaCompra = ?
                 """
 
-            OrientDBSessionFactoryProvider.instance.session.command(query,partyId, nombreDeItemAComprar) // TODO: con actualizar la party tal vez se deberia actualizar todo.... (?)
+            OrientDBSessionFactoryProvider.instance.session.command(query,partyId, nombreDeItemAComprar, LocalDate.now()) // TODO: con actualizar la party tal vez se deberia actualizar todo.... (?)
         }
 
 

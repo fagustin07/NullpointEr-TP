@@ -1,17 +1,21 @@
 package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
+import ar.edu.unq.epers.tactics.modelo.EstadoPartida
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.modelo.Pelea
 import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import ar.edu.unq.epers.tactics.persistencia.dao.AventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.PeleaDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBPartyDAO
 import ar.edu.unq.epers.tactics.service.PeleaService
 import ar.edu.unq.epers.tactics.service.PeleasPaginadas
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
+import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner
 
 class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO): PeleaService {
+    val partyMonedasDAO: OrientDBPartyDAO = OrientDBPartyDAO()
 
     override fun iniciarPelea(partyId: Long, nombrePartyEnemiga:String): Pelea {
         return runTrx {
@@ -38,7 +42,12 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
         }
 
     override fun terminarPelea(idDeLaPelea: Long) =
-          runTrx { peleaDAO.ejecutarCon(idDeLaPelea) { it.finalizar() } }
+          runTrx {
+              val pelea = peleaDAO.ejecutarCon(idDeLaPelea) { it.finalizar() }
+              this.obtenerRecompensaSiHaGanado(pelea)
+
+              pelea
+          }
 
     override fun recuperarOrdenadas(partyId: Long, pagina: Int?): PeleasPaginadas {
         val paginaABuscar = pagina ?: 0
@@ -48,6 +57,16 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
             val peleasRecuperadas = peleaDAO.recuperarOrdenadas(partyId, paginaABuscar)
             val peleasTotales = peleaDAO.cantidadDePeleas().toInt()
             PeleasPaginadas(peleasRecuperadas, peleasTotales)
+        }
+    }
+
+    private fun obtenerRecompensaSiHaGanado(pelea: Pelea) {
+        if (pelea.estadoPartida() == EstadoPartida.GANADA) {
+            OrientDBTransactionRunner.runTrx {
+                val partyConMonedas = partyMonedasDAO.recuperar(pelea.idDeLaParty())
+                partyConMonedas.monedas += 500
+                partyMonedasDAO.actualizar(partyConMonedas)
+            }
         }
     }
 }

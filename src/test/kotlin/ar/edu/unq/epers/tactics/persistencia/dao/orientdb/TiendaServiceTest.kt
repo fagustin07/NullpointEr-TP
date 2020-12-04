@@ -1,22 +1,30 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 
 import ar.edu.unq.epers.tactics.exceptions.*
+import ar.edu.unq.epers.tactics.modelo.Aventurero
+import ar.edu.unq.epers.tactics.modelo.Party
+import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
+import ar.edu.unq.epers.tactics.service.impl.PartyServiceImpl
+import ar.edu.unq.epers.tactics.service.impl.PeleaServiceImpl
 import ar.edu.unq.epers.tactics.service.impl.TiendaServicePersistente
-import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner.runTrx
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class TiendaServiceTest {
+
+    private val peleaService = PeleaServiceImpl(HibernatePeleaDAO(), HibernatePartyDAO(), HibernateAventureroDAO())
+    private val partyService = PartyServiceImpl(HibernatePartyDAO())
     val tiendaService = TiendaServicePersistente(OrientDBPartyDAO(), OrientDBItemDAO())
 
     @Test
     fun `se pueden registar partys`(){
         tiendaService.registrarParty(1, 500)
 
-        var miParty = tiendaService.recuperarParty(1)
+        val miParty = tiendaService.recuperarParty(1)
 
         assertThat(miParty.monedas).isEqualTo(500) //assert malisimo xd
     }
@@ -53,9 +61,6 @@ class TiendaServiceTest {
 
     @Test
     fun `party compra item`(){
-        //TODO: esto es más bien un test del service que de un dao, lo hice aca para simplificar tiempo
-        // y testear esta funcionalidad
-
         val monedasAntesDeCompra = 500
         val precioItem = 200
 
@@ -65,7 +70,7 @@ class TiendaServiceTest {
         tiendaService.registrarCompra(1,"bandera flameante")
 
 
-        var partyRecuperada = tiendaService.recuperarParty(1)
+        val partyRecuperada = tiendaService.recuperarParty(1)
 
         assertThat(partyRecuperada.monedas).isEqualTo(monedasAntesDeCompra - precioItem)
     }
@@ -77,6 +82,40 @@ class TiendaServiceTest {
 
         val exception = assertThrows<CannotBuyException> { tiendaService.registrarCompra(1,"bandera flameante") }
         assertThat(exception.message).isEqualTo("No puedes comprar 'bandera flameante', te faltan 2 monedas.")
+    }
+
+    @Test
+    fun `perder una pelea no incrementa el dinero de una party`(){
+        val party = Party("Nombre", "")
+        partyService.crear(party)
+        val partyMonedas = tiendaService.registrarParty(party.id()!!, 0)
+        val monedasAntesDePelea = partyMonedas.monedas
+        val peleaId = peleaService.iniciarPelea(party.id()!!, "party enemiga").id()!!
+
+        peleaService.terminarPelea(peleaId)
+
+        val partyLuegoDePelea = tiendaService.recuperarParty(party.id()!!)
+        assertThat(partyLuegoDePelea.monedas).isEqualTo(monedasAntesDePelea)
+    }
+
+    @Test
+    fun `ganar una pelea incrementa el dinero de una party`(){
+        val party = Party("Nombre", "")
+        val aliado = Aventurero("Jorge")
+        party.agregarUnAventurero(aliado)
+        partyService.crear(party)
+        val partyMonedas = tiendaService.registrarParty(party.id()!!, 0)
+
+        val monedasAntesDeGanarPelea = partyMonedas.monedas
+        val peleaId = peleaService.iniciarPelea(party.id()!!, "party enemiga").id()!!
+
+        peleaService.terminarPelea(peleaId)
+
+        val partyLuegoDePelea = tiendaService.recuperarParty(party.id()!!)
+        val recompensaPorGanarPelea = 500
+        val monedasEsperadas = monedasAntesDeGanarPelea + recompensaPorGanarPelea
+
+        assertThat(partyLuegoDePelea.monedas).isEqualTo(monedasEsperadas)
     }
 
     @AfterEach
