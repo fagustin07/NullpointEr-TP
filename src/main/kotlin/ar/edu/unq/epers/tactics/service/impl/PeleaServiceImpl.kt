@@ -1,8 +1,6 @@
 package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
-import ar.edu.unq.epers.tactics.modelo.EstadoPartida
-import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.modelo.Pelea
 import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import ar.edu.unq.epers.tactics.persistencia.dao.AventureroDAO
@@ -61,10 +59,10 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
     }
 
     private fun obtenerRecompensaSiHaGanado(pelea: Pelea) {
-        if (pelea.estadoPartida() == EstadoPartida.GANADA) {
+        if (pelea.fueGanada()) {
             OrientDBTransactionRunner.runTrx {
                 val partyConMonedas = partyMonedasDAO.recuperar(pelea.idDeLaParty())
-                partyConMonedas.monedas += 500
+                partyConMonedas.adquirirRecompensaDePelea()
                 partyMonedasDAO.actualizar(partyConMonedas)
             }
         }

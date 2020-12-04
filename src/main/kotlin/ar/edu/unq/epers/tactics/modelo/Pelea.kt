@@ -55,6 +55,8 @@ class Pelea(@OneToOne(fetch = FetchType.EAGER) val party: Party, private val nom
         habilidadesRecibidas.add(habilidadRecibida)
     }
 
+    fun fueGanada() = this.estadoPartida == EstadoPartida.GANADA
+
 }
 
 enum class EstadoPartida(){

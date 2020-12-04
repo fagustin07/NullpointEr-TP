@@ -2,7 +2,7 @@ package ar.edu.unq.epers.tactics.modelo.tienda
 
 import ar.edu.unq.epers.tactics.exceptions.CannotBuyException
 
-class PartyConMonedas(val id: Long, var monedas: Int) {
+class PartyConMonedas(val id: Long, var monedas: Int = 0) {
 
     fun comprar(item: Item) {
         if (item.precio > this.monedas){
@@ -12,5 +12,9 @@ class PartyConMonedas(val id: Long, var monedas: Int) {
         } else {
             monedas -= item.precio
         }
+    }
+
+    internal fun adquirirRecompensaDePelea() {
+        this.monedas+=500
     }
 }
