@@ -10,15 +10,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class TiendaServiceTest {
-    val partyMonedasDAO = OrientDBPartyDAO()
-    val itemDAO = OrientDBItemDAO()
-
-    val tiendaService = TiendaServicePersistente(partyMonedasDAO, itemDAO)
-
-    @BeforeEach
-    fun setUp(){
-
-    }
+    val tiendaService = TiendaServicePersistente(OrientDBPartyDAO(), OrientDBItemDAO())
 
     @Test
     fun `se pueden registar partys`(){

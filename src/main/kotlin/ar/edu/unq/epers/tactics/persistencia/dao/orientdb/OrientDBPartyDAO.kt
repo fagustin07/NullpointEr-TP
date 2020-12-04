@@ -1,27 +1,27 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 
-import ar.edu.unq.epers.tactics.exceptions.CannotBuyException
 import ar.edu.unq.epers.tactics.exceptions.PartyAlreadyRegisteredException
 import ar.edu.unq.epers.tactics.exceptions.PartyUnregisteredException
+import ar.edu.unq.epers.tactics.modelo.tienda.PartyConMonedas
 import ar.edu.unq.epers.tactics.service.runner.OrientDBSessionFactoryProvider
 import com.orientechnologies.orient.core.db.ODatabaseSession
 import com.orientechnologies.orient.core.record.ORecord
+import java.util.*
 
 
 class OrientDBPartyDAO {
+
     val session: ODatabaseSession get() = OrientDBSessionFactoryProvider.instance.session
 
-    fun registrar(partyId: Long, monedas: Int): PartyConMonedas {
-        val query = "SELECT FROM Party WHERE id = ?"
-        val queryResult = session.query(query, partyId)
-        if (queryResult.hasNext()) throw PartyAlreadyRegisteredException(partyId)
+    fun guardar(party: PartyConMonedas): PartyConMonedas {
+        validarQueNoEsteRegistradaLaParty(party)
 
-        val result = session.newVertex("Party")
-        result.setProperty("id", partyId)
-        result.setProperty("monedas", monedas)
-        result.save<ORecord>()
+        val nuevoVertexParty = session.newVertex("Party")
+        nuevoVertexParty.setProperty("id", party.id)
+        nuevoVertexParty.setProperty("monedas", party.monedas)
+        nuevoVertexParty.save<ORecord>()
 
-        return PartyConMonedas(partyId, monedas)
+        return party
     }
 
     fun actualizar(party: PartyConMonedas) {
@@ -30,45 +30,21 @@ class OrientDBPartyDAO {
     }
 
     fun recuperar(partyId: Long): PartyConMonedas {
+        return intentarRecuperar(partyId).orElseThrow { PartyUnregisteredException(partyId) }
+    }
+
+    fun intentarRecuperar(partyId: Long): Optional<PartyConMonedas> =
+        session.query("SELECT FROM Party WHERE id = ?", partyId)
+            .stream()
+            .findFirst()
+            .map { PartyConMonedas(partyId, it.getProperty("monedas")) }
+
+
+    /** PRIVATE **/
+    private fun validarQueNoEsteRegistradaLaParty(party: PartyConMonedas) {
         val query = "SELECT FROM Party WHERE id = ?"
-        val rs = session.query(query, partyId)
-
-        lateinit var party : PartyConMonedas
-        if (rs.hasNext()) {
-            val partyPersistida = rs.next()
-            val monedas = partyPersistida.getProperty<Int>("monedas")
-
-            party = PartyConMonedas(partyId,monedas)
-        } else {
-            throw PartyUnregisteredException(partyId)
-        }
-        return party
+        val queryResult = session.query(query, party.id)
+        if (queryResult.hasNext()) throw PartyAlreadyRegisteredException(party.id)
     }
 
-    fun comprar(partyId: Long, nombreItem: String) {
-        val item: Item = OrientDBItemDAO().recuperar(nombreItem)
-        val party: PartyConMonedas = this.recuperar(partyId)
-        party.comprar(item)
-
-        this.actualizar(party)
-
-        val query = "CREATE EDGE haComprado " +
-                "FROM (SELECT FROM Party WHERE id = ?) TO " +
-                "(SELECT FROM Item WHERE nombre = ?)"
-        session.command(query,partyId, nombreItem)
-    }
-
-}
-
-class PartyConMonedas(val id: Long, var monedas: Int) {
-
-    fun comprar(item: Item) {
-        if (item.precio > this.monedas){
-            val monedasFaltantes = item.precio - this.monedas
-
-            throw CannotBuyException(item.nombre, monedasFaltantes)
-        } else {
-            monedas -= item.precio
-        }
-    }
 }
