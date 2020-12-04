@@ -42,9 +42,7 @@ class OrientDBPartyDAO {
 
     /** PRIVATE **/
     private fun validarQueNoEsteRegistradaLaParty(party: PartyConMonedas) {
-        val query = "SELECT FROM Party WHERE id = ?"
-        val queryResult = session.query(query, party.id)
-        if (queryResult.hasNext()) throw PartyAlreadyRegisteredException(party.id)
+        intentarRecuperar(party.id).ifPresent { throw PartyAlreadyRegisteredException(party.id) }
     }
 
 }
