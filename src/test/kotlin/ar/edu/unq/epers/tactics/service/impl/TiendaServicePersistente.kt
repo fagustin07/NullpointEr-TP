@@ -9,8 +9,18 @@ class TiendaServicePersistente(protected val partyMonedasDAO: OrientDBPartyDAO, 
     fun registrarParty(partyId: Long, cantidadDeMonedasIniciales: Int) =
         runTrx { partyMonedasDAO.registrar(partyId, cantidadDeMonedasIniciales) }
 
-    fun recuperar(partyId: Long) =
+    fun recuperarParty(partyId: Long) =
         runTrx { partyMonedasDAO.recuperar(partyId) }
+
+    fun registrarItem(nombre: String, precio: Int) =
+        runTrx { itemDAO.registrar(nombre,precio) }
+
+    fun recuperarItem(nombre: String) =
+        runTrx { itemDAO.recuperar(nombre) }
+
+    fun registrarCompra(partyId: Long, nombreDeItemAComprar: String) =
+        runTrx { partyMonedasDAO.comprar(partyId, nombreDeItemAComprar) }
+
 
 
 }
