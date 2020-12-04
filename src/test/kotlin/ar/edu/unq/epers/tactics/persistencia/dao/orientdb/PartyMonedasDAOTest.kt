@@ -1,6 +1,7 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 
 import ar.edu.unq.epers.tactics.exceptions.*
+import ar.edu.unq.epers.tactics.service.impl.TiendaServicePersistente
 import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner.runTrx
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -11,29 +12,32 @@ import org.junit.jupiter.api.assertThrows
 class PartyMonedasDAOTest {
     val partyMonedasDAO = OrientDBPartyDAO()
     val itemDAO = OrientDBItemDAO()
-    val party = PartyConMonedas(1, 500)
+
+    val tiendaService = TiendaServicePersistente(partyMonedasDAO, itemDAO)
 
     @BeforeEach
     fun setUp(){
-        runTrx{
-            partyMonedasDAO.registrar(1, 500)
-        }
+
+    }
+
+    @Test
+    fun `se persiste un item`() {
+
     }
 
     @Test
     fun `se pueden registar partys`(){
+        tiendaService.registrarParty(1, 500)
 
-        lateinit var miParty: PartyConMonedas
-        runTrx {
-            miParty = partyMonedasDAO.recuperar(1)
-
-        }
+        var miParty = tiendaService.recuperar(1)
 
         assertThat(miParty.monedas).isEqualTo(500) //assert malisimo xd
     }
 
     @Test
     fun `no se puede registrar una party con un id existente`(){
+        tiendaService.registrarParty(1,400)
+
         runTrx {
             val exception = assertThrows<PartyAlreadyRegisteredException> { partyMonedasDAO.registrar(1,400) }
             assertThat(exception.message).isEqualTo("La party 1 ya está en el sistema.")
@@ -72,24 +76,22 @@ class PartyMonedasDAOTest {
         //TODO: esto es más bien un test del service que de un dao, lo hice aca para simplificar tiempo
         // y testear esta funcionalidad
 
-        val monedasAntesDeCompra = party.monedas
+        val monedasAntesDeCompra = 500
         val precioItem = 200
-        runTrx {
-            itemDAO.registrar("bandera flameante", 200)
+
+        runTrx{
+            partyMonedasDAO.registrar(1, monedasAntesDeCompra)
+            itemDAO.registrar("bandera flameante", precioItem)
         }
 
         runTrx{
             partyMonedasDAO.comprar(1,"bandera flameante")
-
         }
 
-        lateinit var party : PartyConMonedas
-        runTrx {
-            party = partyMonedasDAO.recuperar(1)
-        }
+        var partyRecuperada = runTrx { partyMonedasDAO.recuperar(1) }
 
-        val monedasEsperadas = monedasAntesDeCompra-precioItem
-        assertThat(party.monedas).isEqualTo(monedasEsperadas)
+        val monedasEsperadas = monedasAntesDeCompra - precioItem
+        assertThat(partyRecuperada.monedas).isEqualTo(monedasEsperadas)
     }
 
     @Test
@@ -97,16 +99,16 @@ class PartyMonedasDAOTest {
         //TODO: esto es más bien un test del service que de un dao, lo hice aca para simplificar tiempo
         // y testear esta funcionalidad
 
+        runTrx { partyMonedasDAO.registrar(1,8) }
+
         runTrx {
-            itemDAO.registrar("bandera flameante", 800)
+            itemDAO.registrar("bandera flameante", 10)
         }
 
-        lateinit var exception: CannotBuyException
         runTrx{
-            exception = assertThrows { partyMonedasDAO.comprar(1,"bandera flameante") }
+            val exception = assertThrows<CannotBuyException> { partyMonedasDAO.comprar(1,"bandera flameante") }
+            assertThat(exception.message).isEqualTo("No puedes comprar 'bandera flameante', te faltan 2 monedas.")
         }
-
-        assertThat(exception.message).isEqualTo("No puedes comprar 'bandera flameante', te faltan 300 monedas.")
     }
 
     @AfterEach

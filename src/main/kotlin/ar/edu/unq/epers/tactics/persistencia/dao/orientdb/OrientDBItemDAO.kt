@@ -3,21 +3,21 @@ package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 
 import ar.edu.unq.epers.tactics.exceptions.InexistentItemException
 import ar.edu.unq.epers.tactics.exceptions.ItemAlreadyRegisteredException
-import ar.edu.unq.epers.tactics.exceptions.PartyAlreadyRegisteredException
 import ar.edu.unq.epers.tactics.service.runner.OrientDBSessionFactoryProvider
 import com.orientechnologies.orient.core.db.ODatabaseSession
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument
 import com.orientechnologies.orient.core.record.ORecord
 
 
 class OrientDBItemDAO {
-    val db: ODatabaseSession get() = OrientDBSessionFactoryProvider.instance.db
+    val session: ODatabaseSession get() = OrientDBSessionFactoryProvider.instance.session
 
     fun registrar(nombre: String, precio: Int): Item {
-        val query = "SELECT FROM Item WHERE nombre = ?"
-        val queryResult = db.query(query, nombre)
-        if (queryResult.hasNext()) throw ItemAlreadyRegisteredException(nombre)
+        //if(session.getClass("Item")==null) session.createVertexClass("Item")
 
-        val result = db.newVertex("Item")
+        validarQueNoExistaAlgunItemLlamado(nombre)
+
+        val result = session.newVertex("Item")
         result.setProperty("nombre", nombre)
         result.setProperty("precio", precio)
         result.save<ORecord>()
@@ -27,7 +27,7 @@ class OrientDBItemDAO {
 
     fun recuperar(nombre: String): Item {
         val query = "SELECT FROM Item WHERE nombre = ?"
-        val rs = db.query(query, nombre)
+        val rs = session.query(query, nombre)
 
         lateinit var item : Item
         if (rs.hasNext()) {
@@ -39,6 +39,12 @@ class OrientDBItemDAO {
             throw InexistentItemException(nombre)
         }
         return item
+    }
+
+    private fun validarQueNoExistaAlgunItemLlamado(nombre: String) {
+        val query = "SELECT FROM Item WHERE nombre = ?"
+        val queryResult = session.query(query, nombre)
+        if (queryResult.hasNext()) throw ItemAlreadyRegisteredException(nombre)
     }
 
 }

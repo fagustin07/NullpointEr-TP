@@ -9,14 +9,14 @@ import com.orientechnologies.orient.core.record.ORecord
 
 
 class OrientDBPartyDAO {
-    val db: ODatabaseSession get() = OrientDBSessionFactoryProvider.instance.db
+    val session: ODatabaseSession get() = OrientDBSessionFactoryProvider.instance.session
 
     fun registrar(partyId: Long, monedas: Int): PartyConMonedas {
         val query = "SELECT FROM Party WHERE id = ?"
-        val queryResult = db.query(query, partyId)
+        val queryResult = session.query(query, partyId)
         if (queryResult.hasNext()) throw PartyAlreadyRegisteredException(partyId)
 
-        val result = db.newVertex("Party")
+        val result = session.newVertex("Party")
         result.setProperty("id", partyId)
         result.setProperty("monedas", monedas)
         result.save<ORecord>()
@@ -26,12 +26,12 @@ class OrientDBPartyDAO {
 
     fun actualizar(party: PartyConMonedas) {
         val query = "UPDATE Party SET monedas = ? WHERE id = ?"
-        db.command(query, party.monedas, party.id)
+        session.command(query, party.monedas, party.id)
     }
 
     fun recuperar(partyId: Long): PartyConMonedas {
         val query = "SELECT FROM Party WHERE id = ?"
-        val rs = db.query(query, partyId)
+        val rs = session.query(query, partyId)
 
         lateinit var party : PartyConMonedas
         if (rs.hasNext()) {
@@ -55,7 +55,7 @@ class OrientDBPartyDAO {
         val query = "CREATE EDGE haComprado " +
                 "FROM (SELECT FROM Party WHERE id = ?) TO " +
                 "(SELECT FROM Item WHERE nombre = ?)"
-        db.command(query,partyId, nombreItem)
+        session.command(query,partyId, nombreItem)
     }
 
 }
