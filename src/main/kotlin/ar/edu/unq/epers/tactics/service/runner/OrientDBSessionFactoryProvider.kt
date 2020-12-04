@@ -15,9 +15,9 @@ class OrientDBSessionFactoryProvider private constructor() {
 
 
     fun createSession(): ODatabaseSession {
-        session = orientDb.open("test2", "admin", "admin")
+        session = orientDb.open("test3", "admin", "admin")
 
-        if(session.getClass("Party")==null) session.createVertexClass("Party")
+        if(session.getClass("PartyConMonedas")==null) session.createVertexClass("PartyConMonedas")
         if(session.getClass("Item")==null) session.createVertexClass("Item")
         if(session.getClass("haComprado")==null) session.createEdgeClass("haComprado")
 

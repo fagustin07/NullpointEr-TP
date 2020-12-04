@@ -1,7 +1,6 @@
 package ar.edu.unq.epers.tactics.modelo.tienda
 
 import ar.edu.unq.epers.tactics.exceptions.CannotBuyException
-import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.Item
 
 class PartyConMonedas(val id: Long, var monedas: Int) {
 
