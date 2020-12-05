@@ -70,15 +70,12 @@ class TiendaServiceTest {
     fun `party compra item y se le cobra`(){
         val monedasAntesDeCompra = 500
         val precioItem = 200
-
         tiendaService.registrarParty(1, monedasAntesDeCompra)
         tiendaService.registrarItem("bandera flameante", precioItem)
 
         tiendaService.registrarCompra(1,"bandera flameante")
 
-
         var partyRecuperada = tiendaService.recuperarParty(1)
-
         assertThat(partyRecuperada.monedas).isEqualTo(monedasAntesDeCompra - precioItem)
     }
 

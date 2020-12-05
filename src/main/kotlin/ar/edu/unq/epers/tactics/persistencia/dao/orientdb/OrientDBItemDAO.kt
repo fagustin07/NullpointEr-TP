@@ -22,7 +22,12 @@ class OrientDBItemDAO {
         result.setProperty("precio", item.precio)
         result.save<ORecord>()
 
-        return item // TODO: ¿¿¿deberia retornar el item con el id que le dio la base de datos???
+        return item
+        // TODO: ¿¿¿deberia retornar el item con el id que le dio la base de datos???
+                    // Mauro: Entiendo que no la usamos, pero si devolvemos el Item sin ID estariamos teniendo un objeto "incompleto" en memoria thinking es discutible
+                    // Fede: Mi opinión es que podriamos dejarlo como está y seguir usando nombres, o bien recuperarla y retornarla con rid, pero en los otros mensajes usar el rid para buscarlo en vez del nombre. Sin embargo, es un refactor que se puede dejar para ver mas adelante
+                    // David: Ok
+                    // [Deje un mensaje en Telegram. Despues de rebasear y mergear se vera que se hace]
     }
 
     fun recuperar(nombre: String): Item {
