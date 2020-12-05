@@ -6,8 +6,10 @@ import ar.edu.unq.epers.tactics.persistencia.dao.AventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -79,6 +81,12 @@ class AventureroServiceTest {
             val exception = assertThrows<RuntimeException> { aventureroService.recuperar(aventureroId) }
             assertEquals("No existe Aventurero con id ${aventurero.id()!!}", exception.message)
         }
+    }
+
+    @AfterEach
+    internal fun tearDown() {
+        PartyServiceImpl(HibernatePartyDAO()).eliminarTodo()
+        OrientDBDataDAO().clear()
     }
 
 }

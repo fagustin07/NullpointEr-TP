@@ -12,9 +12,9 @@ abstract class OrientDBDAO<T>(val entityType: Class<T>) {
 
     abstract fun actualizar(entity: T)
 
-    abstract fun recuperar(entityId: Long): T
+    abstract fun recuperar(entityName: String): T
 
-    abstract fun intentarRecuperar(entityId: Long): Optional<T>
+    abstract fun intentarRecuperar(entityName: String): Optional<T>
 
     /** PRIVATE **/
     protected abstract fun validarQueNoEsteRegistrada(entity: T)

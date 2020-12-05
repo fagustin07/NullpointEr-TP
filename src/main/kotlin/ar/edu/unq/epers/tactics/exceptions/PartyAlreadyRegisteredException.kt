@@ -2,4 +2,4 @@ package ar.edu.unq.epers.tactics.exceptions
 
 import java.lang.RuntimeException
 
-class PartyAlreadyRegisteredException(partyId: Long) : RuntimeException("La party ${partyId} ya está en el sistema.")
+class PartyAlreadyRegisteredException(nombreParty: String) : RuntimeException("La party ${nombreParty} ya está en el sistema.")

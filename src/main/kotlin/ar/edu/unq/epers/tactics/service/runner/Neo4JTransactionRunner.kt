@@ -4,7 +4,7 @@ import org.neo4j.driver.*
 
 class Neo4JTransactionRunner {
 
-    private lateinit var driver: Driver
+    private var driver: Driver
 
     init {
         val env = System.getenv()

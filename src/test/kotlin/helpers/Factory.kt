@@ -23,6 +23,8 @@ class Factory {
     private val peleaService: PeleaService
     private val partyService: PartyService
     private val aventureroService : AventureroService
+    private var miniId = 0
+
     init {
         val aventureroDAO = HibernateAventureroDAO()
         val peleaDAO = HibernatePeleaDAO()
@@ -79,8 +81,9 @@ class Factory {
     }
 
     fun nuevaPartyPersistida(): Long {
-        val party = Party("Nombre de party", "/party.jpg")
+        val party = Party("Nombre de party${miniId}", "/party.jpg")
         val partyId = partyService.crear(party).id()!!
+        this.miniId+=1
         return partyId
     }
 

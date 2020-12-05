@@ -61,7 +61,7 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
     private fun obtenerRecompensaSiHaGanado(pelea: Pelea) {
         if (pelea.fueGanada()) {
             OrientDBTransactionRunner.runTrx {
-                val partyConMonedas = partyMonedasDAO.recuperar(pelea.idDeLaParty())
+                val partyConMonedas = partyMonedasDAO.recuperar(pelea.party.nombre())
                 partyConMonedas.adquirirRecompensaDePelea()
                 partyMonedasDAO.actualizar(partyConMonedas)
             }

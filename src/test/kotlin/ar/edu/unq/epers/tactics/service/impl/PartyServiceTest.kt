@@ -6,6 +6,7 @@ import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
 import ar.edu.unq.epers.tactics.service.Direccion
 import ar.edu.unq.epers.tactics.service.Orden
 import helpers.DataServiceHelper
@@ -250,7 +251,7 @@ class PartyServiceTest {
     private fun crearSetDePartysConUnAventurero(cantidadDePartys: Int): MutableList<Party>{
         var partyNumero = 1
         var aventureroNumero = 1
-        var partys = mutableListOf<Party>()
+        val partys = mutableListOf<Party>()
         repeat(cantidadDePartys){
             val party = Party(("Party " + partyNumero), "URL")
             val partyId = partyService.crear(party).id()!!
@@ -283,6 +284,8 @@ class PartyServiceTest {
     @AfterEach
     fun tearDown() {
         DataServiceHelper(partyService).eliminarTodo()
+        OrientDBDataDAO().clear()
+
     }
 
     private fun assertEqualParty(expectedParty: Party, obtainedParty: Party) {

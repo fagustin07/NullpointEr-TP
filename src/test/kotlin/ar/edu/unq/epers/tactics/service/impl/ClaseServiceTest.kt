@@ -5,6 +5,7 @@ import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.neo4j.Neo4JClaseDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
 import helpers.Factory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -414,6 +415,7 @@ class ClaseServiceTest {
     internal fun tearDown() {
         PartyServiceImpl(HibernatePartyDAO()).eliminarTodo()
         claseDAO.clear()
+        OrientDBDataDAO().clear()
     }
 }
 
