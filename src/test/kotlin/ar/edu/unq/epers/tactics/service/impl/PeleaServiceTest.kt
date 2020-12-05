@@ -4,7 +4,6 @@ import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.EstadoPartida
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.modelo.Tactica
-import ar.edu.unq.epers.tactics.modelo.dado.DadoDe20
 import ar.edu.unq.epers.tactics.modelo.dado.DadoSimulado
 import ar.edu.unq.epers.tactics.modelo.enums.Accion
 import ar.edu.unq.epers.tactics.modelo.enums.Criterio
@@ -15,6 +14,7 @@ import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDA
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBPartyDAO
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -28,7 +28,7 @@ internal class PeleaServiceTest {
     val peleaDAO = HibernatePeleaDAO()
     val partyDAO = HibernatePartyDAO()
     val aventureroDAO = HibernateAventureroDAO()
-    val peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO)
+    val peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO, OrientDBPartyDAO())
     val partyService = PartyServiceImpl(partyDAO)
     val aventureroService = AventureroServiceImpl(aventureroDAO, partyDAO)
     lateinit var party: Party

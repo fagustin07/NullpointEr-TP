@@ -12,8 +12,7 @@ import ar.edu.unq.epers.tactics.service.PeleasPaginadas
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
 import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner
 
-class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO): PeleaService {
-    val partyMonedasDAO: OrientDBPartyDAO = OrientDBPartyDAO()
+class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO, val partyMonedasDAO: OrientDBPartyDAO): PeleaService {
 
     override fun iniciarPelea(partyId: Long, nombrePartyEnemiga:String): Pelea {
         return runTrx {

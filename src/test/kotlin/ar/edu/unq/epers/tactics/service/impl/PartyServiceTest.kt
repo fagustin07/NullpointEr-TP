@@ -7,6 +7,7 @@ import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDA
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBPartyDAO
 import ar.edu.unq.epers.tactics.service.Direccion
 import ar.edu.unq.epers.tactics.service.Orden
 import helpers.DataServiceHelper
@@ -266,7 +267,7 @@ class PartyServiceTest {
     }
 
     private fun generarPartyQueHayaPeleado(nombreParty: String,cantidadDePeleas: Int, tieneAventureros:Boolean):Long{
-        val peleaService = PeleaServiceImpl(HibernatePeleaDAO(),dao,HibernateAventureroDAO())
+        val peleaService = PeleaServiceImpl(HibernatePeleaDAO(), dao, HibernateAventureroDAO(), OrientDBPartyDAO())
         val party = Party(nombreParty, "URL")
         val partyId = partyService.crear(party).id()!!
         if(tieneAventureros){
