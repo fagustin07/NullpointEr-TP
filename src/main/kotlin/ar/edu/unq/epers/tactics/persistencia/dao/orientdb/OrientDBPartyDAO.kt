@@ -1,7 +1,7 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 
 import ar.edu.unq.epers.tactics.exceptions.PartyAlreadyRegisteredException
-import ar.edu.unq.epers.tactics.exceptions.PartyUnregisteredException
+import ar.edu.unq.epers.tactics.exceptions.PartyNotRegisteredException
 import ar.edu.unq.epers.tactics.modelo.tienda.PartyConMonedas
 import com.orientechnologies.orient.core.record.ORecord
 import java.util.*
@@ -27,7 +27,7 @@ class OrientDBPartyDAO : OrientDBDAO1<PartyConMonedas>(PartyConMonedas::class.ja
     }
 
     override fun recuperar(nombreParty: String): PartyConMonedas {
-        return intentarRecuperar(nombreParty).orElseThrow { PartyUnregisteredException(nombreParty) }
+        return intentarRecuperar(nombreParty).orElseThrow { PartyNotRegisteredException(nombreParty) }
     }
 
     override fun intentarRecuperar(nombreParty: String): Optional<PartyConMonedas> =

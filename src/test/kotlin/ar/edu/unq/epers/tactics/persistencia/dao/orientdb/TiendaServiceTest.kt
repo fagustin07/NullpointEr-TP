@@ -44,7 +44,7 @@ class TiendaServiceTest {
 
     @Test
     fun `no se puede recuperar una party con un id sin registrar`(){
-        val exception = assertThrows<PartyUnregisteredException> { tiendaService.recuperarParty("Los del fuego") }
+        val exception = assertThrows<PartyNotRegisteredException> { tiendaService.recuperarParty("Los del fuego") }
         assertThat(exception.message).isEqualTo("No exite una party llamada Los del fuego en el sistema.")
     }
 
