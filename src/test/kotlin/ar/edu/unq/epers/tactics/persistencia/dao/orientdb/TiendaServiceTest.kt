@@ -23,7 +23,12 @@ import org.junit.jupiter.api.assertThrows
 class TiendaServiceTest {
 
     val partyClienteDeTiendaDAO = OrientDBPartyDAO()
-    private val peleaService = PeleaServiceImpl(HibernatePeleaDAO(), HibernatePartyDAO(), HibernateAventureroDAO())
+    private val peleaService = PeleaServiceImpl(
+        HibernatePeleaDAO(),
+        HibernatePartyDAO(),
+        HibernateAventureroDAO(),
+        OrientDBPartyDAO()
+    )
     private val partyService = PartyServiceImpl(HibernatePartyDAO())
     val tiendaService = TiendaServicePersistente(partyClienteDeTiendaDAO, OrientDBItemDAO(), OperacionesDAO())
     val objetosDeTestFactory = Factory()
