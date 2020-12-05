@@ -8,7 +8,7 @@ class Neo4JTransactionRunner {
 
     init {
         val env = System.getenv()
-        val url = env.getOrDefault("NEO_URL", "bolt://localhost:60500")
+        val url = env.getOrDefault("NEO_URL", "bolt://localhost:7687")
         val username = env.getOrDefault("NEO_USER", "neo4j")
         val password = env.getOrDefault("NEO_PASSWORD", "root")
 
