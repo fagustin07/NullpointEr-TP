@@ -1,13 +1,14 @@
 package ar.edu.unq.epers.tactics.service.impl
 
+import ar.edu.unq.epers.tactics.modelo.tienda.Compra
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBItemDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBPartyDAO
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
-import ar.edu.unq.epers.tactics.service.runner.OrientDBSessionFactoryProvider
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OperacionesDAO
 import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner.runTrx
 import java.time.LocalDate
 
-class TiendaServicePersistente(protected val partyMonedasDAO: OrientDBPartyDAO, protected val itemDAO: OrientDBItemDAO) {
+class TiendaServicePersistente(protected val partyMonedasDAO: OrientDBPartyDAO, protected val itemDAO: OrientDBItemDAO, protected val operacionesDAO: OperacionesDAO) {
 
     fun recuperarParty(nombreParty: String) =
         runTrx { partyMonedasDAO.recuperar(nombreParty) }
@@ -27,15 +28,10 @@ class TiendaServicePersistente(protected val partyMonedasDAO: OrientDBPartyDAO, 
 
             partyMonedasDAO.actualizar(party)
 
-            val query =
-                """
-                CREATE EDGE haComprado
-                FROM (SELECT FROM PartyConMonedas WHERE nombre = ?)
-                TO (SELECT FROM Item WHERE nombre = ?)
-                SET fechaCompra = ?
-                """
-
-            OrientDBSessionFactoryProvider.instance.session.command(query,nombreParty, nombreDeItemAComprar, LocalDate.now().toString()) // TODO: con actualizar la party tal vez se deberia actualizar todo.... (?)
+            operacionesDAO.registrarCompraDe(party ,item)
         }
+
+    fun comprasRealizadasPorParty(nombreDeParty: String): List<Compra> =
+        runTrx { operacionesDAO.comprasRealizadasPorParty(nombreDeParty) }
 
 }

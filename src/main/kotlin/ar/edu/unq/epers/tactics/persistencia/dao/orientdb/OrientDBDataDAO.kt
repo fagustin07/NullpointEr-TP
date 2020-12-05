@@ -12,7 +12,7 @@ open class OrientDBDataDAO : DataDAO {
         runTrx{
             db.command("DELETE VERTEX FROM PartyConMonedas")
             db.command("DELETE VERTEX FROM Item")
-            db.command("DELETE EDGE haComprado")
+            db.command("DELETE EDGE HaComprado")
         }
     }
 }
