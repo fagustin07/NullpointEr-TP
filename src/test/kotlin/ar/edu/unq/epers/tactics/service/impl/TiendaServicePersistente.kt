@@ -31,7 +31,7 @@ class TiendaServicePersistente(protected val partyMonedasDAO: OrientDBPartyDAO, 
             operacionesDAO.registrarCompraDe(party ,item)
         }
 
-    fun comprasRealizadasPorParty(partyId: Long): List<Compra> =
-        runTrx { operacionesDAO.comprasRealizadasPorParty(partyId) }
+    fun comprasRealizadasPorParty(nombreDeParty: String): List<Compra> =
+        runTrx { operacionesDAO.comprasRealizadasPorParty(nombreDeParty) }
 
 }

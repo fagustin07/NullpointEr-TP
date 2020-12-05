@@ -12,6 +12,8 @@ import ar.edu.unq.epers.tactics.service.impl.PartyServiceImpl
 import ar.edu.unq.epers.tactics.service.impl.PeleaServiceImpl
 import ar.edu.unq.epers.tactics.service.impl.TiendaServicePersistente
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
+import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner
+import helpers.Factory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -20,16 +22,17 @@ import org.junit.jupiter.api.assertThrows
 
 class TiendaServiceTest {
 
+    val partyClienteDeTiendaDAO = OrientDBPartyDAO()
     private val peleaService = PeleaServiceImpl(HibernatePeleaDAO(), HibernatePartyDAO(), HibernateAventureroDAO())
     private val partyService = PartyServiceImpl(HibernatePartyDAO())
-    val tiendaService = TiendaServicePersistente(OrientDBPartyDAO(), OrientDBItemDAO())
+    val tiendaService = TiendaServicePersistente(partyClienteDeTiendaDAO, OrientDBItemDAO(), OperacionesDAO())
+    val objetosDeTestFactory = Factory()
     lateinit var party : Party
 
     @BeforeEach
     fun setUp(){
         party = partyService.crear(Party("Memories",""))
     }
-    val tiendaService = TiendaServicePersistente(OrientDBPartyDAO(), OrientDBItemDAO(), OperacionesDAO())
 
     @Test
     fun `se pueden registar partys`(){
@@ -68,34 +71,41 @@ class TiendaServiceTest {
 
     @Test
     fun `party compra item y se le cobra`(){
-        val monedasAntesDeCompra = 500
-        val precioItem = 200
-        tiendaService.registrarParty(1, monedasAntesDeCompra)
-        tiendaService.registrarItem("bandera flameante", precioItem)
 
-        tiendaService.registrarCompra(1,"bandera flameante")
+        val partyClienteDeTienda = OrientDBTransactionRunner.runTrx { // TODO: hacerla pelear y que gane dinero como corresponde
+            val partyClienteDeTienda = partyClienteDeTiendaDAO.recuperar(party.nombre())
+            partyClienteDeTienda.adquirirRecompensaDePelea()
+            partyClienteDeTiendaDAO.actualizar(partyClienteDeTienda)
 
-        var partyRecuperada = tiendaService.recuperarParty(1)
-        assertThat(partyRecuperada.monedas).isEqualTo(monedasAntesDeCompra - precioItem)
+            partyClienteDeTienda
+        }
+        val monedasAntesDeCompra = partyClienteDeTienda.monedas()
+        val precioDelItem = 200
+        tiendaService.registrarItem("bandera flameante", 200)
+
+        tiendaService.registrarCompra(party.nombre(),"bandera flameante")
+
+        var partyRecuperada = tiendaService.recuperarParty(party.nombre())
+        assertThat(partyRecuperada.monedas).isEqualTo(monedasAntesDeCompra - precioDelItem)
     }
 
     @Test
     fun `inicialmente una party no tiene ninguna compra registrada`(){
-        val party = tiendaService.registrarParty(1, 100)
+        //val party = tiendaService.registrarParty(1, 100)
 
-        val comprasRealizadas = tiendaService.comprasRealizadasPorParty(party.id)
+        val comprasRealizadas = tiendaService.comprasRealizadasPorParty(party.nombre())
 
         assertThat(comprasRealizadas).isEmpty()
     }
 
     @Test
     fun `una party realiza una compra y queda registrada`(){
-        val party = tiendaService.registrarParty(1, 100)
-        val item = tiendaService.registrarItem("Un item", 1)
+        //val party = tiendaService.registrarParty(1, 100)
+        val item = tiendaService.registrarItem("Un item", 0)
 
-        tiendaService.registrarCompra(party.id,item.nombre)
+        tiendaService.registrarCompra(party.nombre(),item.nombre())
 
-        val comprasRealizadas = tiendaService.comprasRealizadasPorParty(party.id)
+        val comprasRealizadas = tiendaService.comprasRealizadasPorParty(party.nombre())
 
         val comprasEsperadas = listOf(Compra(item))
 
@@ -155,7 +165,7 @@ class TiendaServiceTest {
 
 
         val partyRecuperada = tiendaService.recuperarParty(party.nombre())
-        val precioItem = tiendaService.recuperarItem("bandera flameante").precio
+        val precioItem = tiendaService.recuperarItem("bandera flameante").precio()
 
         assertThat(partyRecuperada.monedas).isEqualTo(monedasAntesDeCompra - precioItem)
     }

@@ -13,22 +13,22 @@ class OperacionesDAO {
         val query =
             """
             CREATE EDGE HaComprado
-            FROM (SELECT FROM PartyConMonedas WHERE id = ?)
+            FROM (SELECT FROM PartyConMonedas WHERE nombre = ?)
             TO (SELECT FROM Item WHERE nombre = ?)
             """
 
-        session.command(query, party.id, item.nombre)
+        session.command(query, party.nombre, item.nombre())
     }
 
-    fun comprasRealizadasPorParty(partyId: Long): List<Compra> {
+    fun comprasRealizadasPorParty(nombreDeParty: String): List<Compra> {
         val query = """
-            select from haComprado where out IN (select from PartyConMonedas where id=?)
+            select from haComprado where out IN (select from PartyConMonedas where nombre=?)
             """
 
         return session
-            .query(query, partyId)
+            .query(query, nombreDeParty)
             .stream()
-            .map { it.edge.get().to }
+            .map { it.edge.get().to } // TODO: corregir la query para que esto no sea necesario. Que retorne el item
             .map { Item(it.getProperty("nombre"), it.getProperty("precio")) }
             .map { Compra(it) }
             .toList()

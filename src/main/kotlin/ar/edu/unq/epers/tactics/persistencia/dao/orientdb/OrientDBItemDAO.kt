@@ -15,11 +15,11 @@ class OrientDBItemDAO {
     val session: ODatabaseSession get() = OrientDBSessionFactoryProvider.instance.session
 
     fun guardar(item: Item): Item {
-        validarQueNoExistaAlgunItemLlamado(item.nombre)
+        validarQueNoExistaAlgunItemLlamado(item.nombre())
 
         val result = session.newVertex("Item")
-        result.setProperty("nombre", item.nombre)
-        result.setProperty("precio", item.precio)
+        result.setProperty("nombre", item.nombre())
+        result.setProperty("precio", item.precio())
         result.save<ORecord>()
 
         return item

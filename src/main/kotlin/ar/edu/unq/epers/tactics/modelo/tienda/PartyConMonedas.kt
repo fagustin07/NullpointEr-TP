@@ -4,13 +4,16 @@ import ar.edu.unq.epers.tactics.exceptions.CannotBuyException
 
 class PartyConMonedas(val nombre: String, var monedas: Int = 0) {
 
-    fun comprar(item: Item) {
-        if (item.precio > this.monedas){
-            val monedasFaltantes = item.precio - this.monedas
+    fun nombre() = nombre
+    fun monedas() = monedas
 
-            throw CannotBuyException(item.nombre, monedasFaltantes)
+    fun comprar(item: Item) {
+        if (item.precio() > this.monedas){
+            val monedasFaltantes = item.precio() - this.monedas
+
+            throw CannotBuyException(item.nombre(), monedasFaltantes)
         } else {
-            monedas -= item.precio
+            monedas -= item.precio()
         }
     }
 
