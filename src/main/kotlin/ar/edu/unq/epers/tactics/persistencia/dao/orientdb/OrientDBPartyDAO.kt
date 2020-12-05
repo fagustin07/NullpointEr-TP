@@ -14,7 +14,7 @@ class OrientDBPartyDAO : OrientDBDAO1<PartyConMonedas>(PartyConMonedas::class.ja
         validarQueNoEsteRegistrada(party)
 
         val nuevoVertexParty = session.newVertex("PartyConMonedas")
-        nuevoVertexParty.setProperty("id", party.id)
+        nuevoVertexParty.setProperty("nombre", party.nombre)
         nuevoVertexParty.setProperty("monedas", party.monedas)
         nuevoVertexParty.save<ORecord>()
 
@@ -22,24 +22,24 @@ class OrientDBPartyDAO : OrientDBDAO1<PartyConMonedas>(PartyConMonedas::class.ja
     }
 
     override fun actualizar(party: PartyConMonedas) {
-        val query = "UPDATE PartyConMonedas SET monedas = ? WHERE id = ?"
-        session.command(query, party.monedas, party.id)
+        val query = "UPDATE PartyConMonedas SET monedas = ? WHERE nombre = ?"
+        session.command(query, party.monedas, party.nombre)
     }
 
-    override fun recuperar(partyId: Long): PartyConMonedas {
-        return intentarRecuperar(partyId).orElseThrow { PartyUnregisteredException(partyId) }
+    override fun recuperar(nombreParty: String): PartyConMonedas {
+        return intentarRecuperar(nombreParty).orElseThrow { PartyUnregisteredException(nombreParty) }
     }
 
-    override fun intentarRecuperar(partyId: Long): Optional<PartyConMonedas> =
-        session.query("SELECT FROM PartyConMonedas WHERE id = ?", partyId)
+    override fun intentarRecuperar(nombreParty: String): Optional<PartyConMonedas> =
+        session.query("SELECT FROM PartyConMonedas WHERE nombre = ?", nombreParty)
             .stream()
             .findFirst()
-            .map { PartyConMonedas(partyId, it.getProperty("monedas")) }
+            .map { PartyConMonedas(nombreParty, it.getProperty("monedas")) }
 
 
     /** PRIVATE **/
     override fun validarQueNoEsteRegistrada(party: PartyConMonedas) {
-        intentarRecuperar(party.id).ifPresent { throw PartyAlreadyRegisteredException(party.id) }
+        intentarRecuperar(party.nombre).ifPresent { throw PartyAlreadyRegisteredException(party.nombre) }
     }
 
 }

@@ -31,25 +31,21 @@ class TiendaServiceTest {
 
     @Test
     fun `se pueden registar partys`(){
-        tiendaService.registrarParty(party)
-
-        val miParty = tiendaService.recuperarParty(party.id()!!)
+        val miParty = tiendaService.recuperarParty(party.nombre())
 
         assertThat(miParty.monedas).isEqualTo(0)
     }
 
     @Test
     fun `no se puede registrar una party con un id existente`(){
-        tiendaService.registrarParty(party)
-
-        val exception = assertThrows<PartyAlreadyRegisteredException> { tiendaService.registrarParty(party) }
-        assertThat(exception.message).isEqualTo("La party ${party.id()!!} ya está en el sistema.")
+        val exception = assertThrows<PartyAlreadyRegisteredException> { partyService.crear(party) }
+        assertThat(exception.message).isEqualTo("La party ${party.nombre()} ya está en el sistema.")
     }
 
     @Test
     fun `no se puede recuperar una party con un id sin registrar`(){
-        val exception = assertThrows<PartyUnregisteredException> { tiendaService.recuperarParty(6555) }
-        assertThat(exception.message).isEqualTo("La party con id 6555 no se encuentra en el sistema.")
+        val exception = assertThrows<PartyUnregisteredException> { tiendaService.recuperarParty("Los del fuego") }
+        assertThat(exception.message).isEqualTo("No exite una party llamada Los del fuego en el sistema.")
     }
 
     @Test
@@ -70,22 +66,21 @@ class TiendaServiceTest {
 
     @Test
     fun `se levanta una excepcion al querer comprar un item de mas valor que las monedas de la party`(){
-        tiendaService.registrarParty(party)
         tiendaService.registrarItem("bandera flameante", 10)
 
-        val exception = assertThrows<CannotBuyException> { tiendaService.registrarCompra(party.id()!!,"bandera flameante") }
+        val exception = assertThrows<CannotBuyException> { tiendaService.registrarCompra(party.nombre(),"bandera flameante") }
         assertThat(exception.message).isEqualTo("No puedes comprar 'bandera flameante', te faltan 10 monedas.")
     }
 
     @Test
     fun `perder una pelea no incrementa el dinero de una party`(){
-        val partyMonedas = tiendaService.registrarParty(party)
+        val partyMonedas = tiendaService.recuperarParty(party.nombre())
         val monedasAntesDePelea = partyMonedas.monedas
         val peleaId = peleaService.iniciarPelea(party.id()!!, "party enemiga").id()!!
 
         peleaService.terminarPelea(peleaId)
 
-        val partyLuegoDePelea = tiendaService.recuperarParty(party.id()!!)
+        val partyLuegoDePelea = tiendaService.recuperarParty(party.nombre())
         assertThat(partyLuegoDePelea.monedas).isEqualTo(monedasAntesDePelea)
     }
 
@@ -94,14 +89,12 @@ class TiendaServiceTest {
         val aliado = Aventurero("Jorge")
         partyService.agregarAventureroAParty(party.id()!!,aliado)
 
-        val partyMonedas = tiendaService.registrarParty(party)
-
-        val monedasAntesDeGanarPelea = partyMonedas.monedas
+        val monedasAntesDeGanarPelea = tiendaService.recuperarParty(party.nombre()).monedas
         val peleaId = peleaService.iniciarPelea(party.id()!!, "party enemiga").id()!!
 
         peleaService.terminarPelea(peleaId)
 
-        val partyLuegoDePelea = tiendaService.recuperarParty(party.id()!!)
+        val partyLuegoDePelea = tiendaService.recuperarParty(party.nombre())
         val recompensaPorGanarPelea = 500
         val monedasEsperadas = monedasAntesDeGanarPelea + recompensaPorGanarPelea
 
@@ -115,16 +108,15 @@ class TiendaServiceTest {
 
         val peleaId = peleaService.iniciarPelea(party.id()!!, "party enemiga").id()!!
 
-        val partyMonedas = tiendaService.registrarParty(party)
         peleaService.terminarPelea(peleaId)
 
-        val monedasAntesDeCompra = tiendaService.recuperarParty(party.id()!!).monedas
+        val monedasAntesDeCompra = tiendaService.recuperarParty(party.nombre()).monedas
         tiendaService.registrarItem("bandera flameante", 200)
 
-        tiendaService.registrarCompra(party.id()!!,"bandera flameante")
+        tiendaService.registrarCompra(party.nombre(),"bandera flameante")
 
 
-        val partyRecuperada = tiendaService.recuperarParty(party.id()!!)
+        val partyRecuperada = tiendaService.recuperarParty(party.nombre())
         val precioItem = tiendaService.recuperarItem("bandera flameante").precio
 
         assertThat(partyRecuperada.monedas).isEqualTo(monedasAntesDeCompra - precioItem)

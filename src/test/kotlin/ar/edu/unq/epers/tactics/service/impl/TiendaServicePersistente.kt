@@ -1,9 +1,7 @@
 package ar.edu.unq.epers.tactics.service.impl
 
-import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBItemDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBPartyDAO
-import ar.edu.unq.epers.tactics.modelo.tienda.PartyConMonedas
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.service.runner.OrientDBSessionFactoryProvider
 import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner.runTrx
@@ -11,11 +9,8 @@ import java.time.LocalDate
 
 class TiendaServicePersistente(protected val partyMonedasDAO: OrientDBPartyDAO, protected val itemDAO: OrientDBItemDAO) {
 
-    fun registrarParty(party: Party) =
-        runTrx { partyMonedasDAO.guardar(PartyConMonedas(party.id()!!)) }
-
-    fun recuperarParty(partyId: Long) =
-        runTrx { partyMonedasDAO.recuperar(partyId) }
+    fun recuperarParty(nombreParty: String) =
+        runTrx { partyMonedasDAO.recuperar(nombreParty) }
 
     fun registrarItem(nombre: String, precio: Int) =
         runTrx { itemDAO.guardar(Item(nombre,precio)) }
@@ -23,9 +18,9 @@ class TiendaServicePersistente(protected val partyMonedasDAO: OrientDBPartyDAO, 
     fun recuperarItem(nombre: String) =
         runTrx { itemDAO.recuperar(nombre) }
 
-    fun registrarCompra(partyId: Long, nombreDeItemAComprar: String) =
+    fun registrarCompra(nombreParty: String, nombreDeItemAComprar: String) =
         runTrx {
-            val party = partyMonedasDAO.recuperar(partyId)
+            val party = partyMonedasDAO.recuperar(nombreParty)
             val item = itemDAO.recuperar(nombreDeItemAComprar)
 
             party.comprar(item)
@@ -35,12 +30,12 @@ class TiendaServicePersistente(protected val partyMonedasDAO: OrientDBPartyDAO, 
             val query =
                 """
                 CREATE EDGE haComprado
-                FROM (SELECT FROM PartyConMonedas WHERE id = ?)
+                FROM (SELECT FROM PartyConMonedas WHERE nombre = ?)
                 TO (SELECT FROM Item WHERE nombre = ?)
                 SET fechaCompra = ?
                 """
 
-            OrientDBSessionFactoryProvider.instance.session.command(query,partyId, nombreDeItemAComprar, LocalDate.now().toString()) // TODO: con actualizar la party tal vez se deberia actualizar todo.... (?)
+            OrientDBSessionFactoryProvider.instance.session.command(query,nombreParty, nombreDeItemAComprar, LocalDate.now().toString()) // TODO: con actualizar la party tal vez se deberia actualizar todo.... (?)
         }
 
 }

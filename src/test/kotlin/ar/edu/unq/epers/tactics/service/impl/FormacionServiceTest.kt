@@ -10,10 +10,12 @@ import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDA
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.mongodb.MongoFormacionDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.neo4j.Neo4JClaseDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
 import ar.edu.unq.epers.tactics.service.AventureroService
 import ar.edu.unq.epers.tactics.service.ClaseService
 import ar.edu.unq.epers.tactics.service.FormacionService
 import ar.edu.unq.epers.tactics.service.PartyService
+import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner
 import helpers.Factory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration
@@ -277,5 +279,6 @@ class FormacionServiceTest {
     fun tearDown() {
         formacionDAO.deleteAll()
         claseDAO.clear()
+        OrientDBDataDAO().clear()
     }
 }

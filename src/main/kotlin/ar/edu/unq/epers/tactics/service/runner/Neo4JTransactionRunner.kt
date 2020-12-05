@@ -4,11 +4,11 @@ import org.neo4j.driver.*
 
 class Neo4JTransactionRunner {
 
-    private lateinit var driver: Driver
+    private var driver: Driver
 
     init {
         val env = System.getenv()
-        val url = env.getOrDefault("NEO_URL", "bolt://localhost:7687")
+        val url = env.getOrDefault("NEO_URL", "bolt://localhost:60500")
         val username = env.getOrDefault("NEO_USER", "neo4j")
         val password = env.getOrDefault("NEO_PASSWORD", "root")
 
