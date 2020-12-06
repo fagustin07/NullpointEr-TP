@@ -183,6 +183,35 @@ class TiendaServiceTest {
 
     }
 
+    @Test
+     fun `los accesorios de una party con 2 accesorios`() {
+        val aliado = Aventurero("Jorge")
+        partyService.agregarAventureroAParty(party.id()!!,aliado)
+
+        val peleaId = peleaService.iniciarPelea(party.id()!!, "party enemiga").id()!!
+
+        peleaService.terminarPelea(peleaId)
+
+        tiendaService.registrarItem("chocolate", 2)
+        tiendaService.registrarItem("banana", 2)
+        tiendaService.registrarItem("frutilla", 2)
+
+        tiendaService.registrarCompra(party.nombre(),"chocolate")
+        tiendaService.registrarCompra(party.nombre(),"frutilla")
+
+        val items = tiendaService.losItemsDe(party.nombre())
+
+        assertThat(items[0].nombre).isEqualTo("chocolate")
+        assertThat(items[1].nombre).isEqualTo("frutilla")
+    }
+
+    @Test
+    fun `los items de una party sin items devuelve una lista vacia`() {
+        val items = tiendaService.losItemsDe(party.nombre())
+
+        assertThat(items).isEmpty()
+    }
+
     private fun comprarNVeces(cantDeCompras: Int, nombreParty: String, nombreItem: String) {
         repeat(cantDeCompras){
             tiendaService.registrarCompra(nombreParty,nombreItem)
