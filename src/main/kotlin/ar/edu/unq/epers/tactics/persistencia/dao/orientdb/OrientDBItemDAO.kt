@@ -62,6 +62,10 @@ class OrientDBItemDAO : ItemDAO {
             .toList()
     }
 
+    override fun clear() {
+        session.command("DELETE VERTEX Item")
+    }
+
     private fun validarQueNoExistaAlgunItemLlamado(nombre: String) {
         val query = "SELECT FROM Item WHERE nombre = ?"
         val queryResult = session.query(query, nombre)

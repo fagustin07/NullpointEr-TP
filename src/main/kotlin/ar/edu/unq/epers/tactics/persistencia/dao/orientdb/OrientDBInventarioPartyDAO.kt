@@ -6,10 +6,8 @@ import ar.edu.unq.epers.tactics.modelo.tienda.InventarioParty
 import ar.edu.unq.epers.tactics.persistencia.dao.InventarioPartyDAO
 import com.orientechnologies.orient.core.record.ORecord
 import java.util.*
-import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDAO as OrientDBDAO1
 
-
-class OrientDBInventarioPartyDAO : OrientDBDAO1<InventarioParty>(InventarioParty::class.java), InventarioPartyDAO {
+class OrientDBInventarioPartyDAO : OrientDBDAO<InventarioParty>(InventarioParty::class.java), InventarioPartyDAO {
 
     override fun guardar(inventarioParty: InventarioParty): InventarioParty {
         validarQueNoEsteRegistrada(inventarioParty)
@@ -29,6 +27,10 @@ class OrientDBInventarioPartyDAO : OrientDBDAO1<InventarioParty>(InventarioParty
 
     override fun recuperar(nombreParty: String): InventarioParty {
         return intentarRecuperar(nombreParty).orElseThrow { PartyNotRegisteredException(nombreParty) }
+    }
+
+    override fun clear() {
+        session.command("DELETE VERTEX InventarioParty")
     }
 
     override fun intentarRecuperar(nombreParty: String): Optional<InventarioParty> =

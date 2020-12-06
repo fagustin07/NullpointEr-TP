@@ -35,4 +35,8 @@ class OrientDBOperacionesDAO: OperacionesDAO {
             .toList()
     }
 
+    override fun clear() {
+        session.command("DELETE EDGE HaComprado")
+    }
+
 }
