@@ -176,7 +176,7 @@ class TiendaServiceTest {
     }
 
     @Test
-    fun `los mas comprados de una tienda con muchas ventas de banana frutilla y chocolate`(){
+    fun `los 10 mas comprados ordenados de mayor numero de compras a menor de una tienda`(){
         val aliado = Aventurero("Jorge")
         partyService.agregarAventureroAParty(party.id()!!,aliado)
 
@@ -187,15 +187,38 @@ class TiendaServiceTest {
         tiendaService.registrarItem("chocolate", 2)
         tiendaService.registrarItem("banana", 2)
         tiendaService.registrarItem("frutilla", 2)
+        tiendaService.registrarItem("anillo", 2)
+        tiendaService.registrarItem("piedra", 2)
+        tiendaService.registrarItem("baculo", 2)
+        tiendaService.registrarItem("tela", 2)
+        tiendaService.registrarItem("espada", 2)
+        tiendaService.registrarItem("coco", 2)
+        tiendaService.registrarItem("mango", 2)
 
-        comprarNVeces(5,  party.nombre(), "chocolate")
-        comprarNVeces(15, party.nombre(), "banana")
-        comprarNVeces(12, party.nombre(), "frutilla")
+
+        comprarNVeces(20, party.nombre(), "banana")
+        comprarNVeces(18, party.nombre(), "frutilla")
+        comprarNVeces(17,  party.nombre(), "chocolate")
+        comprarNVeces(15, party.nombre(), "anillo")
+        comprarNVeces(13, party.nombre(), "piedra")
+        comprarNVeces(10,  party.nombre(), "baculo")
+        comprarNVeces(9, party.nombre(), "tela")
+        comprarNVeces(7, party.nombre(), "espada")
+        comprarNVeces(6,  party.nombre(), "coco")
+        comprarNVeces(5,  party.nombre(), "mango")
 
         val losMasComprados = tiendaService.loMasComprado()
+
         assertThat(losMasComprados[0].first.nombre).isEqualTo("banana")
         assertThat(losMasComprados[1].first.nombre).isEqualTo("frutilla")
         assertThat(losMasComprados[2].first.nombre).isEqualTo("chocolate")
+        assertThat(losMasComprados[3].first.nombre).isEqualTo("anillo")
+        assertThat(losMasComprados[4].first.nombre).isEqualTo("piedra")
+        assertThat(losMasComprados[5].first.nombre).isEqualTo("baculo")
+        assertThat(losMasComprados[6].first.nombre).isEqualTo("tela")
+        assertThat(losMasComprados[7].first.nombre).isEqualTo("espada")
+        assertThat(losMasComprados[8].first.nombre).isEqualTo("coco")
+        assertThat(losMasComprados[9].first.nombre).isEqualTo("mango")
     }
 
     @Test

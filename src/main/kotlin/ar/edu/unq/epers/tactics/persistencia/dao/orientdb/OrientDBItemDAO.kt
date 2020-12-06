@@ -57,7 +57,7 @@ class OrientDBItemDAO {
                     ORDER BY vecesComprado DESC LIMIT 10
                 """
 
-        val result: List<Pair<Item, Int>> = session.query(query)
+        return session.query(query)
             .stream()
             .map {
                 val item = Item(it.getProperty("nombre"), it.getProperty("precio"))
@@ -65,8 +65,6 @@ class OrientDBItemDAO {
                 Pair(item, vecesComprado)
             }
             .toList()
-
-        return result
     }
 
 }
