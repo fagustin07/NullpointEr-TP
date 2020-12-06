@@ -53,7 +53,7 @@ class TiendaServiceTest {
 
     @Test
     fun `no se puede recuperar un item con un nombre sin registrar`(){
-        val exception = assertThrows<InexistentItemException> { tiendaService.registrarCompra("Memories","Lanzallamas") }
+        val exception = assertThrows<RuntimeException> { tiendaService.registrarCompra("Memories","Lanzallamas") }
         assertThat(exception.message).isEqualTo("No existe el item llamado Lanzallamas.")
     }
 
@@ -61,7 +61,7 @@ class TiendaServiceTest {
     fun `no se puede registrar un item con un nombre ya existente`(){
         tiendaService.registrarItem("capa en llamas",400)
 
-        val exception = assertThrows<ItemAlreadyRegisteredException> {
+        val exception = assertThrows<RuntimeException> {
             tiendaService.registrarItem("capa en llamas",400)
         }
         assertThat(exception.message).isEqualTo("El item capa en llamas ya se encuentra en el sistema.")

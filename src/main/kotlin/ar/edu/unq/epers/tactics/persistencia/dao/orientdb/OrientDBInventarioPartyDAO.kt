@@ -46,12 +46,13 @@ class OrientDBInventarioPartyDAO : OrientDBDAO<InventarioParty>(InventarioParty:
 
     /** PRIVATE **/
     override fun mapEntidadDesdeOResult(result: OResult): InventarioParty {
+    override fun mapearAEntidad(result: OResult): InventarioParty {
         return InventarioParty(result.getProperty("nombre"), result.getProperty("monedas"))
     }
 
-    override fun mensajeDeErrorParaEntidadNoEncontrada(entityName: String) =
-        "No exite una party llamada ${entityName} en el sistema."
+    override fun mensajeDeErrorParaEntidadNoEncontrada(nombreDeParty: String) =
+        "No exite una party llamada ${nombreDeParty} en el sistema."
 
-    override fun mensajeDeErrorParaNombreDeEntidadYaRegistrado(entityName: String) =
-        "La party ${entityName} ya está en el sistema."
+    override fun mensajeDeErrorParaNombreDeEntidadYaRegistrado(nombreDeParty: String) =
+        "La party ${nombreDeParty} ya está en el sistema."
 }
