@@ -1,4 +1,4 @@
-package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
+package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.exceptions.*
 import ar.edu.unq.epers.tactics.modelo.tienda.Compra
@@ -9,9 +9,10 @@ import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDA
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateDataDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
-import ar.edu.unq.epers.tactics.service.impl.PartyServiceImpl
-import ar.edu.unq.epers.tactics.service.impl.PeleaServiceImpl
-import ar.edu.unq.epers.tactics.service.impl.TiendaServicePersistente
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBInventarioPartyDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBItemDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBOperacionesDAO
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner.runTrx
 import org.assertj.core.api.Assertions.assertThat
