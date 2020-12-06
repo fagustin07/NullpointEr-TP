@@ -38,4 +38,8 @@ class TiendaServicePersistente(protected val partyMonedasDAO: OrientDBPartyDAO, 
         return runTrx { itemDAO.loMasComprado() }
     }
 
+    fun losItemsDe(nombreParty: String):List<Item>{
+        return runTrx { partyMonedasDAO.losItemsDe(nombreParty) }
+    }
+
 }

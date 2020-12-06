@@ -2,9 +2,11 @@ package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 
 import ar.edu.unq.epers.tactics.exceptions.PartyAlreadyRegisteredException
 import ar.edu.unq.epers.tactics.exceptions.PartyNotRegisteredException
+import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.modelo.tienda.PartyConMonedas
 import com.orientechnologies.orient.core.record.ORecord
 import java.util.*
+import kotlin.streams.toList
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDAO as OrientDBDAO1
 
 
@@ -36,6 +38,25 @@ class OrientDBPartyDAO : OrientDBDAO1<PartyConMonedas>(PartyConMonedas::class.ja
             .findFirst()
             .map { PartyConMonedas(nombreParty, it.getProperty("monedas")) }
 
+    fun losItemsDe(nombreParty: String):List<Item>{
+        val query =
+            """
+                    SELECT * 
+                    FROM Item 
+                    WHERE @rid in 
+                    (SELECT out() FROM PartyConMonedas WHERE nombre = ?)
+                    ORDER BY nombre asc
+                """
+
+        val result: List<Item> = session.query(query, nombreParty)
+            .stream()
+            .map {
+                Item(it.getProperty("nombre"), it.getProperty("precio"))
+            }
+            .toList()
+
+            return result
+    }
 
     /** PRIVATE **/
     override fun validarQueNoEsteRegistrada(party: PartyConMonedas) {
