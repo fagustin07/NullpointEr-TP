@@ -18,7 +18,7 @@ class OrientDBOperacionesDAO: OperacionesDAO {
             TO (SELECT FROM Item WHERE nombre = ?)
             """
 
-        session.command(query, inventarioParty.nombreParty, item.nombre())
+        session.command(query, inventarioParty.nombre, item.nombre())
     }
 
     override fun comprasRealizadasPorParty(nombreDeParty: String): List<Compra> {

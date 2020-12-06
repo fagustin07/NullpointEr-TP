@@ -1,34 +1,18 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 
-import ar.edu.unq.epers.tactics.exceptions.PartyAlreadyRegisteredException
-import ar.edu.unq.epers.tactics.exceptions.PartyNotRegisteredException
 import ar.edu.unq.epers.tactics.modelo.tienda.InventarioParty
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.persistencia.dao.InventarioPartyDAO
+import com.orientechnologies.orient.core.sql.executor.OResult
 import com.orientechnologies.orient.core.record.ORecord
 import java.util.*
 import kotlin.streams.toList
 
 class OrientDBInventarioPartyDAO : OrientDBDAO<InventarioParty>(InventarioParty::class.java), InventarioPartyDAO {
 
-    override fun guardar(inventarioParty: InventarioParty): InventarioParty {
-        validarQueNoEsteRegistrada(inventarioParty)
-
-        val nuevoVertexParty = session.newVertex("InventarioParty")
-        nuevoVertexParty.setProperty("nombre", inventarioParty.nombreParty)
-        nuevoVertexParty.setProperty("monedas", inventarioParty.monedas)
-        nuevoVertexParty.save<ORecord>()
-
-        return inventarioParty
-    }
-
     override fun actualizar(inventarioParty: InventarioParty) {
         val query = "UPDATE InventarioParty SET monedas = ? WHERE nombre = ?"
-        session.command(query, inventarioParty.monedas, inventarioParty.nombreParty)
-    }
-
-    override fun recuperar(nombreParty: String): InventarioParty {
-        return intentarRecuperar(nombreParty).orElseThrow { PartyNotRegisteredException(nombreParty) }
+        session.command(query, inventarioParty.monedas, inventarioParty.nombre)
     }
 
     override fun losItemsDe(nombreParty: String):List<Item>{
@@ -61,8 +45,13 @@ class OrientDBInventarioPartyDAO : OrientDBDAO<InventarioParty>(InventarioParty:
 
 
     /** PRIVATE **/
-    override fun validarQueNoEsteRegistrada(inventarioParty: InventarioParty) {
-        intentarRecuperar(inventarioParty.nombreParty).ifPresent { throw PartyAlreadyRegisteredException(inventarioParty.nombreParty) }
+    override fun mapEntidadDesdeOResult(result: OResult): InventarioParty {
+        return InventarioParty(result.getProperty("nombre"), result.getProperty("monedas"))
     }
 
+    override fun mensajeDeErrorParaEntidadNoEncontrada(entityName: String) =
+        "No exite una party llamada ${entityName} en el sistema."
+
+    override fun mensajeDeErrorParaNombreDeEntidadYaRegistrado(entityName: String) =
+        "La party ${entityName} ya está en el sistema."
 }

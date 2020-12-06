@@ -41,13 +41,13 @@ class TiendaServiceTest {
 
     @Test
     fun `no se puede registrar una party con un nombre existente`(){
-        val exception = assertThrows<PartyAlreadyRegisteredException> { partyService.crear(party) }
+        val exception = assertThrows<RuntimeException> { partyService.crear(party) }
         assertThat(exception.message).isEqualTo("La party ${party.nombre()} ya está en el sistema.")
     }
 
     @Test
     fun `no se puede recuperar una party con un nombre sin registrar`(){
-        val exception = assertThrows<PartyNotRegisteredException> { tiendaService.registrarCompra("Los del fuego", "Item") }
+        val exception = assertThrows<RuntimeException> { tiendaService.registrarCompra("Los del fuego", "Item") }
         assertThat(exception.message).isEqualTo("No exite una party llamada Los del fuego en el sistema.")
     }
 
