@@ -11,11 +11,11 @@ import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.mongodb.MongoFormacionDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.neo4j.Neo4JClaseDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBInventarioPartyDAO
 import ar.edu.unq.epers.tactics.service.AventureroService
 import ar.edu.unq.epers.tactics.service.ClaseService
 import ar.edu.unq.epers.tactics.service.FormacionService
 import ar.edu.unq.epers.tactics.service.PartyService
-import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner
 import helpers.Factory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration
@@ -44,7 +44,7 @@ class FormacionServiceTest {
 
         aventureroService = AventureroServiceImpl(aventureroDAO, partyDAO)
         formacionService = FormacionServiceImpl(formacionDAO, HibernatePartyDAO())
-        partyService = PartyServiceImpl(partyDAO)
+        partyService = PartyServiceImpl(partyDAO, OrientDBInventarioPartyDAO())
         claseService = ClaseServiceImpl(claseDAO, aventureroDAO)
 
         recursiveComparisonConfiguration = RecursiveComparisonConfiguration.builder().withIgnoredFields("id").build()

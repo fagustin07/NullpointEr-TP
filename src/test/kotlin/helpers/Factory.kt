@@ -8,7 +8,7 @@ import ar.edu.unq.epers.tactics.modelo.enums.TipoDeReceptor
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
-import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBPartyDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBInventarioPartyDAO
 import ar.edu.unq.epers.tactics.service.AventureroLeaderboardService
 import ar.edu.unq.epers.tactics.service.AventureroService
 import ar.edu.unq.epers.tactics.service.PartyService
@@ -30,9 +30,9 @@ class Factory {
         val aventureroDAO = HibernateAventureroDAO()
         val peleaDAO = HibernatePeleaDAO()
         val partyDAO = HibernatePartyDAO()
-        partyService = PartyServiceImpl(partyDAO)
+        partyService = PartyServiceImpl(partyDAO, OrientDBInventarioPartyDAO())
         leaderboardService = AventureroLeaderboardServiceImpl(aventureroDAO)
-        peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO, OrientDBPartyDAO())
+        peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO, OrientDBInventarioPartyDAO())
         aventureroService = AventureroServiceImpl(aventureroDAO,partyDAO)
     }
 

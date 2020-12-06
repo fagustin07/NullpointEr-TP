@@ -10,7 +10,7 @@ open class OrientDBDataDAO : DataDAO {
 
     override fun clear() {
         runTrx{
-            db.command("DELETE VERTEX FROM PartyConMonedas")
+            db.command("DELETE VERTEX FROM InventarioParty")
             db.command("DELETE VERTEX FROM Item")
             db.command("DELETE EDGE HaComprado")
         }

@@ -2,27 +2,28 @@ package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 
 import ar.edu.unq.epers.tactics.modelo.tienda.Compra
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
-import ar.edu.unq.epers.tactics.modelo.tienda.PartyConMonedas
+import ar.edu.unq.epers.tactics.modelo.tienda.InventarioParty
+import ar.edu.unq.epers.tactics.persistencia.dao.OperacionesDAO
 import ar.edu.unq.epers.tactics.service.runner.OrientDBSessionFactoryProvider
 import kotlin.streams.toList
 
-class OperacionesDAO {
+class OrientDBOperacionesDAO: OperacionesDAO {
     val session get() = OrientDBSessionFactoryProvider.instance.session
 
-    fun registrarCompraDe(party: PartyConMonedas, item: Item) {
+    override fun registrarCompraDe(inventarioParty: InventarioParty, item: Item) {
         val query =
             """
             CREATE EDGE HaComprado
-            FROM (SELECT FROM PartyConMonedas WHERE nombre = ?)
+            FROM (SELECT FROM InventarioParty WHERE nombre = ?)
             TO (SELECT FROM Item WHERE nombre = ?)
             """
 
-        session.command(query, party.nombre, item.nombre())
+        session.command(query, inventarioParty.nombreParty, item.nombre())
     }
 
-    fun comprasRealizadasPorParty(nombreDeParty: String): List<Compra> {
+    override fun comprasRealizadasPorParty(nombreDeParty: String): List<Compra> {
         val query = """
-            select from haComprado where out IN (select from PartyConMonedas where nombre=?)
+            select from haComprado where out IN (select from InventarioParty where nombre=?)
             """
 
         return session
