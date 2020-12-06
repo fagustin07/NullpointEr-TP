@@ -15,6 +15,11 @@ class OrientDBInventarioPartyDAO : OrientDBDAO<InventarioParty>(InventarioParty:
         session.command(query, inventarioParty.monedas, inventarioParty.nombre)
     }
 
+    override fun mapearAEntidad(result: OResult) =
+        InventarioParty(
+            result.getProperty("nombre"),
+            result.getProperty("monedas")
+        )
     override fun losItemsDe(nombreParty: String):List<Item>{
         val query =
             """
