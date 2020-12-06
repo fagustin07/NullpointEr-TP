@@ -12,4 +12,6 @@ interface TiendaService {
     fun comprasRealizadasPor(nombreDeParty: String): List<Compra>
 
     fun loMasComprado(): List<Pair<Item, Int>>
+
+    fun losItemsDe(nombreParty: String):List<Item>
 }
