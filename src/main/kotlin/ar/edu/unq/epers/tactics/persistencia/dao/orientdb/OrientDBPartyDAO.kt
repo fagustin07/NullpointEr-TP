@@ -48,14 +48,12 @@ class OrientDBPartyDAO : OrientDBDAO1<PartyConMonedas>(PartyConMonedas::class.ja
                     ORDER BY nombre asc
                 """
 
-        val result: List<Item> = session.query(query, nombreParty)
+        return session.query(query, nombreParty)
             .stream()
             .map {
                 Item(it.getProperty("nombre"), it.getProperty("precio"))
             }
             .toList()
-
-            return result
     }
 
     /** PRIVATE **/
