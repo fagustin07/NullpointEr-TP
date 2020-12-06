@@ -177,23 +177,16 @@ class TiendaServiceTest {
 
     @Test
     fun `los 10 mas comprados ordenados de mayor numero de compras a menor de una tienda`(){
-        val aliado = Aventurero("Jorge")
-        partyService.agregarAventureroAParty(party.id()!!,aliado)
-
-        val peleaId = peleaService.iniciarPelea(party.id()!!, "party enemiga").id()!!
-
-        peleaService.terminarPelea(peleaId)
-
-        tiendaService.registrarItem("chocolate", 2)
-        tiendaService.registrarItem("banana", 2)
-        tiendaService.registrarItem("frutilla", 2)
-        tiendaService.registrarItem("anillo", 2)
-        tiendaService.registrarItem("piedra", 2)
-        tiendaService.registrarItem("baculo", 2)
-        tiendaService.registrarItem("tela", 2)
-        tiendaService.registrarItem("espada", 2)
-        tiendaService.registrarItem("coco", 2)
-        tiendaService.registrarItem("mango", 2)
+        tiendaService.registrarItem("chocolate", 0)
+        tiendaService.registrarItem("banana",0)
+        tiendaService.registrarItem("frutilla", 0)
+        tiendaService.registrarItem("anillo", 0)
+        tiendaService.registrarItem("piedra", 0)
+        tiendaService.registrarItem("baculo", 0)
+        tiendaService.registrarItem("tela", 0)
+        tiendaService.registrarItem("espada", 0)
+        tiendaService.registrarItem("coco", 0)
+        tiendaService.registrarItem("mango", 0)
 
 
         comprarNVeces(20, party.nombre(), "banana")
@@ -255,7 +248,11 @@ class TiendaServiceTest {
     }
 
     @Test
-    fun `los items de una party sin items devuelve una lista vacia`() {
+    fun `una party recien registrada en la tienda no tiene items`() {
+        val party = Party("Lakers", "URL")
+        partyService.crear(party)
+        // al crear una party se registra en la tienda tambien
+
         val items = tiendaService.losItemsDe(party.nombre())
 
         assertThat(items).isEmpty()
