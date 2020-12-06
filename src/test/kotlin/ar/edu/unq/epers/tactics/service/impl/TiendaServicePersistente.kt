@@ -6,7 +6,6 @@ import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBPartyDAO
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OperacionesDAO
 import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner.runTrx
-import java.time.LocalDate
 
 class TiendaServicePersistente(protected val partyMonedasDAO: OrientDBPartyDAO, protected val itemDAO: OrientDBItemDAO, protected val operacionesDAO: OperacionesDAO) {
 
@@ -33,5 +32,9 @@ class TiendaServicePersistente(protected val partyMonedasDAO: OrientDBPartyDAO, 
 
     fun comprasRealizadasPorParty(nombreDeParty: String): List<Compra> =
         runTrx { operacionesDAO.comprasRealizadasPorParty(nombreDeParty) }
+
+    fun loMasComprado(): List<Pair<Item, Int>>{
+        return runTrx { itemDAO.loMasComprado() }
+    }
 
 }
