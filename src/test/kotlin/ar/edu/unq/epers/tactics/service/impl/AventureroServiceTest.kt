@@ -7,6 +7,7 @@ import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBInventarioPartyDAO
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -32,7 +33,7 @@ class AventureroServiceTest {
         partyDao = HibernatePartyDAO()
 
         aventureroService = AventureroServiceImpl(aventureroDao, partyDao)
-        partyService = PartyServiceImpl(partyDao)
+        partyService = PartyServiceImpl(partyDao, OrientDBInventarioPartyDAO())
 
         party = Party("Party", "")
         aventurero = Aventurero("Aventurero")
@@ -85,7 +86,7 @@ class AventureroServiceTest {
 
     @AfterEach
     internal fun tearDown() {
-        PartyServiceImpl(HibernatePartyDAO()).eliminarTodo()
+        partyService.eliminarTodo()
         OrientDBDataDAO().clear()
     }
 

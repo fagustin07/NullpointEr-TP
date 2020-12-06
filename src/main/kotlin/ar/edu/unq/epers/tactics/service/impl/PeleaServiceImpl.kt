@@ -4,15 +4,15 @@ import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Pelea
 import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import ar.edu.unq.epers.tactics.persistencia.dao.AventureroDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.InventarioPartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.PeleaDAO
-import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBPartyDAO
 import ar.edu.unq.epers.tactics.service.PeleaService
 import ar.edu.unq.epers.tactics.service.PeleasPaginadas
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
 import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner
 
-class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO, val partyMonedasDAO: OrientDBPartyDAO): PeleaService {
+class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val aventureroDAO: AventureroDAO, val inventarioPartyDAO: InventarioPartyDAO): PeleaService {
 
     override fun iniciarPelea(partyId: Long, nombrePartyEnemiga:String): Pelea {
         return runTrx {
@@ -60,9 +60,9 @@ class PeleaServiceImpl(val peleaDAO: PeleaDAO, val partyDAO: PartyDAO, val avent
     private fun obtenerRecompensaSiHaGanado(pelea: Pelea) {
         if (pelea.fueGanada()) {
             OrientDBTransactionRunner.runTrx {
-                val partyConMonedas = partyMonedasDAO.recuperar(pelea.party.nombre())
+                val partyConMonedas = inventarioPartyDAO.recuperar(pelea.party.nombre())
                 partyConMonedas.adquirirRecompensaDePelea()
-                partyMonedasDAO.actualizar(partyConMonedas)
+                inventarioPartyDAO.actualizar(partyConMonedas)
             }
         }
     }

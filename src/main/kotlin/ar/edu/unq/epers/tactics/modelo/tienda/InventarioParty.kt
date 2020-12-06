@@ -2,10 +2,7 @@ package ar.edu.unq.epers.tactics.modelo.tienda
 
 import ar.edu.unq.epers.tactics.exceptions.CannotBuyException
 
-class PartyConMonedas(val nombre: String, var monedas: Int = 0) {
-
-    fun nombre() = nombre
-    fun monedas() = monedas
+class InventarioParty(val nombreParty: String, var monedas: Int = 0) {
 
     fun comprar(item: Item) {
         if (item.precio() > this.monedas){

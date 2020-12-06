@@ -4,6 +4,7 @@ package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 import ar.edu.unq.epers.tactics.exceptions.InexistentItemException
 import ar.edu.unq.epers.tactics.exceptions.ItemAlreadyRegisteredException
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
+import ar.edu.unq.epers.tactics.persistencia.dao.ItemDAO
 import ar.edu.unq.epers.tactics.service.runner.OrientDBSessionFactoryProvider
 import com.orientechnologies.orient.core.db.ODatabaseSession
 import com.orientechnologies.orient.core.record.ORecord
@@ -11,11 +12,11 @@ import java.util.*
 import kotlin.streams.toList
 
 
-class OrientDBItemDAO {
+class OrientDBItemDAO : ItemDAO {
 
     val session: ODatabaseSession get() = OrientDBSessionFactoryProvider.instance.session
 
-    fun guardar(item: Item): Item {
+    override fun guardar(item: Item): Item {
         validarQueNoExistaAlgunItemLlamado(item.nombre())
 
         val result = session.newVertex("Item")
@@ -31,24 +32,18 @@ class OrientDBItemDAO {
                     // [Deje un mensaje en Telegram. Despues de rebasear y mergear se vera que se hace]
     }
 
-    fun recuperar(nombre: String): Item {
+    override fun recuperar(nombre: String): Item {
         return intentarRecuperar(nombre).orElseThrow { InexistentItemException(nombre) }
     }
 
-    fun intentarRecuperar(nombre: String): Optional<Item> =
+     fun intentarRecuperar(nombre: String): Optional<Item> =
         session.query("SELECT FROM Item WHERE nombre = ?", nombre)
             .stream()
             .findFirst()
             .map { Item(it.getProperty("nombre"), it.getProperty("precio")) }
 
 
-    private fun validarQueNoExistaAlgunItemLlamado(nombre: String) {
-        val query = "SELECT FROM Item WHERE nombre = ?"
-        val queryResult = session.query(query, nombre)
-        if (queryResult.hasNext()) throw ItemAlreadyRegisteredException(nombre)
-    }
-
-    fun loMasComprado(): List<Pair<Item, Int>> {
+    override fun loMasComprado(): List<Pair<Item, Int>> {
         val query =
             """
                     SELECT *, in().size() AS vecesComprado 
@@ -65,6 +60,16 @@ class OrientDBItemDAO {
                 Pair(item, vecesComprado)
             }
             .toList()
+    }
+
+    override fun clear() {
+        session.command("DELETE VERTEX Item")
+    }
+
+    private fun validarQueNoExistaAlgunItemLlamado(nombre: String) {
+        val query = "SELECT FROM Item WHERE nombre = ?"
+        val queryResult = session.query(query, nombre)
+        if (queryResult.hasNext()) throw ItemAlreadyRegisteredException(nombre)
     }
 
 }
