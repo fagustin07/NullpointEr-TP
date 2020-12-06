@@ -8,6 +8,7 @@ import ar.edu.unq.epers.tactics.service.runner.OrientDBSessionFactoryProvider
 import com.orientechnologies.orient.core.db.ODatabaseSession
 import com.orientechnologies.orient.core.record.ORecord
 import java.util.*
+import kotlin.streams.toList
 
 
 class OrientDBItemDAO {
@@ -46,4 +47,26 @@ class OrientDBItemDAO {
         val queryResult = session.query(query, nombre)
         if (queryResult.hasNext()) throw ItemAlreadyRegisteredException(nombre)
     }
+
+    fun loMasComprado(): List<Pair<Item, Int>> {
+        val query =
+            """
+                    SELECT *, in().size() AS vecesComprado 
+                    FROM Item
+                    WHERE in().size() > 0
+                    ORDER BY vecesComprado DESC LIMIT 10
+                """
+
+        val result: List<Pair<Item, Int>> = session.query(query)
+            .stream()
+            .map {
+                val item = Item(it.getProperty("nombre"), it.getProperty("precio"))
+                val vecesComprado: Int = it.getProperty("vecesComprado")
+                Pair(item, vecesComprado)
+            }
+            .toList()
+
+        return result
+    }
+
 }

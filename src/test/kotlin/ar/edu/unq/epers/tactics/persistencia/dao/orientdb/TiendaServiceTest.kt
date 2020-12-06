@@ -175,6 +175,48 @@ class TiendaServiceTest {
         assertThat(partyRecuperada.monedas).isEqualTo(monedasAntesDeCompra - precioItem)
     }
 
+    @Test
+    fun `los mas comprados de una tienda con muchas ventas de banana frutilla y chocolate`(){
+        val aliado = Aventurero("Jorge")
+        partyService.agregarAventureroAParty(party.id()!!,aliado)
+
+        val peleaId = peleaService.iniciarPelea(party.id()!!, "party enemiga").id()!!
+
+        peleaService.terminarPelea(peleaId)
+
+        tiendaService.registrarItem("chocolate", 2)
+        tiendaService.registrarItem("banana", 2)
+        tiendaService.registrarItem("frutilla", 2)
+
+        comprarNVeces(5,  party.nombre(), "chocolate")
+        comprarNVeces(15, party.nombre(), "banana")
+        comprarNVeces(12, party.nombre(), "frutilla")
+
+        val losMasComprados = tiendaService.loMasComprado()
+        assertThat(losMasComprados[0].first.nombre).isEqualTo("banana")
+        assertThat(losMasComprados[1].first.nombre).isEqualTo("frutilla")
+        assertThat(losMasComprados[2].first.nombre).isEqualTo("chocolate")
+    }
+
+    @Test
+    fun `los mas comprados de una tienda sin ventas devuelve una lista vacia`() {
+        tiendaService.registrarItem("chocolate", 2)
+        tiendaService.registrarItem("banana", 2)
+        tiendaService.registrarItem("frutilla", 2)
+
+        val losMasComprados = tiendaService.loMasComprado()
+        assertThat(losMasComprados).isEmpty()
+
+    }
+
+    private fun comprarNVeces(cantDeCompras: Int, nombreParty: String, nombreItem: String) {
+        repeat(cantDeCompras){
+            tiendaService.registrarCompra(nombreParty,nombreItem)
+        }
+    }
+
+
+
     @AfterEach
     fun tearDown(){
         OrientDBDataDAO().clear()
