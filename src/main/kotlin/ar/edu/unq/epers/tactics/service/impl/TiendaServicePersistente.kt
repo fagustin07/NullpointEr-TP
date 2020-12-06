@@ -32,4 +32,9 @@ class TiendaServicePersistente(protected val inventarioPartyDAO: InventarioParty
         return runTrx { itemDAO.loMasComprado() }
     }
 
+    override fun losItemsDe(nombreParty: String):List<Item>{
+        return runTrx { inventarioPartyDAO.losItemsDe(nombreParty) }
+    }
+
+
 }
