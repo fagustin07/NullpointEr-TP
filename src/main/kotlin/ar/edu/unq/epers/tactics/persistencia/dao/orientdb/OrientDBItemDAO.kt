@@ -3,6 +3,7 @@ package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.persistencia.dao.ItemDAO
 import com.orientechnologies.orient.core.sql.executor.OResult
+import java.time.LocalDate
 import kotlin.streams.toList
 
 
@@ -11,13 +12,14 @@ class OrientDBItemDAO : OrientDBDAO<Item>(Item::class.java),  ItemDAO {
     override fun loMasComprado(): List<Pair<Item, Int>> {
         val query =
             """
-                    SELECT *, in().size() AS vecesComprado 
-                    FROM Item
-                    WHERE in().size() > 0
-                    ORDER BY vecesComprado DESC LIMIT 10
+                    SELECT in.nombre as nombre, in.precio as precio, count(*) as vecesComprado
+                    FROM HaComprado
+                    WHERE fechaDeCompra >= ?
+                    GROUP BY in.nombre
+                    ORDER BY vecesComprado DESC LIMIT 5
                 """
 
-        return session.query(query)
+        return session.query(query, LocalDate.now().minusDays(7))
             .stream()
             .map {
                 val item = mapearAEntidad(it)

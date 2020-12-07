@@ -4,6 +4,8 @@ import ar.edu.unq.epers.tactics.exceptions.*
 import ar.edu.unq.epers.tactics.modelo.tienda.Compra
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
+import ar.edu.unq.epers.tactics.modelo.calendario.FakeProveedorDeFechas
+import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.persistencia.dao.InventarioPartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateDataDAO
@@ -20,9 +22,11 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDate
 
 class TiendaServiceTest {
 
+    private val NOW = LocalDate.now()
     private val inventarioPartyDAO: InventarioPartyDAO = OrientDBInventarioPartyDAO()
     private val peleaService = PeleaServiceImpl(
         HibernatePeleaDAO(),
@@ -30,8 +34,10 @@ class TiendaServiceTest {
         HibernateAventureroDAO(),
         inventarioPartyDAO
     )
+
+    private val prooveedorDeFechas = FakeProveedorDeFechas(NOW)
     private val partyService = PartyServiceImpl(HibernatePartyDAO(), inventarioPartyDAO)
-    val tiendaService = TiendaServicePersistente(inventarioPartyDAO, OrientDBItemDAO(), OrientDBOperacionesDAO())
+    val tiendaService = TiendaServicePersistente(inventarioPartyDAO, OrientDBItemDAO(), OrientDBOperacionesDAO(), prooveedorDeFechas)
     lateinit var party : Party
 
     @BeforeEach
@@ -107,7 +113,7 @@ class TiendaServiceTest {
         tiendaService.registrarCompra(party.nombre(),"bandera flameante")
 
 
-        val comprasEsperadas = listOf(Compra(item))
+        val comprasEsperadas = listOf(Compra(item, NOW))
         val comprasRealizadas = tiendaService.comprasRealizadasPor(party.nombre())
         assertThat(comprasRealizadas).usingRecursiveComparison().isEqualTo(comprasEsperadas)
     }
@@ -197,6 +203,37 @@ class TiendaServiceTest {
         val losMasComprados = tiendaService.loMasComprado()
         assertThat(losMasComprados).isEmpty()
 
+    }
+
+    @Test
+    fun `lo mas comprado de la ultima semana es solo frutilla`(){
+        val aliado = Aventurero("Jorge")
+        partyService.agregarAventureroAParty(party.id()!!,aliado)
+
+        val peleaId = peleaService.iniciarPelea(party.id()!!, "party enemiga").id()!!
+
+        peleaService.terminarPelea(peleaId)
+
+        tiendaService.registrarItem("chocolate", 2)
+        tiendaService.registrarItem("banana", 2)
+        tiendaService.registrarItem("frutilla", 2)
+
+
+        prooveedorDeFechas.cambiarFecha(LocalDate.of(1999,10,29))
+        comprarNVeces(5,  party.nombre(), "chocolate")
+        comprarNVeces(15, party.nombre(), "banana")
+        comprarNVeces(12, party.nombre(), "frutilla")
+
+        prooveedorDeFechas.cambiarFecha(NOW)
+        comprarNVeces(8, party.nombre(), "frutilla")
+
+        val losMasComprados = tiendaService.loMasComprado()
+
+        val parEsperado = Pair(Item("frutilla",2), 8)
+        assertThat(losMasComprados.size).isEqualTo(1)
+        assertThat(losMasComprados[0])
+            .usingRecursiveComparison()
+            .isEqualTo(parEsperado)
     }
 
     @Test
