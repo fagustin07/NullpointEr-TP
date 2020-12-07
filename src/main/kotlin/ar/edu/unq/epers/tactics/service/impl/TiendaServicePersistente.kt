@@ -22,7 +22,7 @@ class TiendaServicePersistente(protected val inventarioPartyDAO: InventarioParty
 
             inventarioPartyDAO.actualizar(party)
 
-            operacionesDAO.registrarCompraDe(party ,item)
+            operacionesDAO.registrarCompraDe(party, item)
         }
 
     override fun comprasRealizadasPor(nombreDeParty: String): List<Compra> =

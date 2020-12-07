@@ -1,3 +1,5 @@
 package ar.edu.unq.epers.tactics.modelo.tienda
 
-data class Compra(val item: Item)
+import java.time.LocalDate
+
+data class Compra(val item: Item, val fechaCompra: LocalDate)
