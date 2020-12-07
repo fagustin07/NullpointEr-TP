@@ -30,16 +30,9 @@ class OrientDBItemDAO(private val proveedorDeFechas: ProveedorDeFechas) : Orient
             .toList()
     }
 
-    override fun mapearAEntidad(result: OResult) =
+    override fun mapearAEntidad(oResult: OResult) =
         Item(
-            result.getProperty("nombre"),
-            result.getProperty("precio")
+            oResult.getProperty("nombre"),
+            oResult.getProperty("precio")
         )
-
-    override fun mensajeDeErrorParaEntidadNoEncontrada(nombreDeItem: String) =
-        "No existe el item llamado ${nombreDeItem}."
-
-    override fun mensajeDeErrorParaNombreDeEntidadYaRegistrado(nombreDeItem: String) =
-        "El item ${nombreDeItem} ya se encuentra en el sistema."
-
 }

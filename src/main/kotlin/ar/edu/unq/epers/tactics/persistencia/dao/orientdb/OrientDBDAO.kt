@@ -22,7 +22,7 @@ abstract class OrientDBDAO<T>(val entityType: Class<T>) {
     }
 
     open fun recuperar(entityName: String): T {
-        return intentarRecuperar(entityName).orElseThrow { RuntimeException(mensajeDeErrorParaEntidadNoEncontrada(entityName)) }
+        return intentarRecuperar(entityName).orElseThrow { RuntimeException("No existe un ${entityType.simpleName} llamado ${entityName} en el sistema.") }
     }
 
     open fun intentarRecuperar(entityName: String): Optional<T> =
@@ -35,11 +35,7 @@ abstract class OrientDBDAO<T>(val entityType: Class<T>) {
         session.command("DELETE VERTEX ?", entityType.simpleName)
     }
 
-
-    abstract fun mensajeDeErrorParaEntidadNoEncontrada(entityName: String): String
-    abstract fun mensajeDeErrorParaNombreDeEntidadYaRegistrado(entityName: String): String
-
-    protected abstract fun mapearAEntidad(entity: OResult): T // TODO: resolver con metaprogramacion
+    protected abstract fun mapearAEntidad(oResult: OResult): T
 
     protected open fun mapearAVertex(entity: T): OVertex {
         return entityType.declaredFields
@@ -51,7 +47,7 @@ abstract class OrientDBDAO<T>(val entityType: Class<T>) {
     }
 
     private fun validarQueNoExistaEntidadLlamada(entityName: String) {
-        intentarRecuperar(entityName).ifPresent { throw RuntimeException(mensajeDeErrorParaNombreDeEntidadYaRegistrado(entityName)) }
+        intentarRecuperar(entityName).ifPresent { throw RuntimeException("Ya existe un ${entityType.simpleName} llamado ${entityName} en el sistema.") }
     }
 
 }

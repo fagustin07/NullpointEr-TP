@@ -51,21 +51,21 @@ class TiendaServiceTest {
     }
 
     @Test
-    fun `no se puede registrar una party con un nombre existente`() {
+    fun `no se puede registrar un inventario de party con un nombre existente`(){
         val exception = assertThrows<RuntimeException> { partyService.crear(party) }
-        assertThat(exception.message).isEqualTo("La party ${party.nombre()} ya está en el sistema.")
+        assertThat(exception.message).isEqualTo("Ya existe un InventarioParty llamado ${party.nombre()} en el sistema.")
     }
 
     @Test
-    fun `no se puede recuperar una party con un nombre sin registrar`() {
+    fun `no se puede recuperar un inventario de party con un nombre sin registrar`(){
         val exception = assertThrows<RuntimeException> { tiendaService.registrarCompra("Los del fuego", "Item") }
-        assertThat(exception.message).isEqualTo("No exite una party llamada Los del fuego en el sistema.")
+        assertThat(exception.message).isEqualTo("No existe un InventarioParty llamado Los del fuego en el sistema.")
     }
 
     @Test
-    fun `no se puede recuperar un item con un nombre sin registrar`() {
-        val exception = assertThrows<RuntimeException> { tiendaService.registrarCompra("Memories", "Lanzallamas") }
-        assertThat(exception.message).isEqualTo("No existe el item llamado Lanzallamas.")
+    fun `no se puede recuperar un item con un nombre sin registrar`(){
+        val exception = assertThrows<RuntimeException> { tiendaService.registrarCompra("Memories","Lanzallamas") }
+        assertThat(exception.message).isEqualTo("No existe un Item llamado Lanzallamas en el sistema.")
     }
 
     @Test
@@ -75,7 +75,7 @@ class TiendaServiceTest {
         val exception = assertThrows<RuntimeException> {
             tiendaService.registrarItem("capa en llamas", 400)
         }
-        assertThat(exception.message).isEqualTo("El item capa en llamas ya se encuentra en el sistema.")
+        assertThat(exception.message).isEqualTo("Ya existe un Item llamado capa en llamas en el sistema.")
     }
 
     @Test
@@ -124,11 +124,10 @@ class TiendaServiceTest {
     }
 
     @Test
-    fun `se levanta una excepcion al querer comprar un item de mas valor que las monedas de la party`() {
+    fun `se levanta una excepcion al querer comprar un item de mas valor que las monedas que tiene party en su inventario`(){
         tiendaService.registrarItem("bandera flameante", 10)
 
-        val exception =
-            assertThrows<CannotBuyException> { tiendaService.registrarCompra(party.nombre(), "bandera flameante") }
+        val exception = assertThrows<RuntimeException> { tiendaService.registrarCompra(party.nombre(),"bandera flameante") }
         assertThat(exception.message).isEqualTo("No puedes comprar 'bandera flameante', te faltan 10 monedas.")
     }
 
