@@ -6,8 +6,9 @@ class FakeProveedorDeFechas(private var fecha: LocalDate): ProveedorDeFechas {
 
     override fun ahora() = fecha
 
-    override fun cambiarFecha(nuevaFecha: LocalDate) {
+    override fun cambiarFechaActual(nuevaFecha: LocalDate) {
         fecha = nuevaFecha
     }
 
+    override fun haceUnaSemana() = fecha.minusDays(7)
 }

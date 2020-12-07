@@ -6,5 +6,7 @@ interface ProveedorDeFechas {
 
     fun ahora(): LocalDate
 
-    fun cambiarFecha(nuevaFecha: LocalDate)
+    fun cambiarFechaActual(nuevaFecha: LocalDate)
+
+    fun haceUnaSemana(): LocalDate
 }

@@ -1,5 +1,6 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 
+import ar.edu.unq.epers.tactics.modelo.calendario.ProveedorDeFechas
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.persistencia.dao.ItemDAO
 import com.orientechnologies.orient.core.sql.executor.OResult
@@ -7,7 +8,7 @@ import java.time.LocalDate
 import kotlin.streams.toList
 
 
-class OrientDBItemDAO : OrientDBDAO<Item>(Item::class.java),  ItemDAO {
+class OrientDBItemDAO(private val proveedorDeFechas: ProveedorDeFechas) : OrientDBDAO<Item>(Item::class.java),  ItemDAO {
 
     override fun loMasComprado(): List<Pair<Item, Int>> {
         val query =
@@ -19,7 +20,7 @@ class OrientDBItemDAO : OrientDBDAO<Item>(Item::class.java),  ItemDAO {
                     ORDER BY vecesComprado DESC LIMIT 5
                 """
 
-        return session.query(query, LocalDate.now().minusDays(7))
+        return session.query(query, proveedorDeFechas.haceUnaSemana())
             .stream()
             .map {
                 val item = mapearAEntidad(it)
