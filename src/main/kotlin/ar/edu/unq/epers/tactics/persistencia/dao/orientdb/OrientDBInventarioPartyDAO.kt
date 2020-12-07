@@ -15,11 +15,6 @@ class OrientDBInventarioPartyDAO : OrientDBDAO<InventarioParty>(InventarioParty:
         session.command(query, inventarioParty.monedas, inventarioParty.nombre)
     }
 
-    override fun mapearAEntidad(oResult: OResult) =
-        InventarioParty(
-            oResult.getProperty("nombre"),
-            oResult.getProperty("monedas")
-        )
     override fun losItemsDe(nombreParty: String):List<Item>{
         val query =
             """
@@ -49,15 +44,17 @@ class OrientDBInventarioPartyDAO : OrientDBDAO<InventarioParty>(InventarioParty:
             .map { InventarioParty(nombreParty, it.getProperty("monedas")) }
 
 
-    /** PRIVATE **/
-    override fun mapEntidadDesdeOResult(result: OResult): InventarioParty {
-    override fun mapearAEntidad(result: OResult): InventarioParty {
-        return InventarioParty(result.getProperty("nombre"), result.getProperty("monedas"))
-    }
+    override fun mapearAEntidad(oResult: OResult) =
+        InventarioParty(
+            oResult.getProperty("nombre"),
+            oResult.getProperty("monedas")
+        )
 
-    override fun mensajeDeErrorParaEntidadNoEncontrada(nombreDeParty: String) =
+    /** PRIVATE **/
+
+    fun mensajeDeErrorParaEntidadNoEncontrada(nombreDeParty: String) =
         "No exite una party llamada ${nombreDeParty} en el sistema."
 
-    override fun mensajeDeErrorParaNombreDeEntidadYaRegistrado(nombreDeParty: String) =
+    fun mensajeDeErrorParaNombreDeEntidadYaRegistrado(nombreDeParty: String) =
         "La party ${nombreDeParty} ya está en el sistema."
 }
