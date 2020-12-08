@@ -41,7 +41,8 @@ class TiendaServiceTest {
     val tiendaService = TiendaServicePersistente(
         inventarioPartyDAO,
         OrientDBItemDAO(proveedorDeFechas),
-        OrientDBOperacionesDAO(proveedorDeFechas)
+        OrientDBOperacionesDAO(proveedorDeFechas),
+        PartyServiceImpl(HibernatePartyDAO(), inventarioPartyDAO)
     )
     lateinit var party: Party
 
@@ -81,12 +82,7 @@ class TiendaServiceTest {
     @Test
     fun `party compra item y se le cobra`() {
 
-        val aliado = Aventurero("Jorge")
-        partyService.agregarAventureroAParty(party.id()!!, aliado)
-
-        val peleaId = peleaService.iniciarPelea(party.id()!!, "party enemiga").id()!!
-
-        peleaService.terminarPelea(peleaId)
+        ganarPeleaParaGanarMonedas()
 
         val monedasAntesDeCompra = runTrx { inventarioPartyDAO.recuperar(party.nombre()).monedas }
         val precioDelItem = 200
@@ -108,10 +104,7 @@ class TiendaServiceTest {
 
     @Test
     fun `party compra item y queda registrado`() {
-        val aliado = Aventurero("Jorge")
-        partyService.agregarAventureroAParty(party.id()!!, aliado)
-        val peleaId = peleaService.iniciarPelea(party.id()!!, "party enemiga").id()!!
-        peleaService.terminarPelea(peleaId)
+        ganarPeleaParaGanarMonedas()
 
         val item = tiendaService.registrarItem("bandera flameante", 200)
 
@@ -173,12 +166,7 @@ class TiendaServiceTest {
 
     @Test
     fun `lo mas comprado de la ultima semana es solo frutilla`() {
-        val aliado = Aventurero("Jorge")
-        partyService.agregarAventureroAParty(party.id()!!, aliado)
-
-        val peleaId = peleaService.iniciarPelea(party.id()!!, "party enemiga").id()!!
-
-        peleaService.terminarPelea(peleaId)
+        ganarPeleaParaGanarMonedas()
 
         tiendaService.registrarItem("chocolate", 2)
         tiendaService.registrarItem("banana", 2)
@@ -204,12 +192,7 @@ class TiendaServiceTest {
 
     @Test
      fun `los accesorios de una party con 2 accesorios`() {
-        val aliado = Aventurero("Jorge")
-        partyService.agregarAventureroAParty(party.id()!!,aliado)
-
-        val peleaId = peleaService.iniciarPelea(party.id()!!, "party enemiga").id()!!
-
-        peleaService.terminarPelea(peleaId)
+        ganarPeleaParaGanarMonedas()
 
         tiendaService.registrarItem("chocolate", 2)
         tiendaService.registrarItem("banana", 2)
@@ -233,6 +216,31 @@ class TiendaServiceTest {
         val items = tiendaService.losItemsDe(party.nombre())
 
         assertThat(items).isEmpty()
+    }
+
+    @Test
+    fun `si una party compra un accesorio entonces aparece en la lista de compradores de ese accesorio`() {
+        ganarPeleaParaGanarMonedas()
+
+        val nombreItem = "bandera flameante"
+        tiendaService.registrarItem(nombreItem, 10)
+        tiendaService.registrarCompra(party.nombre(), nombreItem)
+
+        val compradoresDeItem = tiendaService.compradoresDe(nombreItem)
+
+        assertThat(compradoresDeItem)
+            .usingRecursiveFieldByFieldElementComparator()
+            .containsExactly(party)
+    }
+
+    private fun ganarPeleaParaGanarMonedas() {
+        val aliado = Aventurero("Jorge")
+        partyService.agregarAventureroAParty(party.id()!!, aliado)
+
+        val peleaId = peleaService.iniciarPelea(party.id()!!, "party enemiga").id()!!
+
+        peleaService.terminarPelea(peleaId)
+        party = partyService.recuperar(party.id()!!)
     }
 
     private fun comprarNVeces(cantDeCompras: Int, nombreParty: String, nombreItem: String) {

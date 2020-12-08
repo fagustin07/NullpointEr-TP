@@ -6,6 +6,8 @@ import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.service.Direccion
 import ar.edu.unq.epers.tactics.service.Orden
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
+import javax.persistence.NoResultException
 
 class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
 
@@ -58,6 +60,16 @@ class HibernatePartyDAO : HibernateDAO<Party>(Party::class.java), PartyDAO {
         when(orden){
             Orden.VICTORIAS -> return EstadoPartida.GANADA
             else -> return EstadoPartida.PERDIDA
+        }
+    }
+
+    override fun recuperarPorNombre(nombre: String) : Party {
+        return try {
+            createQuery("from Party where nombre = :nombre")
+                .setParameter("nombre", nombre)
+                .singleResult
+        } catch (e: NoResultException) {
+            throw RuntimeException("No existe ${entityType.simpleName} con nombre ${nombre}")
         }
     }
 

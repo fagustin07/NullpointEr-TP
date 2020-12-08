@@ -43,6 +43,18 @@ class OrientDBOperacionesDAO(private val proveedorDeFechas: ProveedorDeFechas): 
             .toList()
     }
 
+    override fun partiesQueCompraron(nombreItem: String): List<InventarioParty> {
+        val query = """
+           select out.nombre, out.monedas from haComprado where in.nombre=? 
+        """
+
+        return session
+            .query(query, nombreItem)
+            .stream()
+            .map { InventarioParty(it.getProperty("out.nombre"), it.getProperty("out.monedas")) }
+            .toList()
+    }
+
     override fun clear() {
         session.command("DELETE EDGE HaComprado")
     }

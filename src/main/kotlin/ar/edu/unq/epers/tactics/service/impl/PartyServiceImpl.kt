@@ -38,6 +38,10 @@ class PartyServiceImpl(val partyDAO: PartyDAO, val inventarioPartyDAO: Inventari
         }
     }
 
+    override fun recuperarPorNombre(nombre: String): Party {
+        return runTrx { partyDAO.recuperarPorNombre(nombre) }
+    }
+
     override fun agregarAventureroAParty(idDeLaParty: Long, aventurero: Aventurero): Aventurero {
         return runTrx {
             partyDAO.ejecutarCon(idDeLaParty) { it.agregarUnAventurero(aventurero) }
