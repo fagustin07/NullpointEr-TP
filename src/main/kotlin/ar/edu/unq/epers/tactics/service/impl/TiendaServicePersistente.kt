@@ -106,5 +106,9 @@ class TiendaServicePersistente(
         }
     }
 
+    override fun itemsEnVenta(): List<Item> {
+        return runTrx { itemDAO.itemsEnVenta() }
+    }
+
 
 }

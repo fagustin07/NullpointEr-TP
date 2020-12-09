@@ -8,4 +8,6 @@ interface ItemDAO: DataDAO {
     fun recuperar(nombre: String): Item
 
     fun loMasComprado(): List<Pair<Item, Int>>
+
+    fun itemsEnVenta():List<Item>
 }

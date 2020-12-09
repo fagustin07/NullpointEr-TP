@@ -19,4 +19,6 @@ interface TiendaService {
     fun compradoresDe(nombreItem: String): List<Party>
 
     fun tradear(nombrePartyVendedora: String, nombrePartyCompradora: String, itemsAVender: List<Item>, monedas: Int)
+
+    fun itemsEnVenta():List<Item>
 }
