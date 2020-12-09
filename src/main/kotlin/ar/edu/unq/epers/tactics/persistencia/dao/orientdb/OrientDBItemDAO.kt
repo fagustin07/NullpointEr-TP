@@ -38,7 +38,7 @@ class OrientDBItemDAO(private val proveedorDeFechas: ProveedorDeFechas) : Orient
     override fun itemsEnVenta(): List<Item> {
         val query =
             """
-                  SELECT * FROM item 
+                  SELECT * FROM Item 
                   WHERE in('haComprado').size() < 20
                   ORDER BY nombre ASC
                 """
@@ -46,8 +46,7 @@ class OrientDBItemDAO(private val proveedorDeFechas: ProveedorDeFechas) : Orient
         return session.query(query)
             .stream()
             .map {
-                val item = mapearAEntidad(it)
-                item
+                 mapearAEntidad(it)
             }
             .toList()
 
