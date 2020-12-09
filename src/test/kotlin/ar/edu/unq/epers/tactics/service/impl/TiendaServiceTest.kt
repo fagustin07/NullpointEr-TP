@@ -368,6 +368,7 @@ class TiendaServiceTest {
         return item
     }
 
+
     private fun ganarPeleaParaGanarMonedas(partyId: Long): Party {
         val aliado = Aventurero("Jorge")
         partyService.agregarAventureroAParty(partyId, aliado)

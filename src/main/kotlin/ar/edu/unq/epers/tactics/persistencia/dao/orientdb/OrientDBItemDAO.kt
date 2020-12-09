@@ -39,7 +39,6 @@ class OrientDBItemDAO(private val proveedorDeFechas: ProveedorDeFechas) : Orient
         val query =
             """
                   SELECT * FROM Item 
-                  WHERE in('haComprado').size() < 20
                   ORDER BY nombre ASC
                 """
 
