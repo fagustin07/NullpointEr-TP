@@ -335,6 +335,13 @@ class TiendaServiceTest {
     }
 
     @Test
+    fun `una tienda inicialmente tiene 0 items en venta`() {
+        val itemsEnVenta = tiendaService.itemsEnVenta()
+
+        assertThat(itemsEnVenta).isEmpty()
+    }
+
+    @Test
     fun `una tienda tiene 3 items en venta`() {
         tiendaService.registrarItem("chocolate", 2)
         tiendaService.registrarItem("banana", 2)
