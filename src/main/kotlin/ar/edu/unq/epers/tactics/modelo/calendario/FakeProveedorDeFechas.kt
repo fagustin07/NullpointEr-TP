@@ -1,14 +1,14 @@
 package ar.edu.unq.epers.tactics.modelo.calendario
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 
-class FakeProveedorDeFechas(private var fecha: LocalDate): ProveedorDeFechas {
+class FakeProveedorDeFechas(private var fecha: LocalDateTime): ProveedorDeFechas {
 
-    override fun ahora() = fecha
+    override fun ahora(): LocalDateTime = fecha
 
-    override fun cambiarFechaActual(nuevaFecha: LocalDate) {
+    override fun cambiarFechaActual(nuevaFecha: LocalDateTime) {
         fecha = nuevaFecha
     }
 
-    override fun haceUnaSemana() = fecha.minusDays(7)
+    override fun haceUnaSemana(): LocalDateTime = fecha.minusDays(7)
 }

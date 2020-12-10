@@ -10,4 +10,6 @@ interface OperacionesDAO: DataDAO {
     fun comprasRealizadasPorParty(nombreDeParty: String): List<Compra>
 
     fun partiesQueCompraron(nombreItem: String): List<InventarioParty>
+
+    fun registrarVentaDe(inventarioParty: InventarioParty, item: Item)
 }

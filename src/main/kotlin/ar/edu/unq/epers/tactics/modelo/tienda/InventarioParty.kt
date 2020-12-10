@@ -15,4 +15,14 @@ class InventarioParty(val nombre: String, var monedas: Int = 0) {
     internal fun adquirirRecompensaDePelea() {
         this.monedas+=500
     }
+
+    fun debitarMonto(monedas: Int) {
+        if (monedas > this.monedas){
+            val monedasFaltantes = monedas - this.monedas
+
+            throw RuntimeException("No puedes debitar '${monedas}', te faltan ${monedasFaltantes} monedas.")
+        } else {
+            this.monedas -= monedas
+        }
+    }
 }

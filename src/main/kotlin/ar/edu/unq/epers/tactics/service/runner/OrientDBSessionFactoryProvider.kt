@@ -22,6 +22,7 @@ class OrientDBSessionFactoryProvider private constructor() {
         if(session.getClass("InventarioParty")==null) session.createVertexClass("InventarioParty")
         if(session.getClass("Item")==null) session.createVertexClass("Item")
         if(session.getClass("haComprado")==null) session.createEdgeClass("haComprado")
+        if(session.getClass("haVendido")==null) session.createEdgeClass("haVendido")
 
         return session
     }

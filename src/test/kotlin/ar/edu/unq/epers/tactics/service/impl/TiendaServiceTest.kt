@@ -1,6 +1,5 @@
 package ar.edu.unq.epers.tactics.service.impl
 
-import ar.edu.unq.epers.tactics.exceptions.*
 import ar.edu.unq.epers.tactics.modelo.tienda.Compra
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
@@ -18,15 +17,16 @@ import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBOperacionesDAO
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner.runTrx
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 class TiendaServiceTest {
 
-    private val NOW = LocalDate.now()
+    private val NOW = LocalDateTime.now().withNano(0)
     private val inventarioPartyDAO: InventarioPartyDAO = OrientDBInventarioPartyDAO()
     private val peleaService = PeleaServiceImpl(
         HibernatePeleaDAO(),
@@ -52,20 +52,20 @@ class TiendaServiceTest {
     }
 
     @Test
-    fun `no se puede registrar un inventario de party con un nombre existente`(){
+    fun `no se puede registrar un inventario de party con un nombre existente`() {
         val exception = assertThrows<RuntimeException> { partyService.crear(party) }
         assertThat(exception.message).isEqualTo("Ya existe un InventarioParty llamado ${party.nombre()} en el sistema.")
     }
 
     @Test
-    fun `no se puede recuperar un inventario de party con un nombre sin registrar`(){
+    fun `no se puede recuperar un inventario de party con un nombre sin registrar`() {
         val exception = assertThrows<RuntimeException> { tiendaService.registrarCompra("Los del fuego", "Item") }
         assertThat(exception.message).isEqualTo("No existe un InventarioParty llamado Los del fuego en el sistema.")
     }
 
     @Test
-    fun `no se puede recuperar un item con un nombre sin registrar`(){
-        val exception = assertThrows<RuntimeException> { tiendaService.registrarCompra("Memories","Lanzallamas") }
+    fun `no se puede recuperar un item con un nombre sin registrar`() {
+        val exception = assertThrows<RuntimeException> { tiendaService.registrarCompra("Memories", "Lanzallamas") }
         assertThat(exception.message).isEqualTo("No existe un Item llamado Lanzallamas en el sistema.")
     }
 
@@ -82,7 +82,7 @@ class TiendaServiceTest {
     @Test
     fun `party compra item y se le cobra`() {
 
-        ganarPeleaParaGanarMonedas()
+        party = ganarPeleaParaGanarMonedas(party.id()!!)
 
         val monedasAntesDeCompra = runTrx { inventarioPartyDAO.recuperar(party.nombre()).monedas }
         val precioDelItem = 200
@@ -104,23 +104,26 @@ class TiendaServiceTest {
 
     @Test
     fun `party compra item y queda registrado`() {
-        ganarPeleaParaGanarMonedas()
+        party = ganarPeleaParaGanarMonedas(party.id()!!)
 
         val item = tiendaService.registrarItem("bandera flameante", 200)
 
         tiendaService.registrarCompra(party.nombre(), "bandera flameante")
 
 
-        val comprasEsperadas = listOf(Compra(item, NOW))
+        val comprasEsperadas = listOf(Compra(item, proveedorDeFechas.ahora()))
         val comprasRealizadas = tiendaService.comprasRealizadasPor(party.nombre())
-        assertThat(comprasRealizadas).usingRecursiveComparison().isEqualTo(comprasEsperadas)
+        assertThat(comprasRealizadas)
+            .usingRecursiveComparison()
+            .isEqualTo(comprasEsperadas)
     }
 
     @Test
-    fun `se levanta una excepcion al querer comprar un item de mas valor que las monedas que tiene party en su inventario`(){
+    fun `se levanta una excepcion al querer comprar un item de mas valor que las monedas que tiene party en su inventario`() {
         tiendaService.registrarItem("bandera flameante", 10)
 
-        val exception = assertThrows<RuntimeException> { tiendaService.registrarCompra(party.nombre(),"bandera flameante") }
+        val exception =
+            assertThrows<RuntimeException> { tiendaService.registrarCompra(party.nombre(), "bandera flameante") }
         assertThat(exception.message).isEqualTo("No puedes comprar 'bandera flameante', te faltan 10 monedas.")
     }
 
@@ -166,14 +169,14 @@ class TiendaServiceTest {
 
     @Test
     fun `lo mas comprado de la ultima semana es solo frutilla`() {
-        ganarPeleaParaGanarMonedas()
+        party = ganarPeleaParaGanarMonedas(party.id()!!)
 
         tiendaService.registrarItem("chocolate", 2)
         tiendaService.registrarItem("banana", 2)
         tiendaService.registrarItem("frutilla", 2)
 
 
-        proveedorDeFechas.cambiarFechaActual(LocalDate.of(1999, 10, 29))
+        proveedorDeFechas.cambiarFechaActual(LocalDateTime.of(1999, 10, 29,12,30,11))
         comprarNVeces(5, party.nombre(), "chocolate")
         comprarNVeces(15, party.nombre(), "banana")
         comprarNVeces(12, party.nombre(), "frutilla")
@@ -191,20 +194,22 @@ class TiendaServiceTest {
     }
 
     @Test
-     fun `los accesorios de una party con 2 accesorios`() {
-        ganarPeleaParaGanarMonedas()
+    fun `los accesorios de una party con 2 accesorios`() {
+        party = ganarPeleaParaGanarMonedas(party.id()!!)
 
         tiendaService.registrarItem("chocolate", 2)
         tiendaService.registrarItem("banana", 2)
         tiendaService.registrarItem("frutilla", 2)
 
-        tiendaService.registrarCompra(party.nombre(),"chocolate")
-        tiendaService.registrarCompra(party.nombre(),"frutilla")
+        tiendaService.registrarCompra(party.nombre(), "chocolate")
+        tiendaService.registrarCompra(party.nombre(), "frutilla")
 
         val items = tiendaService.losItemsDe(party.nombre())
+        val itemsEsperados = listOf(Item("chocolate",2), Item("frutilla",2))
 
-        assertThat(items[0].nombre).isEqualTo("chocolate")
-        assertThat(items[1].nombre).isEqualTo("frutilla")
+        assertThat(items)
+            .usingFieldByFieldElementComparator()
+            .containsAll(itemsEsperados)
     }
 
     @Test
@@ -220,7 +225,7 @@ class TiendaServiceTest {
 
     @Test
     fun `si una party compra un accesorio entonces aparece en la lista de compradores de ese accesorio`() {
-        ganarPeleaParaGanarMonedas()
+        party = ganarPeleaParaGanarMonedas(party.id()!!)
 
         val nombreItem = "bandera flameante"
         tiendaService.registrarItem(nombreItem, 10)
@@ -233,14 +238,119 @@ class TiendaServiceTest {
             .containsExactly(party)
     }
 
-    private fun ganarPeleaParaGanarMonedas() {
-        val aliado = Aventurero("Jorge")
-        partyService.agregarAventureroAParty(party.id()!!, aliado)
+    @Test
+    fun `si una party le vende un item a otra, entonces la party vendedora ya no tiene ese item`() {
+        var partyCompradora = partyService.crear(Party("Dalasha", "url"))
+        partyCompradora = ganarPeleaParaGanarMonedas(partyCompradora.id()!!)
+        party = ganarPeleaParaGanarMonedas(party.id()!!)
+        val item = comprarItem()
 
-        val peleaId = peleaService.iniciarPelea(party.id()!!, "party enemiga").id()!!
+        proveedorDeFechas.cambiarFechaActual(LocalDateTime.now())
+        tiendaService.tradear(party.nombre(), partyCompradora.nombre(), listOf(item), 10)
+
+        assertThat(tiendaService.losItemsDe(party.nombre()))
+            .usingRecursiveFieldByFieldElementComparator()
+            .doesNotContain(item)
+    }
+
+    @Test
+    fun `si una party le vende un item a otra, entonces la party compradora tiene ese item`() {
+        var partyCompradora = partyService.crear(Party("Dalasha", "url"))
+        partyCompradora = ganarPeleaParaGanarMonedas(partyCompradora.id()!!)
+        party = ganarPeleaParaGanarMonedas(party.id()!!)
+        val item = comprarItem()
+
+        tiendaService.tradear(party.nombre(), partyCompradora.nombre(), listOf(item), 10)
+
+        assertThat(tiendaService.losItemsDe(partyCompradora.nombre()))
+            .usingRecursiveFieldByFieldElementComparator()
+            .contains(item)
+    }
+
+    @Test
+    fun `si una party le vende un item a otra, entonces la party compradora gasta las monedas`() {
+        var partyCompradora = partyService.crear(Party("Dalasha", "url"))
+        party = ganarPeleaParaGanarMonedas(party.id()!!)
+        partyCompradora = ganarPeleaParaGanarMonedas(partyCompradora.id()!!)
+        val monedasAntesDeCompra = runTrx { inventarioPartyDAO.recuperar(partyCompradora.nombre()).monedas }
+        val item = comprarItem()
+
+        val monedasAIntercambiar = 20
+        tiendaService.tradear(party.nombre(), partyCompradora.nombre(), listOf(item), monedasAIntercambiar)
+
+        val monedasLuegoDeCompra = runTrx { inventarioPartyDAO.recuperar(partyCompradora.nombre()).monedas }
+        assertThat(monedasLuegoDeCompra)
+            .isEqualTo(monedasAntesDeCompra - monedasAIntercambiar)
+    }
+
+    @Test
+    fun `si una party le vende un item a otra, entonces la party vendedora recibe las monedas`() {
+        var partyCompradora = partyService.crear(Party("Dalasha", "url"))
+        party = ganarPeleaParaGanarMonedas(party.id()!!)
+        partyCompradora = ganarPeleaParaGanarMonedas(partyCompradora.id()!!)
+        val monedasAntesDeCompra = runTrx { inventarioPartyDAO.recuperar(party.nombre()).monedas }
+        val item = comprarItem()
+
+        tiendaService.tradear(party.nombre(), partyCompradora.nombre(), listOf(item), 20)
+
+        val monedasLuegoDeCompra = runTrx { inventarioPartyDAO.recuperar(party.nombre()).monedas }
+        assertThat(monedasLuegoDeCompra)
+            .isEqualTo(monedasAntesDeCompra + item.precio)
+    }
+
+    @Test
+    fun `una party no puede vender un item que no tiene`() {
+        var partyCompradora = partyService.crear(Party("Dalasha", "url"))
+        partyCompradora = ganarPeleaParaGanarMonedas(partyCompradora.id()!!)
+
+        val item = Item("Item que no posee", 10)
+        tiendaService.registrarItem(item.nombre(), item.precio())
+        assertThatThrownBy { tiendaService.tradear(party.nombre(), partyCompradora.nombre(), listOf(item), 10) }
+            .hasMessageContaining("La party debe ser dueña de todos los items que pretende vender")
+    }
+
+    @Test
+    fun `una party no puede comprar un item a otra si no tiene monedas suficientes`() {
+        val partyCompradora = partyService.crear(Party("Dalasha", "url"))
+        ganarPeleaParaGanarMonedas(party.id()!!)
+        val item = comprarItem()
+
+        assertThatThrownBy{ tiendaService.tradear(party.nombre(), partyCompradora.nombre(), listOf(item), 10) }
+            .hasMessageContaining("No puedes debitar '10', te faltan 10 monedas.")
+    }
+
+    @Test
+    fun `si una party vende un item y luego lo vuelve a comprar, vuelve a estar entre sus items`() {
+        var partyCompradora = partyService.crear(Party("Dalasha", "url"))
+        partyCompradora = ganarPeleaParaGanarMonedas(partyCompradora.id()!!)
+        party = ganarPeleaParaGanarMonedas(party.id()!!)
+        val item = comprarItem()
+
+        tiendaService.tradear(party.nombre(), partyCompradora.nombre(), listOf(item), 10)
+
+        proveedorDeFechas.cambiarFechaActual(LocalDateTime.now())
+        tiendaService.registrarCompra(party.nombre(), item.nombre)
+
+        assertThat(tiendaService.losItemsDe(party.nombre()))
+            .usingRecursiveFieldByFieldElementComparator()
+            .contains(item)
+    }
+
+    private fun comprarItem(): Item {
+        val nombreItem = "bandera flameante"
+        val item = tiendaService.registrarItem(nombreItem, 10)
+        tiendaService.registrarCompra(party.nombre(), nombreItem)
+        return item
+    }
+
+    private fun ganarPeleaParaGanarMonedas(partyId: Long): Party {
+        val aliado = Aventurero("Jorge")
+        partyService.agregarAventureroAParty(partyId, aliado)
+
+        val peleaId = peleaService.iniciarPelea(partyId, "party enemiga").id()!!
 
         peleaService.terminarPelea(peleaId)
-        party = partyService.recuperar(party.id()!!)
+        return partyService.recuperar(partyId)
     }
 
     private fun comprarNVeces(cantDeCompras: Int, nombreParty: String, nombreItem: String) {

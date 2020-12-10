@@ -2,6 +2,7 @@ package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.modelo.tienda.Compra
+import ar.edu.unq.epers.tactics.modelo.tienda.InventarioParty
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.persistencia.dao.InventarioPartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.ItemDAO
@@ -9,6 +10,7 @@ import ar.edu.unq.epers.tactics.persistencia.dao.OperacionesDAO
 import ar.edu.unq.epers.tactics.service.PartyService
 import ar.edu.unq.epers.tactics.service.TiendaService
 import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner.runTrx
+import java.lang.RuntimeException
 
 class TiendaServicePersistente(
     protected val inventarioPartyDAO: InventarioPartyDAO,
@@ -46,6 +48,62 @@ class TiendaServicePersistente(
     override fun compradoresDe(nombreItem: String): List<Party> {
         val inventarios = runTrx { operacionesDAO.partiesQueCompraron(nombreItem) }
         return inventarios.map { partyService.recuperarPorNombre(it.nombre) }
+    }
+
+    override fun tradear(
+        nombrePartyVendedora: String,
+        nombrePartyCompradora: String,
+        itemsAVender: List<Item>,
+        monedas: Int
+    ) {
+        lateinit var inventarioPartyVendedora: InventarioParty
+        lateinit var inventarioPartyCompradora: InventarioParty
+        verificarQueLaPartyVendedoraPoseaTodosLosItems(nombrePartyVendedora, itemsAVender)
+        runTrx {
+            inventarioPartyVendedora = inventarioPartyDAO.recuperar(nombrePartyVendedora)
+            inventarioPartyCompradora = inventarioPartyDAO.recuperar(nombrePartyCompradora)
+
+            registrarVentaDeItems(itemsAVender, inventarioPartyVendedora, monedas, nombrePartyCompradora)
+
+            inventarioPartyCompradora.debitarMonto(monedas)
+            inventarioPartyDAO.actualizar(inventarioPartyCompradora)
+        }
+
+
+    }
+
+    private fun registrarVentaDeItems(
+        itemsAVender: List<Item>,
+        inventarioPartyVendedora: InventarioParty,
+        monedas: Int,
+        nombrePartyCompradora: String
+    ) {
+        itemsAVender.forEach {
+            this.registrarVenta(inventarioPartyVendedora, it, monedas)
+            this.registrarCompraAParty(nombrePartyCompradora, it.nombre())
+        }
+    }
+
+
+    private fun registrarCompraAParty(nombreParty: String, nombreDeItemAComprar: String) {
+        val party = inventarioPartyDAO.recuperar(nombreParty)
+        val item = itemDAO.recuperar(nombreDeItemAComprar)
+
+        operacionesDAO.registrarCompraDe(party, item)
+    }
+
+    private fun registrarVenta(inventarioPartyVendedora: InventarioParty, item: Item, monedas: Int) {
+        inventarioPartyVendedora.monedas += monedas
+
+        inventarioPartyDAO.actualizar(inventarioPartyVendedora)
+        operacionesDAO.registrarVentaDe(inventarioPartyVendedora, item)
+    }
+
+    private fun verificarQueLaPartyVendedoraPoseaTodosLosItems(nombreParty: String, itemsAVender: List<Item>) {
+        val items = losItemsDe(nombreParty)
+        if (!items.containsAll(itemsAVender)) {
+            throw RuntimeException("La party debe ser dueña de todos los items que pretende vender")
+        }
     }
 
 

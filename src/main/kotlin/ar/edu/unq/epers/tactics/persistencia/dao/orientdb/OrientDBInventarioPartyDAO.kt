@@ -16,16 +16,27 @@ class OrientDBInventarioPartyDAO : OrientDBDAO<InventarioParty>(InventarioParty:
     }
 
     override fun losItemsDe(nombreParty: String):List<Item>{
+
         val query =
-            """
-                    SELECT * 
-                    FROM Item 
-                    WHERE @rid in 
-                    (SELECT out() FROM InventarioParty WHERE nombre = ?)
-                    ORDER BY nombre asc
+            """ 
+                SELECT FROM ITEM
+                LET
+                ${'$'}ultimaCompra = (SELECT FROM HaComprado WHERE out.nombre = ? ORDER BY fechaDeCompra DESC LIMIT 1),
+                ${'$'}ultimaVenta = (SELECT FROM HaVendido WHERE out.nombre = ? ORDER BY fechaDeVenta DESC LIMIT 1),
+                ${'$'}fechaUltimaCompra = first(${'$'}ultimaCompra).fechaDeCompra.asDatetime(),
+                ${'$'}fechaUltimaVenta = first(${'$'}ultimaVenta).fechaDeVenta.asDatetime()
+                
+                WHERE 
+                ( ${'$'}fechaUltimaCompra IS NOT NULL AND ${'$'}fechaUltimaVenta IS NULL )
+                OR
+                ( ${'$'}fechaUltimaCompra IS NOT NULL AND
+                  ${'$'}fechaUltimaVenta IS NOT NULL AND
+                  ${'$'}fechaUltimaCompra  >  ${'$'}fechaUltimaVenta )
+
+                ORDER BY nombre
                 """
 
-        return session.query(query, nombreParty)
+        return session.query(query, nombreParty, nombreParty)
             .stream()
             .map {
                 Item(it.getProperty("nombre"), it.getProperty("precio"))
@@ -49,12 +60,4 @@ class OrientDBInventarioPartyDAO : OrientDBDAO<InventarioParty>(InventarioParty:
             oResult.getProperty("nombre"),
             oResult.getProperty("monedas")
         )
-
-    /** PRIVATE **/
-
-    fun mensajeDeErrorParaEntidadNoEncontrada(nombreDeParty: String) =
-        "No exite una party llamada ${nombreDeParty} en el sistema."
-
-    fun mensajeDeErrorParaNombreDeEntidadYaRegistrado(nombreDeParty: String) =
-        "La party ${nombreDeParty} ya está en el sistema."
 }

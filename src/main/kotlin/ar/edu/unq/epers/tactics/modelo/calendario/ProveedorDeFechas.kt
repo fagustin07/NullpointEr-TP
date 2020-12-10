@@ -1,12 +1,12 @@
 package ar.edu.unq.epers.tactics.modelo.calendario
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 interface ProveedorDeFechas {
 
-    fun ahora(): LocalDate
+    fun ahora(): LocalDateTime
 
-    fun cambiarFechaActual(nuevaFecha: LocalDate)
+    fun cambiarFechaActual(nuevaFecha: LocalDateTime)
 
-    fun haceUnaSemana(): LocalDate
+    fun haceUnaSemana(): LocalDateTime
 }

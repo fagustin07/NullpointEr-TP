@@ -4,7 +4,6 @@ import ar.edu.unq.epers.tactics.modelo.calendario.ProveedorDeFechas
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.persistencia.dao.ItemDAO
 import com.orientechnologies.orient.core.sql.executor.OResult
-import java.time.LocalDate
 import kotlin.streams.toList
 
 
