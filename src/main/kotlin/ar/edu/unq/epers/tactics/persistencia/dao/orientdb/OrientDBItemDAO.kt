@@ -7,7 +7,7 @@ import com.orientechnologies.orient.core.sql.executor.OResult
 import kotlin.streams.toList
 
 
-class OrientDBItemDAO(private val proveedorDeFechas: ProveedorDeFechas) : OrientDBDAO<Item>(Item::class.java),  ItemDAO {
+class OrientDBItemDAO(private val proveedorDeFechas: ProveedorDeFechas) : OrientDBDAO<Item>(Item::class.java), ItemDAO {
 
     override fun loMasComprado(): List<Pair<Item, Int>> {
         val query =
@@ -34,4 +34,20 @@ class OrientDBItemDAO(private val proveedorDeFechas: ProveedorDeFechas) : Orient
             oResult.getProperty("nombre"),
             oResult.getProperty("precio")
         )
+
+    override fun itemsEnVenta(): List<Item> {
+        val query =
+            """
+                  SELECT * FROM Item 
+                  ORDER BY nombre ASC
+                """
+
+        return session.query(query)
+            .stream()
+            .map {
+                 mapearAEntidad(it)
+            }
+            .toList()
+
+    }
 }

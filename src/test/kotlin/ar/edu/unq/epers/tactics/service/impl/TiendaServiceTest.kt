@@ -1,9 +1,9 @@
 package ar.edu.unq.epers.tactics.service.impl
 
-import ar.edu.unq.epers.tactics.modelo.tienda.Compra
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.modelo.calendario.FakeProveedorDeFechas
+import ar.edu.unq.epers.tactics.modelo.tienda.Compra
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.persistencia.dao.InventarioPartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
@@ -113,9 +113,7 @@ class TiendaServiceTest {
 
         val comprasEsperadas = listOf(Compra(item, proveedorDeFechas.ahora()))
         val comprasRealizadas = tiendaService.comprasRealizadasPor(party.nombre())
-        assertThat(comprasRealizadas)
-            .usingRecursiveComparison()
-            .isEqualTo(comprasEsperadas)
+        assertThat(comprasRealizadas).usingRecursiveComparison().isEqualTo(comprasEsperadas)
     }
 
     @Test
@@ -336,12 +334,33 @@ class TiendaServiceTest {
             .contains(item)
     }
 
+    @Test
+    fun `una tienda inicialmente tiene 0 items en venta`() {
+        val itemsEnVenta = tiendaService.itemsEnVenta()
+
+        assertThat(itemsEnVenta).isEmpty()
+    }
+
+    @Test
+    fun `una tienda tiene 3 items en venta`() {
+        tiendaService.registrarItem("chocolate", 2)
+        tiendaService.registrarItem("banana", 2)
+        tiendaService.registrarItem("frutilla", 2)
+
+        val itemsEnTienda = tiendaService.itemsEnVenta()
+
+        assertThat(itemsEnTienda[0].nombre).isEqualTo("banana")
+        assertThat(itemsEnTienda[1].nombre).isEqualTo("chocolate")
+        assertThat(itemsEnTienda[2].nombre).isEqualTo("frutilla")
+    }
+
     private fun comprarItem(): Item {
         val nombreItem = "bandera flameante"
         val item = tiendaService.registrarItem(nombreItem, 10)
         tiendaService.registrarCompra(party.nombre(), nombreItem)
         return item
     }
+
 
     private fun ganarPeleaParaGanarMonedas(partyId: Long): Party {
         val aliado = Aventurero("Jorge")
