@@ -19,6 +19,7 @@ Nos asignaron al equipo de backend, encargado de implementar la lógica de negoc
 - [Entrega 2 - ORM - Hibernate - Hito 2](enunciado/entrega2/entrega2.2.md)
 - [Entrega 3 - NoSQL - Neo4j](enunciado/entrega3/entrega3.md)
 - [Entrega 4 - NoSQL - MongoDB](enunciado/entrega4/entrega4.md)
+- [Entrega 5 - NoSQL - Investigacion - OrientDB](enunciado/entrega5/entrega5.md)
 
 ## Consideraciones
 - Se entregará utilizando git. El grupo deberá subir el código del TP a github, hacer un tag y notificarnos de dicho tag para que podamos corregirlo. [Acá](https://sites.google.com/site/estrategiasdepersistencia/material/entregando-con-git) tienen un breve tutorial sobre como hacerlo.
