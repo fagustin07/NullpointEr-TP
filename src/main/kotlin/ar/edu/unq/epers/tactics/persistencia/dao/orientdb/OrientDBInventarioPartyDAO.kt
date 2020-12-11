@@ -12,10 +12,6 @@ class OrientDBInventarioPartyDAO : OrientDBDAO<InventarioParty>(InventarioParty:
         session.command(query, inventarioParty.monedas, inventarioParty.nombre)
     }
 
-    override fun clear() {
-        session.command("DELETE VERTEX InventarioParty")
-    }
-
     override fun mapearAEntidad(oResult: OResult) =
         InventarioParty(
             oResult.getProperty("nombre"),
