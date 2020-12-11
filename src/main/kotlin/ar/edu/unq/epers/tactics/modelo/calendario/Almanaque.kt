@@ -6,7 +6,5 @@ interface Almanaque {
 
     fun ahora(): LocalDateTime
 
-    fun cambiarFechaActual(nuevaFecha: LocalDateTime)
-
     fun haceUnaSemana(): LocalDateTime
 }
