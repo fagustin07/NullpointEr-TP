@@ -10,4 +10,5 @@ interface PartyDAO: DAO<Party> {
     fun eliminarTodo()
     fun recuperarOrdenadas(orden: Orden, direccion: Direccion, pagina: Int): List<Party>
     fun cantidadDePartys(): Long
+    fun recuperarPorNombre(nombre: String): Party
 }

@@ -11,6 +11,7 @@ interface PartyService {
     fun agregarAventureroAParty(idDeLaParty: Long, aventurero: Aventurero) : Aventurero
     fun eliminarTodo()
     fun recuperarOrdenadas(orden: Orden, direccion: Direccion, pagina:Int?):PartyPaginadas
+    fun recuperarPorNombre(nombre: String): Party
 }
 
 class PartyPaginadas (var parties:List<Party>, var total:Int)

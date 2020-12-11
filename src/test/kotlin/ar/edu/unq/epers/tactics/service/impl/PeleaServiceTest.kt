@@ -4,7 +4,6 @@ import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.EstadoPartida
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.modelo.Tactica
-import ar.edu.unq.epers.tactics.modelo.dado.DadoDe20
 import ar.edu.unq.epers.tactics.modelo.dado.DadoSimulado
 import ar.edu.unq.epers.tactics.modelo.enums.Accion
 import ar.edu.unq.epers.tactics.modelo.enums.Criterio
@@ -14,6 +13,8 @@ import ar.edu.unq.epers.tactics.modelo.habilidades.*
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBInventarioPartyDAO
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -27,11 +28,11 @@ internal class PeleaServiceTest {
     val peleaDAO = HibernatePeleaDAO()
     val partyDAO = HibernatePartyDAO()
     val aventureroDAO = HibernateAventureroDAO()
-    val peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO)
-    val partyService = PartyServiceImpl(partyDAO)
+    val peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO, OrientDBInventarioPartyDAO())
+    val partyService = PartyServiceImpl(partyDAO, OrientDBInventarioPartyDAO())
     val aventureroService = AventureroServiceImpl(aventureroDAO, partyDAO)
     lateinit var party: Party
-
+    var miniId = 0
     val nombreDePartyEnemiga = "Nombre de party enemiga"
 
     @BeforeEach
@@ -360,10 +361,11 @@ internal class PeleaServiceTest {
     }
 
     private fun crearPeleas() {
-        val partyEnemiga = Party("Los capos", "URL")
+        val partyEnemiga = Party("Los capos${miniId}", "URL")
         partyService.crear(partyEnemiga)
         val pelea = peleaService.iniciarPelea(party.id()!!, partyEnemiga.nombre())
         peleaService.terminarPelea(pelea.id()!!)
+        miniId+=1
     }
 
     @Test
@@ -430,5 +432,6 @@ internal class PeleaServiceTest {
     @AfterEach
     fun tearDown() {
         partyDAO.eliminarTodo()
+        OrientDBDataDAO().clear()
     }
 }

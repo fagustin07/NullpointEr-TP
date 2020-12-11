@@ -8,6 +8,7 @@ import ar.edu.unq.epers.tactics.modelo.enums.TipoDeReceptor
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBInventarioPartyDAO
 import ar.edu.unq.epers.tactics.service.AventureroLeaderboardService
 import ar.edu.unq.epers.tactics.service.AventureroService
 import ar.edu.unq.epers.tactics.service.PartyService
@@ -23,13 +24,15 @@ class Factory {
     private val peleaService: PeleaService
     private val partyService: PartyService
     private val aventureroService : AventureroService
+    private var miniId = 0
+
     init {
         val aventureroDAO = HibernateAventureroDAO()
         val peleaDAO = HibernatePeleaDAO()
         val partyDAO = HibernatePartyDAO()
-        partyService = PartyServiceImpl(partyDAO)
+        partyService = PartyServiceImpl(partyDAO, OrientDBInventarioPartyDAO())
         leaderboardService = AventureroLeaderboardServiceImpl(aventureroDAO)
-        peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO)
+        peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO, OrientDBInventarioPartyDAO())
         aventureroService = AventureroServiceImpl(aventureroDAO,partyDAO)
     }
 
@@ -79,8 +82,9 @@ class Factory {
     }
 
     fun nuevaPartyPersistida(): Long {
-        val party = Party("Nombre de party", "/party.jpg")
+        val party = Party("Nombre de party${miniId}", "/party.jpg")
         val partyId = partyService.crear(party).id()!!
+        this.miniId+=1
         return partyId
     }
 

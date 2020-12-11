@@ -1,15 +1,16 @@
 package ar.edu.unq.epers.tactics.spring.configuration
 
 
+import ar.edu.unq.epers.tactics.modelo.calendario.AlmanaqueReal
 import ar.edu.unq.epers.tactics.persistencia.dao.*
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBInventarioPartyDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBItemDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBOperacionesDAO
 import ar.edu.unq.epers.tactics.service.*
-import ar.edu.unq.epers.tactics.service.impl.AventureroLeaderboardServiceImpl
-import ar.edu.unq.epers.tactics.service.impl.AventureroServiceImpl
-import ar.edu.unq.epers.tactics.service.impl.PeleaServiceImpl
-import ar.edu.unq.epers.tactics.service.impl.PartyServiceImpl
+import ar.edu.unq.epers.tactics.service.impl.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -42,8 +43,23 @@ class AppConfiguration {
     }
 
     @Bean
-    fun partyService(partyDAO: PartyDAO) : PartyService {
-        return PartyServiceImpl(partyDAO)
+    fun itemDAO(): ItemDAO {
+        return OrientDBItemDAO(AlmanaqueReal())
+    }
+
+    @Bean
+    fun inventarioPartyDAO(): InventarioPartyDAO {
+        return OrientDBInventarioPartyDAO()
+    }
+
+    @Bean
+    fun operacionesDAO(): OperacionesDAO {
+        return OrientDBOperacionesDAO(AlmanaqueReal())
+    }
+
+    @Bean
+    fun partyService(partyDAO: PartyDAO, inventarioPartyDAO: InventarioPartyDAO) : PartyService {
+        return PartyServiceImpl(partyDAO, inventarioPartyDAO)
     }
 
     @Bean
@@ -57,8 +73,12 @@ class AppConfiguration {
     }
 
     @Bean
-    fun fightService(peleaDAO: PeleaDAO, partyDAO: PartyDAO, aventureroDAO: AventureroDAO) : PeleaService {
-        return PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO)
+    fun fightService(peleaDAO: PeleaDAO, partyDAO: PartyDAO, aventureroDAO: AventureroDAO, inventarioPartyDAO: InventarioPartyDAO) : PeleaService {
+        return PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO, inventarioPartyDAO)
     }
 
+    @Bean
+    fun tiendaService(inventarioPartyDAO: InventarioPartyDAO, itemDAO: ItemDAO, operacionesDAO: OperacionesDAO, partyService: PartyService): TiendaService {
+        return TiendaServicePersistente(inventarioPartyDAO, itemDAO, operacionesDAO, partyService)
+    }
 }

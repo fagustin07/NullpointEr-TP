@@ -11,7 +11,6 @@ class HabilidadNulaTest {
     fun `no altera el estado del aventurero`() {
         val aventurero = Aventurero("Pepe")
         val manaInicial = aventurero.mana()
-        val dañoRecibido = aventurero.dañoRecibido()
 
         HabilidadNula.para(aventurero, aventurero).resolversePara(aventurero)
 

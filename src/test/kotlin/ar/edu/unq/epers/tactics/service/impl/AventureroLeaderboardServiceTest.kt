@@ -1,6 +1,7 @@
 package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
+import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
 import ar.edu.unq.epers.tactics.service.AventureroLeaderboardService
 import ar.edu.unq.epers.tactics.service.AventureroService
 import ar.edu.unq.epers.tactics.service.PartyService
@@ -216,5 +217,6 @@ class AventureroLeaderboardServiceTest {
     @AfterEach
     fun tearDown() {
         partyService.eliminarTodo()
+        OrientDBDataDAO().clear()
     }
 }
