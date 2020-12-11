@@ -2,7 +2,7 @@ package ar.edu.unq.epers.tactics.modelo.calendario
 
 import java.time.LocalDateTime
 
-class ProveedorDeFechasReal : ProveedorDeFechas {
+class AlmanaqueReal : Almanaque {
     override fun ahora(): LocalDateTime = LocalDateTime.now()
 
     override fun cambiarFechaActual(nuevaFecha: LocalDateTime) {}

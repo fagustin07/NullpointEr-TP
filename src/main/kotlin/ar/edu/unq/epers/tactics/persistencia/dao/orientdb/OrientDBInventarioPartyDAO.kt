@@ -4,8 +4,6 @@ import ar.edu.unq.epers.tactics.modelo.tienda.InventarioParty
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.persistencia.dao.InventarioPartyDAO
 import com.orientechnologies.orient.core.sql.executor.OResult
-import com.orientechnologies.orient.core.record.ORecord
-import java.util.*
 import kotlin.streams.toList
 
 class OrientDBInventarioPartyDAO : OrientDBDAO<InventarioParty>(InventarioParty::class.java), InventarioPartyDAO {
@@ -16,7 +14,6 @@ class OrientDBInventarioPartyDAO : OrientDBDAO<InventarioParty>(InventarioParty:
     }
 
     override fun losItemsDe(nombreParty: String):List<Item>{
-
         val query =
             """ 
                 SELECT FROM ITEM
@@ -38,22 +35,13 @@ class OrientDBInventarioPartyDAO : OrientDBDAO<InventarioParty>(InventarioParty:
 
         return session.query(query, nombreParty, nombreParty)
             .stream()
-            .map {
-                Item(it.getProperty("nombre"), it.getProperty("precio"))
-            }
+            .map { Item(it.getProperty("nombre"), it.getProperty("precio")) }
             .toList()
     }
 
     override fun clear() {
         session.command("DELETE VERTEX InventarioParty")
     }
-
-    override fun intentarRecuperar(nombreParty: String): Optional<InventarioParty> =
-        session.query("SELECT FROM InventarioParty WHERE nombre = ?", nombreParty)
-            .stream()
-            .findFirst()
-            .map { InventarioParty(nombreParty, it.getProperty("monedas")) }
-
 
     override fun mapearAEntidad(oResult: OResult) =
         InventarioParty(

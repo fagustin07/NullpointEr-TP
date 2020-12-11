@@ -2,7 +2,7 @@ package ar.edu.unq.epers.tactics.modelo.calendario
 
 import java.time.LocalDateTime
 
-interface ProveedorDeFechas {
+interface Almanaque {
 
     fun ahora(): LocalDateTime
 

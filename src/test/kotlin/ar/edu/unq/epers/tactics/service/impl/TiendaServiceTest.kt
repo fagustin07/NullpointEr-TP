@@ -2,7 +2,7 @@ package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
-import ar.edu.unq.epers.tactics.modelo.calendario.FakeProveedorDeFechas
+import ar.edu.unq.epers.tactics.modelo.calendario.AlmanaqueSimulado
 import ar.edu.unq.epers.tactics.modelo.tienda.Compra
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.persistencia.dao.InventarioPartyDAO
@@ -35,7 +35,7 @@ class TiendaServiceTest {
         inventarioPartyDAO
     )
 
-    private val proveedorDeFechas = FakeProveedorDeFechas(NOW)
+    private val proveedorDeFechas = AlmanaqueSimulado(NOW)
     private val partyService = PartyServiceImpl(HibernatePartyDAO(), inventarioPartyDAO)
 
     val tiendaService = TiendaServicePersistente(

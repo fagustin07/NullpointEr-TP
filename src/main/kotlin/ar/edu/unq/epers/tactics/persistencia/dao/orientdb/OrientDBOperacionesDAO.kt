@@ -1,17 +1,15 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 
-import ar.edu.unq.epers.tactics.modelo.calendario.ProveedorDeFechas
+import ar.edu.unq.epers.tactics.modelo.calendario.Almanaque
 import ar.edu.unq.epers.tactics.modelo.tienda.Compra
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.modelo.tienda.InventarioParty
 import ar.edu.unq.epers.tactics.persistencia.dao.OperacionesDAO
 import ar.edu.unq.epers.tactics.service.runner.OrientDBSessionFactoryProvider
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import kotlin.streams.toList
 
-class OrientDBOperacionesDAO(private val proveedorDeFechas: ProveedorDeFechas): OperacionesDAO {
+class OrientDBOperacionesDAO(private val almanaque: Almanaque): OperacionesDAO {
     val session get() = OrientDBSessionFactoryProvider.instance.session
 
     override fun registrarCompraDe(inventarioParty: InventarioParty, item: Item) {
@@ -47,7 +45,7 @@ class OrientDBOperacionesDAO(private val proveedorDeFechas: ProveedorDeFechas): 
 
     override fun partiesQueCompraron(nombreItem: String): List<InventarioParty> {
         val query = """
-           select out.nombre, out.monedas from haComprado where in.nombre=? 
+           SELECT out.nombre, out.monedas FROM haComprado WHERE in.nombre=? 
         """
 
         return session
@@ -69,7 +67,7 @@ class OrientDBOperacionesDAO(private val proveedorDeFechas: ProveedorDeFechas): 
         session.command(query, inventarioParty.nombre, item.nombre(), this.fechaActualParaGuardarEnDb())
     }
 
-    private fun fechaActualParaGuardarEnDb() = proveedorDeFechas.ahora().toString().replace('T', ' ')
+    private fun fechaActualParaGuardarEnDb() = almanaque.ahora().toString().replace('T', ' ')
 
     override fun clear() {
         session.command("DELETE EDGE HaComprado")

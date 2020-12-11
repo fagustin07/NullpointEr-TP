@@ -1,13 +1,16 @@
 package ar.edu.unq.epers.tactics.persistencia.dao.orientdb
 
+import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.service.runner.OrientDBSessionFactoryProvider
 import com.orientechnologies.orient.core.db.ODatabaseSession
 import com.orientechnologies.orient.core.record.ORecord
 import com.orientechnologies.orient.core.record.OVertex
+import com.orientechnologies.orient.core.record.impl.ODocument
 import com.orientechnologies.orient.core.sql.executor.OResult
 import java.lang.RuntimeException
 import java.util.*
 import kotlin.collections.fold
+import kotlin.streams.toList
 
 abstract class OrientDBDAO<T>(val entityType: Class<T>) {
 
@@ -26,7 +29,7 @@ abstract class OrientDBDAO<T>(val entityType: Class<T>) {
     }
 
     open fun intentarRecuperar(entityName: String): Optional<T> =
-        session.query("SELECT FROM ? WHERE nombre = ?", entityType.simpleName, entityName)
+        session.query("SELECT FROM ? WHERE nombre = ? LIMIT 1", entityType.simpleName, entityName)
             .stream()
             .findFirst()
             .map { mapearAEntidad(it) }

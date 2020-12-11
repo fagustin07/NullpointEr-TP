@@ -2,7 +2,7 @@ package ar.edu.unq.epers.tactics.modelo.calendario
 
 import java.time.LocalDateTime
 
-class FakeProveedorDeFechas(private var fecha: LocalDateTime): ProveedorDeFechas {
+class AlmanaqueSimulado(private var fecha: LocalDateTime): Almanaque {
 
     override fun ahora(): LocalDateTime = fecha
 
