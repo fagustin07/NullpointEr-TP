@@ -1,7 +1,6 @@
 package ar.edu.unq.epers.tactics.persistencia.dao
 
 import ar.edu.unq.epers.tactics.modelo.tienda.InventarioParty
-import ar.edu.unq.epers.tactics.modelo.tienda.Item
 
 interface InventarioPartyDAO: DataDAO {
     fun guardar(inventarioParty: InventarioParty): InventarioParty
@@ -10,5 +9,4 @@ interface InventarioPartyDAO: DataDAO {
 
     fun recuperar(nombreParty: String): InventarioParty
 
-    fun losItemsDe(nombreParty: String):List<Item>
 }

@@ -42,7 +42,7 @@ class TiendaServicePersistente(
     }
 
     override fun losItemsDe(nombreParty: String): List<Item> {
-        return runTrx { inventarioPartyDAO.losItemsDe(nombreParty) }
+        return runTrx { itemDAO.itemsEnVenta().filter { itemDAO.perteneceA(it.nombre,nombreParty) } }
     }
 
     override fun compradoresDe(nombreItem: String): List<Party> {

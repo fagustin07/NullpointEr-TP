@@ -10,4 +10,6 @@ interface ItemDAO: DataDAO {
     fun loMasCompradoEnLaUltimaSemana(): List<Pair<Item, Int>>
 
     fun itemsEnVenta():List<Item>
+
+    fun perteneceA(nombreItem: String, nombreParty: String): Boolean
 }

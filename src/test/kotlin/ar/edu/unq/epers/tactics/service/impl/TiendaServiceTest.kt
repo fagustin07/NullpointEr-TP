@@ -350,6 +350,62 @@ class TiendaServiceTest {
         assertThat(itemsEnTienda[2].nombre).isEqualTo("frutilla")
     }
 
+    @Test
+    fun `las parties pueden comprar y tradear items entre ellas`() {
+        var partyUno = partyService.crear(Party("Overworld", "url"))
+        var partyDos = partyService.crear(Party("Dalasha", "url"))
+        partyUno = ganarPeleaParaGanarMonedas(partyUno.id()!!)
+        partyDos = ganarPeleaParaGanarMonedas(partyDos.id()!!)
+
+        this.registrarItems()
+
+        almanaqueSimulado.simularElPasoDeDias(1)
+        this.comprarItems(partyUno,partyDos)
+
+        val itemsPartyUno = tiendaService.losItemsDe(partyUno.nombre())
+        val itemsPartyDos = tiendaService.losItemsDe(partyDos.nombre())
+
+        almanaqueSimulado.simularElPasoDeDias(1)
+        tiendaService.tradear(partyUno.nombre(), partyDos.nombre(), itemsPartyUno, 80)
+        tiendaService.tradear(partyDos.nombre(), partyUno.nombre(), itemsPartyDos, 120)
+
+        val itemsLuegoDeTradePartyUno = tiendaService.losItemsDe(partyUno.nombre())
+        val itemsLuegoDeTradePartyDos = tiendaService.losItemsDe(partyDos.nombre())
+
+        assertThat(itemsLuegoDeTradePartyUno)
+            .usingRecursiveFieldByFieldElementComparator()
+            .containsAll(itemsPartyDos)
+
+        assertThat(itemsLuegoDeTradePartyUno.all { item ->
+            itemsLuegoDeTradePartyDos.all { it.nombre() != item.nombre() }
+        }).isTrue()
+
+        assertThat(itemsLuegoDeTradePartyDos)
+            .usingRecursiveFieldByFieldElementComparator()
+            .containsAll(itemsPartyUno)
+
+        assertThat(itemsLuegoDeTradePartyDos.all { item ->
+            itemsLuegoDeTradePartyUno.all { it.nombre() != item.nombre() }
+        }).isTrue()
+
+    }
+
+    private fun comprarItems(partyUno: Party, partyDos: Party) {
+        tiendaService.registrarCompra(partyUno.nombre(), "bandera")
+        tiendaService.registrarCompra(partyUno.nombre(), "mastil")
+
+        tiendaService.registrarCompra(partyDos.nombre(), "fuego eterno")
+        tiendaService.registrarCompra(partyDos.nombre(), "espada del rey")
+    }
+
+    private fun registrarItems() {
+        tiendaService.registrarItem("bandera", 5)
+        tiendaService.registrarItem("mastil", 7)
+        tiendaService.registrarItem("fuego eterno", 9)
+        tiendaService.registrarItem("espada del rey", 10)
+    }
+
+
     private fun comprarItem(): Item {
         val nombreItem = "bandera flameante"
         val item = tiendaService.registrarItem(nombreItem, 10)
