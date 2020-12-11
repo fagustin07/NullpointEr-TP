@@ -42,6 +42,25 @@ class OrientDBItemDAO(private val almanaque: Almanaque) : OrientDBDAO<Item>(Item
             .toList()
     }
 
+    override fun perteneceA(nombreItem: String, nombreParty: String): Boolean {
+        val query = """
+            SELECT in.nombre as nombre, in.precio as precio FROM HaComprado 
+            LET
+            ${'$'}ultimaVenta = (SELECT FROM HaVendido WHERE out.nombre = ? AND in.nombre = ? ORDER BY fechaDeVenta DESC LIMIT 1),
+            ${'$'}fechaUltimaVenta = first(${'$'}ultimaVenta).fechaDeVenta.asDateTime()
+            WHERE 
+            out.nombre = ? AND in.nombre = ? AND 
+            (${'$'}ultimaVenta.size() = 0 OR fechaDeCompra.asDatetime() > ${'$'}fechaUltimaVenta ) 
+        """
+
+        return session.query(query, nombreParty, nombreItem, nombreParty, nombreItem)
+            .stream()
+            .map {
+                mapearAEntidad(it)
+            }
+            .toList().isNotEmpty()
+    }
+
     override fun mapearAEntidad(oResult: OResult) =
         Item(
             oResult.getProperty("nombre"),
