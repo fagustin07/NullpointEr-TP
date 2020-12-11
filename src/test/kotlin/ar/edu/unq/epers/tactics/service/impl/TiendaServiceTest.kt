@@ -325,7 +325,7 @@ class TiendaServiceTest {
 
         tiendaService.tradear(party.nombre(), partyCompradora.nombre(), listOf(item), 10)
 
-        almanaqueSimulado.cambiarFechaActual(LocalDateTime.now())
+        almanaqueSimulado.cambiarFechaActual(almanaqueSimulado.ahora().plusDays(1))
         tiendaService.registrarCompra(party.nombre(), item.nombre)
 
         assertThat(tiendaService.losItemsDe(party.nombre()))
