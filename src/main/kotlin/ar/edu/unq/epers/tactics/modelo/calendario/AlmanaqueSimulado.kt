@@ -2,13 +2,13 @@ package ar.edu.unq.epers.tactics.modelo.calendario
 
 import java.time.LocalDateTime
 
-class AlmanaqueSimulado(private var fecha: LocalDateTime): Almanaque {
+class AlmanaqueSimulado(private var fechaDeHoy: LocalDateTime): Almanaque {
 
-    override fun ahora(): LocalDateTime = fecha
+    override fun ahora(): LocalDateTime = fechaDeHoy
 
-    override fun haceUnaSemana(): LocalDateTime = fecha.minusDays(7)
+    override fun haceUnaSemana(): LocalDateTime = fechaDeHoy.minusDays(7)
 
-    fun cambiarFechaActual(nuevaFecha: LocalDateTime) {
-        fecha = nuevaFecha
+    fun simularElPasoDeDias(cantidadDeDiasAAvanzar: Long) {
+        fechaDeHoy = fechaDeHoy.plusDays(cantidadDeDiasAAvanzar)
     }
 }

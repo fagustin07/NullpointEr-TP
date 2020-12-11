@@ -26,7 +26,6 @@ import java.time.LocalDateTime
 
 class TiendaServiceTest {
 
-    private val NOW = LocalDateTime.now().withNano(0)
     private val inventarioPartyDAO: InventarioPartyDAO = OrientDBInventarioPartyDAO()
     private val peleaService = PeleaServiceImpl(
         HibernatePeleaDAO(),
@@ -35,7 +34,7 @@ class TiendaServiceTest {
         inventarioPartyDAO
     )
 
-    private val almanaqueSimulado = AlmanaqueSimulado(NOW)
+    private val almanaqueSimulado = AlmanaqueSimulado(LocalDateTime.now())
     private val partyService = PartyServiceImpl(HibernatePartyDAO(), inventarioPartyDAO)
 
     val tiendaService = TiendaServicePersistente(
@@ -172,13 +171,11 @@ class TiendaServiceTest {
         tiendaService.registrarItem("banana", 2)
         tiendaService.registrarItem("frutilla", 2)
 
-
-        almanaqueSimulado.cambiarFechaActual(LocalDateTime.of(1999, 10, 29,12,30,11))
         comprarNVeces(5, party.nombre(), "chocolate")
         comprarNVeces(15, party.nombre(), "banana")
         comprarNVeces(12, party.nombre(), "frutilla")
 
-        almanaqueSimulado.cambiarFechaActual(NOW)
+        almanaqueSimulado.simularElPasoDeDias(8)
         comprarNVeces(8, party.nombre(), "frutilla")
 
         val losMasComprados = tiendaService.loMasComprado()
@@ -242,7 +239,7 @@ class TiendaServiceTest {
         party = ganarPeleaParaGanarMonedas(party.id()!!)
         val item = comprarItem()
 
-        almanaqueSimulado.cambiarFechaActual(LocalDateTime.now())
+        almanaqueSimulado.simularElPasoDeDias(1)
         tiendaService.tradear(party.nombre(), partyCompradora.nombre(), listOf(item), 10)
 
         assertThat(tiendaService.losItemsDe(party.nombre()))
@@ -325,7 +322,7 @@ class TiendaServiceTest {
 
         tiendaService.tradear(party.nombre(), partyCompradora.nombre(), listOf(item), 10)
 
-        almanaqueSimulado.cambiarFechaActual(almanaqueSimulado.ahora().plusDays(1))
+        almanaqueSimulado.simularElPasoDeDias(1)
         tiendaService.registrarCompra(party.nombre(), item.nombre)
 
         assertThat(tiendaService.losItemsDe(party.nombre()))
