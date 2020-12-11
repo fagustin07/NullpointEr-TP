@@ -4,6 +4,8 @@ import com.orientechnologies.orient.core.db.ODatabaseSession
 import com.orientechnologies.orient.core.db.ODatabaseType
 import com.orientechnologies.orient.core.db.OrientDB
 import com.orientechnologies.orient.core.db.OrientDBConfig
+import com.orientechnologies.orient.core.metadata.schema.OClass
+import com.orientechnologies.orient.core.metadata.schema.OType
 
 class OrientDBSessionFactoryProvider private constructor() {
 
@@ -19,8 +21,23 @@ class OrientDBSessionFactoryProvider private constructor() {
     fun createSession(): ODatabaseSession {
         session = orientDb.open("epers_tactics_db", "admin", "admin")
 
-        if(session.getClass("InventarioParty")==null) session.createVertexClass("InventarioParty")
-        if(session.getClass("Item")==null) session.createVertexClass("Item")
+        if(session.getClass("InventarioParty")==null) {
+            val inventarioPartyClass = session.createVertexClass("InventarioParty")
+            inventarioPartyClass.createProperty("nombre", OType.STRING)
+            inventarioPartyClass.createProperty("monedas", OType.INTEGER)
+
+            inventarioPartyClass.createIndex("index_InventarioParty", OClass.INDEX_TYPE.UNIQUE, "nombre")
+        }
+
+        if(session.getClass("Item")==null) {
+            val itemClass = session.createVertexClass("Item")
+            itemClass.createProperty("nombre", OType.STRING)
+            itemClass.createProperty("precio", OType.INTEGER)
+
+            itemClass.createIndex("index_Ttem", OClass.INDEX_TYPE.UNIQUE, "nombre")
+
+        }
+
         if(session.getClass("haComprado")==null) session.createEdgeClass("haComprado")
         if(session.getClass("haVendido")==null) session.createEdgeClass("haVendido")
 

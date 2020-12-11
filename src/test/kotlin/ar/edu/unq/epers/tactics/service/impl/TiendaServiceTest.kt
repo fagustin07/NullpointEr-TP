@@ -2,7 +2,7 @@ package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
-import ar.edu.unq.epers.tactics.modelo.calendario.FakeProveedorDeFechas
+import ar.edu.unq.epers.tactics.modelo.calendario.AlmanaqueSimulado
 import ar.edu.unq.epers.tactics.modelo.tienda.Compra
 import ar.edu.unq.epers.tactics.modelo.tienda.Item
 import ar.edu.unq.epers.tactics.persistencia.dao.InventarioPartyDAO
@@ -26,7 +26,6 @@ import java.time.LocalDateTime
 
 class TiendaServiceTest {
 
-    private val NOW = LocalDateTime.now().withNano(0)
     private val inventarioPartyDAO: InventarioPartyDAO = OrientDBInventarioPartyDAO()
     private val peleaService = PeleaServiceImpl(
         HibernatePeleaDAO(),
@@ -35,13 +34,13 @@ class TiendaServiceTest {
         inventarioPartyDAO
     )
 
-    private val proveedorDeFechas = FakeProveedorDeFechas(NOW)
+    private val almanaqueSimulado = AlmanaqueSimulado(LocalDateTime.now())
     private val partyService = PartyServiceImpl(HibernatePartyDAO(), inventarioPartyDAO)
 
     val tiendaService = TiendaServicePersistente(
         inventarioPartyDAO,
-        OrientDBItemDAO(proveedorDeFechas),
-        OrientDBOperacionesDAO(proveedorDeFechas),
+        OrientDBItemDAO(almanaqueSimulado),
+        OrientDBOperacionesDAO(almanaqueSimulado),
         PartyServiceImpl(HibernatePartyDAO(), inventarioPartyDAO)
     )
     lateinit var party: Party
@@ -81,7 +80,6 @@ class TiendaServiceTest {
 
     @Test
     fun `party compra item y se le cobra`() {
-
         party = ganarPeleaParaGanarMonedas(party.id()!!)
 
         val monedasAntesDeCompra = runTrx { inventarioPartyDAO.recuperar(party.nombre()).monedas }
@@ -111,7 +109,7 @@ class TiendaServiceTest {
         tiendaService.registrarCompra(party.nombre(), "bandera flameante")
 
 
-        val comprasEsperadas = listOf(Compra(item, proveedorDeFechas.ahora()))
+        val comprasEsperadas = listOf(Compra(item, almanaqueSimulado.fechaDeHoy()))
         val comprasRealizadas = tiendaService.comprasRealizadasPor(party.nombre())
         assertThat(comprasRealizadas).usingRecursiveComparison().isEqualTo(comprasEsperadas)
     }
@@ -173,13 +171,11 @@ class TiendaServiceTest {
         tiendaService.registrarItem("banana", 2)
         tiendaService.registrarItem("frutilla", 2)
 
-
-        proveedorDeFechas.cambiarFechaActual(LocalDateTime.of(1999, 10, 29,12,30,11))
         comprarNVeces(5, party.nombre(), "chocolate")
         comprarNVeces(15, party.nombre(), "banana")
         comprarNVeces(12, party.nombre(), "frutilla")
 
-        proveedorDeFechas.cambiarFechaActual(NOW)
+        almanaqueSimulado.simularElPasoDeDias(8)
         comprarNVeces(8, party.nombre(), "frutilla")
 
         val losMasComprados = tiendaService.loMasComprado()
@@ -243,7 +239,7 @@ class TiendaServiceTest {
         party = ganarPeleaParaGanarMonedas(party.id()!!)
         val item = comprarItem()
 
-        proveedorDeFechas.cambiarFechaActual(LocalDateTime.now())
+        almanaqueSimulado.simularElPasoDeDias(1)
         tiendaService.tradear(party.nombre(), partyCompradora.nombre(), listOf(item), 10)
 
         assertThat(tiendaService.losItemsDe(party.nombre()))
@@ -326,7 +322,7 @@ class TiendaServiceTest {
 
         tiendaService.tradear(party.nombre(), partyCompradora.nombre(), listOf(item), 10)
 
-        proveedorDeFechas.cambiarFechaActual(LocalDateTime.now())
+        almanaqueSimulado.simularElPasoDeDias(1)
         tiendaService.registrarCompra(party.nombre(), item.nombre)
 
         assertThat(tiendaService.losItemsDe(party.nombre()))

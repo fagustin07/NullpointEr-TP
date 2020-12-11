@@ -38,7 +38,7 @@ class TiendaServicePersistente(
         runTrx { operacionesDAO.comprasRealizadasPorParty(nombreDeParty) }
 
     override fun loMasComprado(): List<Pair<Item, Int>> {
-        return runTrx { itemDAO.loMasComprado() }
+        return runTrx { itemDAO.loMasCompradoEnLaUltimaSemana() }
     }
 
     override fun losItemsDe(nombreParty: String): List<Item> {
