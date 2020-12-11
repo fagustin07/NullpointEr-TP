@@ -109,7 +109,7 @@ class TiendaServiceTest {
         tiendaService.registrarCompra(party.nombre(), "bandera flameante")
 
 
-        val comprasEsperadas = listOf(Compra(item, almanaqueSimulado.ahora()))
+        val comprasEsperadas = listOf(Compra(item, almanaqueSimulado.fechaDeHoy()))
         val comprasRealizadas = tiendaService.comprasRealizadasPor(party.nombre())
         assertThat(comprasRealizadas).usingRecursiveComparison().isEqualTo(comprasEsperadas)
     }

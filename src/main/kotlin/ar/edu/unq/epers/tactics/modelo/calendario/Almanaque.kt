@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 interface Almanaque {
 
-    fun ahora(): LocalDateTime
+    fun fechaDeHoy(): LocalDateTime
 
     fun haceUnaSemana(): LocalDateTime
 }

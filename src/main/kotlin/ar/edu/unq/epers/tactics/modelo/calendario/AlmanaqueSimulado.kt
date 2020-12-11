@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 class AlmanaqueSimulado(private var fechaDeHoy: LocalDateTime): Almanaque {
 
-    override fun ahora(): LocalDateTime = fechaDeHoy
+    override fun fechaDeHoy(): LocalDateTime = fechaDeHoy
 
     override fun haceUnaSemana(): LocalDateTime = fechaDeHoy.minusDays(7)
 

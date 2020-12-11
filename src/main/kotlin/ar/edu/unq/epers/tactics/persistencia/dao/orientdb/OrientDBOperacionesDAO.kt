@@ -67,7 +67,7 @@ class OrientDBOperacionesDAO(private val almanaque: Almanaque): OperacionesDAO {
         session.command(query, inventarioParty.nombre, item.nombre(), this.fechaActualParaGuardarEnDb())
     }
 
-    private fun fechaActualParaGuardarEnDb() = almanaque.ahora().toString().replace('T', ' ')
+    private fun fechaActualParaGuardarEnDb() = almanaque.fechaDeHoy().toString().replace('T', ' ')
 
     override fun clear() {
         session.command("DELETE EDGE HaComprado")
