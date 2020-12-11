@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/store")
 class TiendaControllerRest(private val tiendaService: TiendaService) {
 
-    @GetMapping
+    @GetMapping("/item")
     fun itemsEnVenta() = tiendaService.itemsEnVenta()
 
     @GetMapping("/item/mas-comprados")
@@ -31,18 +31,20 @@ class TiendaControllerRest(private val tiendaService: TiendaService) {
     fun comprasRealizadasPor(@PathVariable nombreDeParty: String) =
         tiendaService.comprasRealizadasPor(nombreDeParty)
 
-    @PostMapping("/trade/{nombrePartyVendedora}/{nombrePartyCompradora}")
+    @PostMapping("/trade")
     fun efectuarTrade(
-        @PathVariable nombrePartyVendedora: String,
-        @PathVariable nombrePartyCompradora: String,
-        @RequestBody trade: TradeDTO
+        @RequestBody tradeoAEfectuar: TradeDTO
     ) =
         tiendaService.tradear(
-            nombrePartyVendedora, nombrePartyCompradora,
-            trade.itemsAVender, trade.monedasOfrecidas)
-
+            tradeoAEfectuar.nombrePartyVendedora,
+            tradeoAEfectuar.nombrePartyCompradora,
+            tradeoAEfectuar.itemsAVender,
+            tradeoAEfectuar.monedasOfrecidas)
 }
 
-data class TradeDTO(val itemsAVender: List<Item>, val monedasOfrecidas: Int)
+data class TradeDTO(val nombrePartyVendedora: String,
+                    val nombrePartyCompradora: String,
+                    val itemsAVender: List<Item>,
+                    val monedasOfrecidas: Int)
 
 data class OrdenDeCompra(val nombrePartyCompradora: String, val nombreDeItemAComprar: String)
