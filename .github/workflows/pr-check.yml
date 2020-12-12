@@ -30,3 +30,6 @@ jobs:
           NEO_USER: ${{ secrets.NEO_USER }}
           NEO_PASSWORD: ${{ secrets.NEO_PASSWORD }}
           NEO_URL: ${{ secrets.NEO_URL }}
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          MONGO_DB: ${{ secrets.MONGO_DB }}
+          ORIENTDB_URL: memory:test
