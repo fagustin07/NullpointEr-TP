@@ -13,7 +13,9 @@ class OrientDBSessionFactoryProvider private constructor() {
     lateinit var session: ODatabaseSession
 
     init {
-        orientDb = OrientDB("remote:localhost", "root","root",OrientDBConfig.defaultConfig())
+        val env = System.getenv()
+        val url = env.getOrDefault("ORIENTDB_URL", "remote:localhost")
+        orientDb = OrientDB(url, "root","root",OrientDBConfig.defaultConfig())
         orientDb.createIfNotExists("epers_tactics_db",ODatabaseType.PLOCAL)
     }
 

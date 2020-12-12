@@ -37,6 +37,7 @@ jobs:
           NEO_URL: ${{ secrets.NEO_URL }}
           MONGO_URI: ${{ secrets.MONGO_URI }}
           MONGO_DB: ${{ secrets.MONGO_DB }}
+          ORIENTDB_URL: memory:test
 
       - name: Success notification
         if: success()
