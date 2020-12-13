@@ -345,4 +345,48 @@ class AventureroTest {
         assertThat(aventurero.vidaActual()).isEqualTo(vidaAntesDeMejora)
     }
 
+    @Test
+    fun `un aventurero es otro si alguno no tiene id y se llaman igual`(){
+        val pepito = Aventurero("Pepito")
+        val pepitoClon = Aventurero("Pepito")
+        assertThat(pepito.esElAventurero(pepitoClon)).isTrue()
+    }
+
+
+    @Test
+    fun `un aventurero NO es otro si alguno no tiene id y se llaman distinto`(){
+        val pepito = Aventurero("Pepito")
+        val pepitoClon = Aventurero("Pepito 2")
+        assertThat(pepito.esElAventurero(pepitoClon)).isFalse()
+    }
+
+    @Test
+    fun `un aventurero NO es otro si ambos tienen el mismo id y se llaman distinto`(){
+        val pepito = Aventurero("Pepito")
+        pepito.darleElId(43)
+        val pepitoClon = Aventurero("Pepito Clon")
+        pepitoClon.darleElId(43)
+
+        assertThat(pepito.esElAventurero(pepitoClon)).isFalse()
+    }
+
+    @Test
+    fun `un aventurero NO es otro si tienen ids distintos`(){
+        val pepito = Aventurero("Pepito")
+        pepito.darleElId(43)
+        val pepitoClon = Aventurero("Pepito")
+        pepitoClon.darleElId(45)
+
+        assertThat(pepito.esElAventurero(pepitoClon)).isFalse()
+    }
+
+    @Test
+    fun `un aventurero es otro si ambos tienen el mismo id y se llaman igual`(){
+        val pepito = Aventurero("Pepito")
+        pepito.darleElId(43)
+        val pepitoClon = Aventurero("Pepito")
+        pepitoClon.darleElId(43)
+
+        assertThat(pepito.esElAventurero(pepitoClon)).isTrue()
+    }
 }

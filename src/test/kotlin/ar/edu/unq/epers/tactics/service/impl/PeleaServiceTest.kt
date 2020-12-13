@@ -13,6 +13,7 @@ import ar.edu.unq.epers.tactics.modelo.habilidades.*
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.mongodb.MongoFormacionDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBInventarioPartyDAO
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
@@ -29,8 +30,8 @@ internal class PeleaServiceTest {
     val partyDAO = HibernatePartyDAO()
     val aventureroDAO = HibernateAventureroDAO()
     val peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO, OrientDBInventarioPartyDAO())
-    val partyService = PartyServiceImpl(partyDAO, OrientDBInventarioPartyDAO())
-    val aventureroService = AventureroServiceImpl(aventureroDAO, partyDAO)
+    val partyService = PartyServiceImpl(partyDAO, OrientDBInventarioPartyDAO(), MongoFormacionDAO())
+    val aventureroService = AventureroServiceImpl(aventureroDAO, partyDAO, MongoFormacionDAO())
     lateinit var party: Party
     var miniId = 0
     val nombreDePartyEnemiga = "Nombre de party enemiga"

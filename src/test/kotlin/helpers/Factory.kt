@@ -8,6 +8,7 @@ import ar.edu.unq.epers.tactics.modelo.enums.TipoDeReceptor
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.mongodb.MongoFormacionDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBInventarioPartyDAO
 import ar.edu.unq.epers.tactics.service.AventureroLeaderboardService
 import ar.edu.unq.epers.tactics.service.AventureroService
@@ -30,10 +31,10 @@ class Factory {
         val aventureroDAO = HibernateAventureroDAO()
         val peleaDAO = HibernatePeleaDAO()
         val partyDAO = HibernatePartyDAO()
-        partyService = PartyServiceImpl(partyDAO, OrientDBInventarioPartyDAO())
+        partyService = PartyServiceImpl(partyDAO, OrientDBInventarioPartyDAO(), MongoFormacionDAO())
         leaderboardService = AventureroLeaderboardServiceImpl(aventureroDAO)
         peleaService = PeleaServiceImpl(peleaDAO, partyDAO, aventureroDAO, OrientDBInventarioPartyDAO())
-        aventureroService = AventureroServiceImpl(aventureroDAO,partyDAO)
+        aventureroService = AventureroServiceImpl(aventureroDAO, partyDAO, MongoFormacionDAO())
     }
 
     fun comenzarPeleaDe(partyId: Long): Long {

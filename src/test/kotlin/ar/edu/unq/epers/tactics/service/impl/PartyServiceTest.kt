@@ -6,6 +6,7 @@ import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.mongodb.MongoFormacionDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBInventarioPartyDAO
 import ar.edu.unq.epers.tactics.service.Direccion
@@ -25,7 +26,7 @@ class PartyServiceTest {
 
     @BeforeEach
     fun setUp() {
-        partyService = PartyServiceImpl(dao, OrientDBInventarioPartyDAO())
+        partyService = PartyServiceImpl(dao, OrientDBInventarioPartyDAO(), MongoFormacionDAO())
     }
 
     @Test

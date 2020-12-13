@@ -1,10 +1,7 @@
 package ar.edu.unq.epers.tactics.service.impl
 
 import ar.edu.unq.epers.tactics.exceptions.DuplicateFormationException
-import ar.edu.unq.epers.tactics.modelo.AtributoDeFormacion
-import ar.edu.unq.epers.tactics.modelo.Aventurero
-import ar.edu.unq.epers.tactics.modelo.Formacion
-import ar.edu.unq.epers.tactics.modelo.Party
+import ar.edu.unq.epers.tactics.modelo.*
 import ar.edu.unq.epers.tactics.persistencia.dao.FormacionDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
@@ -42,10 +39,10 @@ class FormacionServiceTest {
         formacionDAO = MongoFormacionDAO()
         claseDAO = Neo4JClaseDAO()
 
-        aventureroService = AventureroServiceImpl(aventureroDAO, partyDAO)
+        aventureroService = AventureroServiceImpl(aventureroDAO, partyDAO, MongoFormacionDAO())
         formacionService = FormacionServiceImpl(formacionDAO, HibernatePartyDAO())
-        partyService = PartyServiceImpl(partyDAO, OrientDBInventarioPartyDAO())
-        claseService = ClaseServiceImpl(claseDAO, aventureroDAO)
+        partyService = PartyServiceImpl(partyDAO, OrientDBInventarioPartyDAO(), MongoFormacionDAO())
+        claseService = ClaseServiceImpl(claseDAO, aventureroDAO, MongoFormacionDAO())
 
         recursiveComparisonConfiguration = RecursiveComparisonConfiguration.builder().withIgnoredFields("id").build()
     }
@@ -53,7 +50,7 @@ class FormacionServiceTest {
     /*CREAR FORMACION*/
     @Test
     fun `se puede persistir una formacion`() {
-        val requerimientos = mapOf<String, Int>(Pair("Gran Mago", 2), Pair("Magico", 5) )
+        val requerimientos = mapOf(Pair("Gran Mago", 2), Pair("Magico", 5) )
         val stats = factory.crearStats(listOf("Inteligencia" to 20, "Constitucion" to 15))
 
         val formacionCreada = formacionService.crearFormacion("ForBidden", requerimientos, stats)
@@ -273,6 +270,118 @@ class FormacionServiceTest {
         claseService.crearMejora("Aventurero", "Magico", listOf(), 0)
         claseService.ganarProficiencia(magico.id()!!, "Aventurero", "Magico")
         return party
+    }
+
+    @Test
+    fun `cuando a una party cumple con los requisitos de una formacion sus aventureros incrementan el puntaje de los atributos que correspondan a la formacino`() {
+        val puntosDeFuerzaInicial = 2.0
+        val puntosDeFuerzaAGanar = 60
+        val aventurero = Aventurero("Nombre de aventurero", fuerza=puntosDeFuerzaInicial)
+
+        val requisitos = mapOf(aventurero.clases().first() to 1)
+        val stats = listOf(AtributoDeFormacion("fuerza", puntosDeFuerzaAGanar))
+        val formacion = Formacion("nombre de formacion", requisitos, stats)
+
+        formacionDAO.guardar(formacion)
+        val partyId = partyService.crear(Party("Nombre de party", "url")).id()!!
+
+
+        val aventureroPersistido = partyService.agregarAventureroAParty(partyId, aventurero)
+
+
+        assertThat(aventureroPersistido.fuerza()).isEqualTo((puntosDeFuerzaInicial + puntosDeFuerzaAGanar))
+    }
+
+    @Test
+    fun `cuando un aventurero gana una clase requerida por una formacion los aventureros de la party reciben un incremento de atributos de formacion`() {
+        val aventureroConExperiencia = factory.crearAventureroConExperiencia(10)
+        val puntosDeFuerzaIniciales = aventureroConExperiencia.fuerza()
+        val claseDelAventurero = aventureroConExperiencia.clases().first()
+
+        val puntosDeFuerzaAGanarPorFormacion = 60
+        val claseRequeridaPorFormacion = claseMago()
+        crearFormacionConRequisitoUnico(claseRequeridaPorFormacion, "fuerza", puntosDeFuerzaAGanarPorFormacion)
+        crearMejoraQueNoIncrementeAtributos(claseDelAventurero, claseRequeridaPorFormacion)
+
+
+        val aventureroConNuevaClase = claseService.ganarProficiencia(aventureroConExperiencia.id()!!, claseDelAventurero, claseRequeridaPorFormacion)
+
+
+        assertThat(aventureroConNuevaClase.fuerza()).isEqualTo(puntosDeFuerzaIniciales + puntosDeFuerzaAGanarPorFormacion)
+    }
+
+    @Test
+    fun `cuando un aventurero gana una clase que no es requerida por ninguna formacion, los aventureros de la party reciben un incremento de atributos de formacion`() {
+        val aventureroConExperiencia = factory.crearAventureroConExperiencia(10)
+        val puntosDeFuerzaIniciales = aventureroConExperiencia.fuerza()
+        val claseDelAventurero = aventureroConExperiencia.clases().first()
+
+        val claseAMejorar = claseMago()
+        crearMejoraQueNoIncrementeAtributos(claseDelAventurero, claseMago())
+
+        val aventureroConNuevaClase = claseService.ganarProficiencia(aventureroConExperiencia.id()!!, claseDelAventurero, claseAMejorar)
+
+        assertThat(aventureroConNuevaClase.fuerza()).isEqualTo(puntosDeFuerzaIniciales)
+    }
+
+    @Test
+    fun `cuando una party pierde un aventurero y deja de cumplir con algun requisito de una formacion, la pierde y sus aventureros pierten puntos de atributos de formacion`() {
+        val claseRequeridaPorFormacion = claseAventurero()
+        crearFormacion(mapOf(claseRequeridaPorFormacion to 2), "fuerza", 66)
+
+        val party = Party("Nombre de party", "")
+        val pepe = Aventurero("Pepe")
+        val juan = Aventurero("Juan")
+        val puntosDeFuerzaIniciales = juan.fuerza()
+
+        val partyId = partyService.crear(party).id()!!
+        val aventureroAEliminar = partyService.agregarAventureroAParty(partyId, pepe)
+        val aventureroADejarId = partyService.agregarAventureroAParty(partyId, juan).id()!!
+
+
+        aventureroService.eliminar(aventureroAEliminar)
+
+
+        val unicoAventurero = aventureroService.recuperar(aventureroADejarId)
+        assertThat(unicoAventurero.fuerza()).isEqualTo(puntosDeFuerzaIniciales)
+    }
+
+    @Test
+    fun `cuando una party pierde un aventurero y sigue cumpliendo con los requisitos de una formacion, no la pierde y sus aventureros siguien sumando atributos de formacion`() {
+        crearFormacionConRequisitoUnico(claseAventurero(), "fuerza", 66)
+
+        val party = Party("Nombre de party", "")
+        val pepe = Aventurero("Pepe")
+        val juan = Aventurero("Juan")
+
+        val partyId = partyService.crear(party).id()!!
+        val aventureroAEliminar = partyService.agregarAventureroAParty(partyId, pepe)
+        val aventureroADejar = partyService.agregarAventureroAParty(partyId, juan)
+
+        val puntosDeFuerzaAntesDeEliminarAventurero = aventureroADejar.fuerza()
+
+
+        aventureroService.eliminar(aventureroAEliminar)
+
+
+        val unicoAventurero = aventureroService.recuperar(aventureroADejar.id()!!)
+        assertThat(unicoAventurero.fuerza()).isEqualTo(puntosDeFuerzaAntesDeEliminarAventurero)
+    }
+
+    private fun crearFormacionConRequisitoUnico(claseRequeridaPorFormacion: String, atributoAMejorar: String, puntosDeFuerzaAGanarPorFormacion: Int) {
+        crearFormacion(mapOf(claseRequeridaPorFormacion to 1), atributoAMejorar, puntosDeFuerzaAGanarPorFormacion)
+    }
+
+    private fun crearFormacion(requisitos: Map<String, Int>, atributoAMejorar: String, puntosDeFuerzaAGanarPorFormacion: Int) {
+        val stats = listOf(AtributoDeFormacion(atributoAMejorar, puntosDeFuerzaAGanarPorFormacion))
+        val formacion = Formacion("Un nombre", requisitos, stats)
+        formacionDAO.guardar(formacion)
+    }
+
+    private fun crearMejoraQueNoIncrementeAtributos(claseDePartida: String, claseAMejorar: String) {
+        claseService.crearClase(claseDePartida)
+        claseService.crearClase(claseAMejorar)
+        claseService.crearMejora(claseDePartida, claseAMejorar, listOf(), 0)
     }
 
     @AfterEach

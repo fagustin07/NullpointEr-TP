@@ -4,6 +4,7 @@ import ar.edu.unq.epers.tactics.modelo.Atributo
 import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.mongodb.MongoFormacionDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.neo4j.Neo4JClaseDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBInventarioPartyDAO
@@ -23,7 +24,7 @@ class ClaseServiceTest {
     private val NOMBRE_DE_CLASE_FISICO = "Fisico"
 
     private val claseDAO = Neo4JClaseDAO()
-    private val claseService: ClaseServiceImpl = ClaseServiceImpl(claseDAO, HibernateAventureroDAO())
+    private val claseService: ClaseServiceImpl = ClaseServiceImpl(claseDAO, HibernateAventureroDAO(), MongoFormacionDAO())
 
     @Test
     fun `cuando se crea una clase inicia con nombre`() {
@@ -414,7 +415,7 @@ class ClaseServiceTest {
 
     @AfterEach
     internal fun tearDown() {
-        PartyServiceImpl(HibernatePartyDAO(),OrientDBInventarioPartyDAO()).eliminarTodo()
+        PartyServiceImpl(HibernatePartyDAO(), OrientDBInventarioPartyDAO(), MongoFormacionDAO()).eliminarTodo()
         claseDAO.clear()
         OrientDBDataDAO().clear()
     }

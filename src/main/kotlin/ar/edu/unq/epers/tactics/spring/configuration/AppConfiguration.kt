@@ -6,6 +6,7 @@ import ar.edu.unq.epers.tactics.persistencia.dao.*
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.mongodb.MongoFormacionDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBInventarioPartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBItemDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBOperacionesDAO
@@ -58,13 +59,13 @@ class AppConfiguration {
     }
 
     @Bean
-    fun partyService(partyDAO: PartyDAO, inventarioPartyDAO: InventarioPartyDAO) : PartyService {
-        return PartyServiceImpl(partyDAO, inventarioPartyDAO)
+    fun partyService(partyDAO: PartyDAO, inventarioPartyDAO: InventarioPartyDAO, formacionDAO: FormacionDAO) : PartyService {
+        return PartyServiceImpl(partyDAO, inventarioPartyDAO, formacionDAO)
     }
 
     @Bean
-    fun adventurerService(aventureroDAO: AventureroDAO, partyDAO: PartyDAO) : AventureroService {
-        return AventureroServiceImpl(aventureroDAO, partyDAO)
+    fun adventurerService(aventureroDAO: AventureroDAO, partyDAO: PartyDAO, formacionDAO: FormacionDAO) : AventureroService {
+        return AventureroServiceImpl(aventureroDAO, partyDAO, formacionDAO)
     }
 
     @Bean
