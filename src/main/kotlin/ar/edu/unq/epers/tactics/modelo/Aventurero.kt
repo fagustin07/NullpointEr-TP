@@ -2,6 +2,7 @@ package ar.edu.unq.epers.tactics.modelo
 
 import ar.edu.unq.epers.tactics.modelo.habilidades.Habilidad
 import ar.edu.unq.epers.tactics.modelo.habilidades.HabilidadNula
+import java.util.*
 import javax.persistence.*
 import kotlin.String
 import kotlin.math.max
@@ -95,24 +96,23 @@ class Aventurero(private var nombre: String) {
     fun nivel() = nivel
     fun poderTotal() = poderTotal
 
-    fun fuerza() = fuerza
-    fun destreza() = destreza
-    fun constitucion() = constitucion
-    fun inteligencia() = inteligencia
+    fun fuerza() = fuerza + party().map { it.fuerzaPorAtributosDeFormacion() }.orElse(0.0)
+    fun destreza() = destreza + party().map { it.destrezaPorAtributosDeFormacion() }.orElse(0.0)
+    fun constitucion() = constitucion + party().map { it.constitucionPorAtributosDeFormacion() }.orElse(0.0)
+    fun inteligencia() = inteligencia + party().map { it.inteligenciaPorAtributosDeFormacion() }.orElse(0.0)
 
-    fun vidaInicial() = nivel() * 5 + constitucion * 2 + fuerza
-    fun vidaActual() = vidaInicial() - dañoRecibido
+    fun vidaInicial() = nivel() * 5 + constitucion() * 2 + fuerza()
+    fun vidaActual() = vidaInicial() - dañoRecibido()
     fun mana() = mana
-    fun armadura() = nivel() + constitucion
-    fun velocidad() = nivel() + destreza
-    fun dañoFisico() = nivel() + fuerza + (destreza / 2)
-    fun poderMagico() = nivel() + mana
-    fun precisionFisica() = nivel() + fuerza + destreza
+    fun armadura() = nivel() + constitucion()
+    fun velocidad() = nivel() + destreza()
+    fun dañoFisico() = nivel() + fuerza() + (destreza() / 2)
+    fun poderMagico() = nivel() + mana()
+    fun precisionFisica() = nivel() + fuerza() + destreza()
     fun dañoRecibido() = this.dañoRecibido
 
     fun aliados(): List<Aventurero> {
-        if (party == null) return listOf()
-        return party!!.aliadosDe(this)
+        return party().map { it.aliadosDe(this) }.orElse(listOf())
     }
 
     fun tacticas() = this.tacticas
@@ -131,6 +131,8 @@ class Aventurero(private var nombre: String) {
     fun estaSiendoDefendiendo() = this.defensor != null
 
     fun tieneExperiencia() = experiencia > 0
+
+    fun esElAventurero(aventurero: Aventurero) = this.tienenElMismoId(aventurero) && this.seLlamanIgual(aventurero)
 
     /** ACTIONS **/
     fun resolverTurno(enemigos: List<Aventurero>): Habilidad {
@@ -245,6 +247,13 @@ class Aventurero(private var nombre: String) {
     /*** PRIVATE ***/
     /** TESTING **/
     private fun tieneDefensor() = this.defensor != null && this.defensor!!.estaVivo()
+
+    private fun seLlamanIgual(aventurero: Aventurero) = this.nombre() == aventurero.nombre()
+
+    private fun tienenElMismoId(aventurero: Aventurero) =  if(this.id() != null && aventurero.id() != null) this.id()==aventurero.id() else true
+
+    /** ACCESSING **/
+    fun party() = Optional.ofNullable(party)
 
     /** ACTIONS **/
     private fun recibirDaño(dañoAAplicar: Double) {

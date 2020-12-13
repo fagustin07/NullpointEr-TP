@@ -10,6 +10,7 @@ import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDA
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateDataDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePeleaDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.mongodb.MongoFormacionDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBInventarioPartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBItemDAO
@@ -35,13 +36,13 @@ class TiendaServiceTest {
     )
 
     private val almanaqueSimulado = AlmanaqueSimulado(LocalDateTime.now())
-    private val partyService = PartyServiceImpl(HibernatePartyDAO(), inventarioPartyDAO)
+    private val partyService = PartyServiceImpl(HibernatePartyDAO(), inventarioPartyDAO, MongoFormacionDAO())
 
     val tiendaService = TiendaServicePersistente(
         inventarioPartyDAO,
         OrientDBItemDAO(almanaqueSimulado),
         OrientDBOperacionesDAO(almanaqueSimulado),
-        PartyServiceImpl(HibernatePartyDAO(), inventarioPartyDAO)
+        PartyServiceImpl(HibernatePartyDAO(), inventarioPartyDAO, MongoFormacionDAO())
     )
     lateinit var party: Party
 

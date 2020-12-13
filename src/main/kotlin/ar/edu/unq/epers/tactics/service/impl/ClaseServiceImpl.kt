@@ -6,11 +6,12 @@ import ar.edu.unq.epers.tactics.modelo.Clase
 import ar.edu.unq.epers.tactics.modelo.Mejora
 import ar.edu.unq.epers.tactics.persistencia.dao.AventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.ClaseDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.FormacionDAO
 import ar.edu.unq.epers.tactics.service.ClaseService
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
 import org.neo4j.driver.exceptions.NoSuchRecordException
 
-class ClaseServiceImpl(private val claseDAO: ClaseDAO, val aventureroDAO: AventureroDAO) : ClaseService {
+class ClaseServiceImpl(val claseDAO: ClaseDAO, val aventureroDAO: AventureroDAO, val formacionDAO: FormacionDAO) : ClaseService {
 
     override fun crearClase(nombreDeLaClase: String): Clase {
         val clase = Clase(nombreDeLaClase)
@@ -45,6 +46,13 @@ class ClaseServiceImpl(private val claseDAO: ClaseDAO, val aventureroDAO: Aventu
             aventureroDAO.resultadoDeEjecutarCon(aventureroId) {
                 val mejoraBuscada = buscarLaMejora(nombreClaseInicio, nombreClaseAMejorar)
                 obtenerMejoraSiDebe(it, mejoraBuscada)
+
+                it.party().ifPresent { party ->
+                    party.actualizarAtributosEnBaseA(
+                        formacionDAO.formacionesQuePosee(party)
+                    )
+                }
+
                 it
             }
         }

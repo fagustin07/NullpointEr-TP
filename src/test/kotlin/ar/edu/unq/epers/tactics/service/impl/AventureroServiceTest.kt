@@ -6,6 +6,7 @@ import ar.edu.unq.epers.tactics.persistencia.dao.AventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernateAventureroDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.hibernate.HibernatePartyDAO
+import ar.edu.unq.epers.tactics.persistencia.dao.mongodb.MongoFormacionDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBDataDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.orientdb.OrientDBInventarioPartyDAO
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner
@@ -32,8 +33,8 @@ class AventureroServiceTest {
         aventureroDao = HibernateAventureroDAO()
         partyDao = HibernatePartyDAO()
 
-        aventureroService = AventureroServiceImpl(aventureroDao, partyDao)
-        partyService = PartyServiceImpl(partyDao, OrientDBInventarioPartyDAO())
+        aventureroService = AventureroServiceImpl(aventureroDao, partyDao, MongoFormacionDAO())
+        partyService = PartyServiceImpl(partyDao, OrientDBInventarioPartyDAO(), MongoFormacionDAO())
 
         party = Party("Party", "")
         aventurero = Aventurero("Aventurero")

@@ -10,4 +10,8 @@ class AtributoDeFormacion {
         this.nombreAtributo   = nombreAtributo
         this.puntosDeGanancia = puntosDeGanancia
     }
+
+    fun nombreDeAtributo() = nombreAtributo!!
+
+    fun puntosDeGanancia() = puntosDeGanancia!!
 }

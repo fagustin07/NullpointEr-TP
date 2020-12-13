@@ -16,6 +16,10 @@ class Party(private var nombre: String, private var imagenURL: String) {
     @JoinColumn(name = "party_id")
     private var aventureros: MutableList<Aventurero> = mutableListOf()
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    var puntosDeAtributosGanadosPorFormacion: Map<String, Double> = mutableMapOf()
+
+
     var estaEnPelea = false
 
     fun numeroDeAventureros() = aventureros.size
@@ -31,8 +35,9 @@ class Party(private var nombre: String, private var imagenURL: String) {
     fun removerA(aventurero: Aventurero) {
         if (aventurero.party == null || !this.esLaParty(aventurero.party!!)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
 
-        aventureros.remove(aventurero)
-        aventurero.salirDeLaParty()
+        val aventureroARemover = aventureros.firstOrNull { it.esElAventurero(aventurero) }
+        aventureroARemover?.salirDeLaParty()
+        aventureros.remove(aventureroARemover)
     }
 
     fun nombre() = nombre
@@ -61,7 +66,7 @@ class Party(private var nombre: String, private var imagenURL: String) {
     }
 
     private fun esLaParty(party: Party) = (party.id != null && party.id()==this.id)
-                                        || this.nombre==party.nombre
+            || this.nombre==party.nombre
 
     private fun puedeAgregarAventureros() = this.numeroDeAventureros() < this.maximoDeAventureros()
 
@@ -89,6 +94,23 @@ class Party(private var nombre: String, private var imagenURL: String) {
         subirDeNivelAventureros()
     }
 
+    fun actualizarAtributosEnBaseA(formaciones: List<Formacion>) {
+        asignarAtributosDeFormacion(formaciones.flatMap { it.stats })
+    }
+
+    fun asignarAtributosDeFormacion(atributosDeFormacion: List<AtributoDeFormacion>) {
+        puntosDeAtributosGanadosPorFormacion = atributosDeFormacion.fold(mutableMapOf()) { puntosAcumulados, it ->
+            val acumulado = puntosAcumulados.getOrDefault(it.nombreDeAtributo(), 0.0)
+
+            puntosAcumulados.put(
+                it.nombreDeAtributo(),
+                acumulado + it.puntosDeGanancia().toDouble()
+            )
+
+            puntosAcumulados
+        }
+    }
+
     /* Assertions */
     private fun validarQueNoPertenzcaAOtraParty(aventurero: Aventurero) {
         if (aventurero.party != null && !this.esLaParty(aventurero.party!!)) throw RuntimeException("${aventurero.nombre()} no pertenece a ${this.nombre}.")
@@ -102,5 +124,19 @@ class Party(private var nombre: String, private var imagenURL: String) {
         if (!this.puedeAgregarAventureros()) throw RuntimeException("La party $nombre está completa.")
     }
 
+    fun fuerzaPorAtributosDeFormacion() =
+        puntosDeAtributoPorFormacion("fuerza")
+
+    fun destrezaPorAtributosDeFormacion() =
+        puntosDeAtributoPorFormacion("destreza")
+
+    fun constitucionPorAtributosDeFormacion() =
+        puntosDeAtributoPorFormacion("constitucion")
+
+    fun inteligenciaPorAtributosDeFormacion() =
+        puntosDeAtributoPorFormacion("inteligencia")
+
+    private fun puntosDeAtributoPorFormacion(nombreDeAtributo: String): Double =
+        puntosDeAtributosGanadosPorFormacion.getOrDefault(nombreDeAtributo, 0.0)
 
 }

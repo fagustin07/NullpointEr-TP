@@ -3,6 +3,7 @@ package ar.edu.unq.epers.tactics.service.impl
 import ar.edu.unq.epers.tactics.modelo.Aventurero
 import ar.edu.unq.epers.tactics.modelo.Party
 import ar.edu.unq.epers.tactics.modelo.tienda.InventarioParty
+import ar.edu.unq.epers.tactics.persistencia.dao.FormacionDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.InventarioPartyDAO
 import ar.edu.unq.epers.tactics.persistencia.dao.PartyDAO
 import ar.edu.unq.epers.tactics.service.Direccion
@@ -12,7 +13,7 @@ import ar.edu.unq.epers.tactics.service.PartyService
 import ar.edu.unq.epers.tactics.service.runner.HibernateTransactionRunner.runTrx
 import ar.edu.unq.epers.tactics.service.runner.OrientDBTransactionRunner
 
-class PartyServiceImpl(val partyDAO: PartyDAO, val inventarioPartyDAO: InventarioPartyDAO) : PartyService {
+class PartyServiceImpl(val partyDAO: PartyDAO, val inventarioPartyDAO: InventarioPartyDAO, val formacionDAO: FormacionDAO) : PartyService {
 
     override fun crear(party: Party) = runTrx {
         OrientDBTransactionRunner.runTrx {
@@ -44,7 +45,13 @@ class PartyServiceImpl(val partyDAO: PartyDAO, val inventarioPartyDAO: Inventari
 
     override fun agregarAventureroAParty(idDeLaParty: Long, aventurero: Aventurero): Aventurero {
         return runTrx {
-            partyDAO.ejecutarCon(idDeLaParty) { it.agregarUnAventurero(aventurero) }
+            partyDAO.ejecutarCon(idDeLaParty) {
+                it.agregarUnAventurero(aventurero)
+
+                it.actualizarAtributosEnBaseA(
+                    formacionDAO.formacionesQuePosee(it)
+                )
+            }
             aventurero
         }
     }
