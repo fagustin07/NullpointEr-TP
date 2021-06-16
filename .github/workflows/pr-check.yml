@@ -33,3 +33,4 @@ jobs:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           MONGO_DB: ${{ secrets.MONGO_DB }}
           ORIENTDB_URL: memory:test
+          
